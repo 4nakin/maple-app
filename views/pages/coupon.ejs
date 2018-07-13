@@ -2,18 +2,31 @@
     <% include ../partials/navigation %>
     <% include ../partials/outputMessage %>
         <section role="region" class="container js-coupon-section">
-            <div class="coupon-add-nav">
+            <!-- <div class="coupon-add-nav">
                 <button type="button" class="btn btn-primary js-add-new-coupon-btn" data-toggle="modal" data-target="#addNewCouponModal">
                     <span class="icon-budicon-classic-1" aria-hidden="true">Add a new coupon</span>
                 </button>
-            </div>
+            </div> -->
 
-            <header role="banner">
-                <h1 class="header-title">Your Coupons</h1>
-            </header>
+
+
 
             <section role="region" class="list-coupons-section" id="js-list-coupons-section">
-              <div id="coupons"></div>
+
+              <div class="wrapper">
+                <h1>Dashboard</h1>
+                <button class="button solid js-add-new-coupon-btn add-new-coupon-btn" data-toggle="modal" data-target="#addNewCouponModal">
+                  <span>
+                    <img src="images/add-icon@3x.svg" alt="add-icon" class="add-icon">
+                  </span>
+                  Add Coupon
+                </button>
+              </div>
+
+              <div id="coupons">
+                  <!-- coupons will render here -->
+              </div>
+
             </section>
 
             <section role="region" id="addNewCouponModelSection">

@@ -4,7 +4,7 @@
       <% include ../partials/outputMessage %>
         <section role="region" class="container" id="login-section">
             <h1>Login</h1>
-            <form action="/auth" method="post" id="js-login-form">
+            <form action="/auth" method="post" id="js-login-form" class="login-form">
             <div class="form-group">
                 <label>Username:</label>
                 <input type="text" name="username" class="form-control" id="input-username" required/>
@@ -13,7 +13,7 @@
                 <label>Password:</label>
                 <input type="password" name="password" class="form-control" id="input-password" required/>
             </div>
-              <button type="submit" class="btn btn-primary " value="Login">Login</button>
+              <button type="submit" class="button solid" value="Login">Login</button>
             </form>
         </section>
         <section role="region" id="signup-link-section">

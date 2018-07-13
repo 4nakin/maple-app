@@ -1,30 +1,44 @@
 'use strict';
 
-/*
-function loadUserCoupons() {
-  $('.js-logout').removeClass('hide');
-  $('.js-coupon').removeClass('hide');
-  var token = localStorage.getItem('Token');
+function getUserCoupons() {
+
   $.ajax({
-    url: '/coupon/' + token,
+    beforeSend: function(xhr) {
+      xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
+    },
+    url: '/coupon/',
     type: 'GET',
     success: function(res) {
+
+      $('.js-logout').removeClass('hide');
+      $('.js-coupon').removeClass('hide');
+
+      $('.js-signup').addClass('hide');
+      $('.js-login').addClass('hide');
+
+      console.log(`The user made it to the Dashboard`);
+      console.log(`The user id is: ${res._userId}`);
       var html = "";
       res.coupons.map(function(coupon){
-        html +=`<section role="region" class="coupon-container js-coupon-container" data-id="${coupon._id}">
-                    <div class="coupon-actions-nav">
-                        <button type="button" class="btn-transparent edit-btn js-edit-coupon-btn " data-toggle="modal" data-target="#editCouponModal">
-                          <span class="icons icon-budicon-classic js-edit-icon" alt="edit-icon"></span>
-                        </button>
-                        <button type="button" class="btn-transparent" >
-                          <span class="icons icon-budicon-classic-2 js-delete-icon" alt="delete-icon"></span>
-                        </button>
-                    </div>
+        html +=`<section role="role" class="all-coupon-container" data-id="${coupon._id}">
+                  <section role="region" class="coupon-container js-coupon-container">
+                    <div class="coupon-merchant-logo"></div>
                     <h2 class="coupon-merchant-name">${coupon.merchantName}</h2>
+                    <p class="coupon-description">${coupon.description}</p>
+                    <div class="dashed">
+                      <img src="images/dashed-line.png">
+                    </div>
+                    <p class="coupon-title">COUPON CODE</p>
                     <p class="coupon-code js-coupon-code">${coupon.code}</p>
                     <p class="coupon-expiration-date">${coupon.expirationDate}</p>
-                    <p class="coupon-description">${coupon.description}</p>
-                </section>`
+                  </section>
+                  <section role="region" class="coupon-actions-nav">
+                    <img src="images/ui-compose.svg" alt="edit-icon" class="icon edit-icon js-edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
+                    <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4">
+                    <img src="images/notification.svg" alt="" class="icon notification-icon js-notification-icon" tabindex="4">
+                    <img src="images/trash.svg" alt="" class="icon delete-icon js-delete-icon" tabindex="4">
+                  </section>
+                </section>`;
       });
       $('#coupons').html(html);
     },
@@ -38,22 +52,27 @@ function loadUserCoupons() {
     }
   })
 }
-*/
+
 function renderCoupons(res) {
-  return` <section role="region" class="coupon-container js-coupon-container" data-id="${res._id}">
-            <div class="coupon-actions-nav">
-            <button type="button" class="btn-transparent js-edit-coupon-btn" data-toggle="modal" data-target="#editCouponModal">
-              <span class="icons icon-budicon-classic js-edit-icon" alt="edit-icon"></span>
-            </button>
-            <button type="button" class="btn-transparent">
-                <span class="icons icon-budicon-classic-2 js-delete-icon" alt="delete-icon"></span>
-            </button>
-            </div>
-            <h2 class="coupon-merchant-name">${res.merchantName}</h2>
-            <p class="coupon-code js-coupon-code">${res.code}</p>
-            <p class="coupon-expiration-date">${res.expirationDate}</p>
-            <p class="coupon-description">${res.description}</p>
-          </section>`;
+  return`<section role="role" class="all-coupon-container">
+            <section role="region" class="coupon-container js-coupon-container" data-id="${res._id}">
+              <div class="coupon-merchant-logo"></div>
+              <h2 class="coupon-merchant-name">${res.merchantName}</h2>
+              <p class="coupon-description">${res.description}</p>
+              <div class="dashed">
+                <img src="images/dashed-line.png">
+              </div>
+              <p class="coupon-title">COUPON CODE</p>
+              <p class="coupon-code js-coupon-code">${res.code}</p>
+              <p class="coupon-expiration-date">${res.expirationDate}</p>
+            </section>
+            <section role="region" class="coupon-actions-nav">
+              <img src="images/ui-compose.svg" alt="edit-icon" class="icon edit-icon js-edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
+              <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4">
+              <img src="images/notification.svg" alt="" class="icon notification-icon js-notification-icon" tabindex="4">
+              <img src="images/trash.svg" alt="" class="icon trash-icon js-delete-icon" tabindex="4">
+            </section>
+          </section`;
 }
 
 function renderAddModal() {
@@ -88,8 +107,8 @@ function renderAddModal() {
                                   <input type="text" name="description" class="form-control input-add-description" required>
                               </div>
 
-                              <div class="center">
-                                  <button type="submit" class="btn btn-primary submit-add-coupon-btn" id="js-submit-add-coupon-btn">add coupon</button>
+                              <div class="test-btn">
+                                  <button type="submit" class="button solid submit-add-coupon-btn" id="js-submit-add-coupon-btn">Add new coupon</button>
                               </div>
                           </form>
                       </div>
@@ -131,7 +150,7 @@ function renderEditModal() {
                                 </div>
 
                                 <div class="center">
-                                    <button type="submit" class="btn btn-primary submit-edit-coupon-btn" id="js-submit-edit-coupon-btn">save edited coupon</button>
+                                    <button type="submit" class="button solid submit-edit-coupon-btn" id="js-submit-edit-coupon-btn">save edited coupon</button>
                                 </div>
                             </form>
                         </div>
@@ -142,12 +161,20 @@ function renderEditModal() {
 
 function watchAddBtnHandler() {
   $('.js-add-new-coupon-btn').on('click', (e) => {
+
     $('#addNewCouponModelSection').html(renderAddModal());
     $('#addNewCouponModal').modal('show');
+
+    var date = new Date();
+    // date.setDate(date.getDate()-1); //to get previous day
+    date.setDate(date.getDate());
+
     $('[data-toggle="datepicker"]').datepicker({
       autoHide: true,
       zIndex: 2048,
+      startDate: date
     });
+
     watchSubmitAddNewCouponHandler();
   })
 }
@@ -181,7 +208,8 @@ function sendAddCouponDataToAPI() {
         $('.input-add-expirationDate').val('');
         $('.input-add-description').val('');
 
-        $('.list-coupons-section').append(renderCoupons(res));
+        // $('.list-coupons-section').append(renderCoupons(res));
+        $('#coupons').append(renderCoupons(res));
 
         $('#js-msg-output').show();
 
@@ -204,9 +232,10 @@ function sendAddCouponDataToAPI() {
 function watchDeleteBtnHandler() {
     $('#js-list-coupons-section').on('click','.js-delete-icon', function(e) {
         e.preventDefault();
-        const couponId = $(this).parent().parent().parent().attr('data-id');
+        //console.log($(this).parent().parent().attr('data-id'));
+        const couponId = $(this).parent().parent().attr('data-id')
         console.log(`The coupon id: ${couponId}`);
-        $(this).parent().parent().parent().remove();
+        $(this).parent().parent().remove();
         sendCouponToDeleteFromApi(couponId);
     });
 }
@@ -236,16 +265,21 @@ function watchEditBtnHandler() {
       $('#editCouponModelSection').html(renderEditModal());
       $('#editCouponModal').modal('show');
 
+      var date = new Date();
+      // date.setDate(date.getDate()-1); //to get previous day
+      date.setDate(date.getDate());
+
       $('[data-toggle="datepicker"]').datepicker({
         autoHide: true,
         zIndex: 2048,
+        startDate: date
       });
 
-      const couponId = $(this).parent().parent().parent().attr('data-id');
+      const couponId = $(this).parent().parent().attr('data-id');
       console.log(`The coupon id of the edit coupon ${couponId}`);
 
       //get the values currently in the input fields for that getCouponid
-      const couponObject = $(this).parent().parent().parent();
+      const couponObject = $(this).parent().parent();
       const merchantNameText = $(couponObject).find('h2.coupon-merchant-name').text();
       const codeText = $(couponObject).find('p.coupon-code').text();
       const expirationDateText = $(couponObject).find('p.coupon-expiration-date').text();
@@ -318,6 +352,7 @@ function sendCouponToEditFromApi(id) {
     });
 }
 
+
 /*
 //HAVE TO GET THIS WORKING
 function copyCouponCodeToClipboard() {
@@ -329,11 +364,8 @@ function copyCouponCodeToClipboard() {
 
 */
 
-
 function initalizeCouponApp() {
-
-    //loadUserCoupons();
-    //getUserCoupons();
+    getUserCoupons();
     watchAddBtnHandler();
     watchDeleteBtnHandler();
     watchEditBtnHandler();

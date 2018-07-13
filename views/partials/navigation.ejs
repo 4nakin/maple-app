@@ -1,9 +1,13 @@
-<nav class="navbar navbar-default fixed-top navbar-expand-lg navbar-light" role="navigation">
-    <a class="navbar-brand" href="/">Maple</a>
+<nav class="navbar navbar-default navbar-expand-lg navbar-light" role="navigation">
+  <header role="banner">
+    <img src="images/wallet-logo@2x.png" alt="wallet-logo" class="wallet-logo">
+    <h1 class="app-logo"><a href="/">Maple</a></h1>
+  </header>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <% if(title === 'Coupon'){%>
@@ -11,22 +15,22 @@
             <%} else{%>
                 <li class="nav-item js-coupon hide">
             <%}%>
-                    <a class="nav-link" href="/coupon">Coupon</a>
+                    <a class="nav-link" href="/dashboard">Coupon</a>
                 </li>
         </ul>
         <ul class="navbar-nav navbar-right">
             <% if(title === 'Register'){%>
-                <li class="nav-item active">
+                <li class="nav-item active js-signup">
             <%} else{%>
-                <li class="nav-item">
+                <li class="nav-item js-signup">
             <%}%>
                     <a class="nav-link" href="/signup">Sign Up</a>
                 </li>
 
             <% if(title === 'Login'){%>
-              <li class="nav-item active">
+              <li class="nav-item active js-login">
             <%} else{%>
-              <li class="nav-item">
+              <li class="nav-item js-login">
             <%}%>
                     <a class="nav-link" href="/login">Login</a>
                 </li>

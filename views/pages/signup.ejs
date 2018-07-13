@@ -1,10 +1,9 @@
 <% include ../partials/header %>
     <% include ../partials/navigation %>
-      <main role="main"></main>
         <% include ../partials/outputMessage %>
             <section role="region" class="container" id="signup-section">
-                <h1>Sign up</h1>
-                <form action="/user" method="post" id="js-signup-form">
+                <h1>Sign up with Maple</h1>
+                <form action="/user" method="post" id="js-signup-form" class="signup-form">
                     <div class="form-group">
                         <label>First Name</label>
                         <input type="text" name="firstName" class="form-control" id="input-firstName" required />
@@ -21,7 +20,7 @@
                         <label>Password</label>
                         <input type="password" name="password" class="form-control" id="input-password" required />
                     </div>
-                    <button type="submit" class="btn btn-primary" value="signUp">Sign up</button>
+                    <button type="submit" class="button solid" value="signUp">Sign up</button>
                 </form>
             </section>
             <section role="region" id="login-link-section">

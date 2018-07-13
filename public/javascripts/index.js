@@ -1,5 +1,17 @@
 'use strict';
 
+function signupBtnHandler() {
+  $('.js-signup-btn').on('click', (e) => {
+    window.location.href = '/signup';
+  });
+}
+
+function loginBtnHandler() {
+  $('.js-login-btn').on('click', (e) => {
+    window.location.href = '/login';
+  });
+}
+
 function signupHandler() {
   $('#signup-section').on('submit', '#js-signup-form', (e) => {
     e.preventDefault();
@@ -20,7 +32,6 @@ function signupHandler() {
         $('#input-lastName').val('');
         $('#input-username').val('');
         $('#input-password').val('');
-
 
         $('#js-msg-output').html(`<div class="alert alert-success alert-dismissible fade show text-center" role="alert">Your Account has been registered!
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -84,8 +95,7 @@ function loginHandler() {
         $('.js-logout').removeClass('hide');
         $('.js-coupon').removeClass('hide');
 
-        //window.location.href = '/coupon';
-        getUserCoupons();
+        window.location.href = '/dashboard';
       },
       error: (err) => {
         console.log(err);
@@ -99,80 +109,31 @@ function loginHandler() {
   });
 }
 
-function getUserCoupons() {
-  $('.js-logout').removeClass('hide');
-  $('.js-coupon').removeClass('hide');
-  $.ajax({
-    beforeSend: function(xhr) {
-      xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
-    },
-    url: '/coupon/',
-    type: 'GET',
-    success: function(res) {
-      console.log(`The user id is: ${res._userId}`);
-      //renderCouponsToPage(res);
-    },
-    error: function(err) {
-      if(token === null) {
-        console.log('Token is empty and you are not logged in. Please log in!!!');
-      }
-      else{
-        console.log('something went wrong when trying to get to the protected endpoint');
-      }
-    }
-  })
+function renderNavigationLinksListener() {
+  var token = localStorage.getItem('Token');
+
+  if(!token) {
+    console.log('oh no, There\'s no token');
+    //hide coupon link
+    $('.js-signup').removeClass('hide');
+    $('.js-login').removeClass('hide');
+  }
+  else{
+    console.log('you are still signed in');
+    //show coupon link
+    $('.js-logout').removeClass('hide');
+    $('.js-coupon').removeClass('hide');
+    $('.js-signup').addClass('hide');
+    $('.js-login').addClass('hide');
+  }
 }
-
-/*
-function renderCouponsToPage(res){
-  console.log('Im in the renderCouponToPage');
-  console.log('the res is' + res);
-  console.log(`The userId is ${res._userId}`);
-
-  $.ajax({
-    beforeSend: function(xhr) {
-      xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
-    },
-    url: `/coupon/${res._userId}`,
-    type: 'GET',
-    success: function(res) {
-      console.log(res);
-      var html = "";
-      res.coupons.map(function(coupon){
-        html +=`<section role="region" class="coupon-container js-coupon-container" data-id="${coupon._id}">
-                  <div class="coupon-actions-nav">
-                      <button type="button" class="btn-transparent edit-btn js-edit-coupon-btn " data-toggle="modal" data-target="#editCouponModal">
-                        <span class="icons icon-budicon-classic js-edit-icon" alt="edit-icon"></span>
-                      </button>
-                      <button type="button" class="btn-transparent" >
-                        <span class="icons icon-budicon-classic-2 js-delete-icon" alt="delete-icon"></span>
-                      </button>
-                  </div>
-                  <h2 class="coupon-merchant-name">${coupon.merchantName}</h2>
-                  <p class="coupon-code js-coupon-code">${coupon.code}</p>
-                  <p class="coupon-expiration-date">${coupon.expirationDate}</p>
-                  <p class="coupon-description">${coupon.description}</p>
-                </section>`
-      });
-      $('#coupons').html(html);
-
-      // window.location.href = `/coupon/${res._userId}`;
-    },
-    error: function(err) {
-      if(token === null) {
-        console.log('Token is empty and you are not logged in. Please log in!!!');
-      }
-      else{
-        console.log('something went wrong when trying to get to the protected endpoint');
-      }
-    }
-  })
-}
-*/
 
 function initApp() {
+  signupBtnHandler();
+  loginBtnHandler();
   signupHandler();
   loginHandler();
+  renderNavigationLinksListener();
   logoutHandler();
 }
 
