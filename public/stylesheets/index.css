@@ -326,13 +326,13 @@ main .coupon-main-img {
   border-radius: 12px;
   height: 67px;
   width: 300px;
-  padding: 21px 43px;
+  padding: 21px 0;
+  text-align: center;
 }
 
-.edit-icon,
-.upload-icon,
-.notification-icon {
-  margin-right: 38px;
+.icon {
+  margin: 0 19px;
+  cursor: pointer;
 }
 
 .coupon-container {

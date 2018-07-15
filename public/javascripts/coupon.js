@@ -1,7 +1,6 @@
 'use strict';
 
 function getUserCoupons() {
-
   $.ajax({
     beforeSend: function(xhr) {
       xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
@@ -54,8 +53,8 @@ function getUserCoupons() {
 }
 
 function renderCoupons(res) {
-  return`<section role="role" class="all-coupon-container">
-            <section role="region" class="coupon-container js-coupon-container" data-id="${res._id}">
+  return`<section role="role" class="all-coupon-container" data-id="${res._id}">
+            <section role="region" class="coupon-container js-coupon-container">
               <div class="coupon-merchant-logo"></div>
               <h2 class="coupon-merchant-name">${res.merchantName}</h2>
               <p class="coupon-description">${res.description}</p>
@@ -128,7 +127,7 @@ function renderEditModal() {
                         </div>
                         <div class="modal-body">
                             <h5 class="modal-title" id="editCouponModalLabel">Edit existing coupon</h5>
-                            <form id="js-add-coupon-form">
+                            <form id="js-edit-coupon-form">
                                 <div class="form-group">
                                     <label for="merchantName">Merchant Name</label>
                                     <input type="text" name="merchantName" class="form-control input-edit-merchantName" required>
@@ -161,7 +160,6 @@ function renderEditModal() {
 
 function watchAddBtnHandler() {
   $('.js-add-new-coupon-btn').on('click', (e) => {
-
     $('#addNewCouponModelSection').html(renderAddModal());
     $('#addNewCouponModal').modal('show');
 
@@ -180,7 +178,7 @@ function watchAddBtnHandler() {
 }
 
 function watchSubmitAddNewCouponHandler() {
-    $('#js-submit-add-coupon-btn').on('click', (e) => {
+    $('#js-add-coupon-form').on('submit', (e) => {
         e.preventDefault();
         console.log('you added a coupon');
         $('#addNewCouponModal').modal('hide');
@@ -203,13 +201,23 @@ function sendAddCouponDataToAPI() {
       },
       dataType:'json',
   		success: function(res){
+
+        //const companyname = $('.input-add-merchantName').val();
+        //getCompanyLogoImageDataFromApi(companyname);
+
         $('.input-add-merchantName').val('');
         $('.input-add-code').val('');
         $('.input-add-expirationDate').val('');
         $('.input-add-description').val('');
 
-        // $('.list-coupons-section').append(renderCoupons(res));
-        $('#coupons').append(renderCoupons(res));
+        const couponHTML = $(renderCoupons(res));
+        couponHTML.css('opacity', '0');
+        $('#coupons').append(couponHTML);
+
+        couponHTML.animate({
+          opacity: 1,
+        }, 500);
+
 
         $('#js-msg-output').show();
 
@@ -235,12 +243,12 @@ function watchDeleteBtnHandler() {
         //console.log($(this).parent().parent().attr('data-id'));
         const couponId = $(this).parent().parent().attr('data-id')
         console.log(`The coupon id: ${couponId}`);
-        $(this).parent().parent().remove();
-        sendCouponToDeleteFromApi(couponId);
+        const container = $(this).parent().parent();
+        sendCouponToDeleteFromApi(couponId, container);
     });
 }
 
-function sendCouponToDeleteFromApi(id) {
+function sendCouponToDeleteFromApi(id, container) {
   console.log(`if I got here then i should delete this id: ${id} from the DB`);
     $.ajax({
       url: `/coupon/${id}`,
@@ -251,6 +259,13 @@ function sendCouponToDeleteFromApi(id) {
       dataType: 'json',
       success: function(res) {
         console.log(`you successfully deleted a coupon`);
+
+        container.animate({
+          opacity: 0,
+        }, 500, function(){
+          container.remove();
+        });
+
       },
       error: function(err) {
         console.log(`Something happened when trying to delete ${err}`);
@@ -297,7 +312,7 @@ function watchEditBtnHandler() {
 }
 
 function watchSubmitEditCouponHandler(id) {
-  $('#js-submit-edit-coupon-btn').on('click', function(e) {
+  $('#js-submit-edit-coupon-btn').on('submit', function(e) {
       e.preventDefault();
       console.log('you want to update a coupon');
       $('#editCouponModal').modal('toggle');
@@ -350,6 +365,26 @@ function sendCouponToEditFromApi(id) {
         console.log(`Something happened when trying to edit ${err}`);
       }
     });
+}
+
+function getCompanyLogoImageDataFromApi(searchTerm) {
+  console.log(`Get Company function ${searchTerm}`);
+  $.ajax({
+    url: `https://logo.clearbit.com/${searchTerm}.com`,
+    type: 'GET',
+    dataType: 'html',
+    success: function(res) {
+      console.log('the get company call was successful' + res);
+      $('#test').html('<img src="data:image/png;base64,' + res + '" />');
+    },
+    error: function(res) {
+      console.log('there is an err');
+    }
+  });
+}
+
+function displaySearchData(data) {
+  console.log("This is gets returned" + data);
 }
 
 
