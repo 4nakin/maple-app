@@ -380,7 +380,6 @@ function getCompanyLogoImageDataFromApi(searchTerm) {
     success: function(res) {
       //console.log('the get company call was successful' + res);
 
-
       $('#test').html(`<img src="data:image/png;base64,${res}"/>`);
     },
     error: function(res) {
