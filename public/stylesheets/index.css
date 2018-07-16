@@ -89,6 +89,14 @@ nav li a {
   color: #999;
 }
 
+.navbar-nav {
+ background: #FFFFFF;
+ margin-top: 5px;
+ margin-bottom: 10px;
+ /* width: 100%; */
+ text-align: right;
+}
+
 header {
   display: inline-block;
   display: flex;
@@ -430,6 +438,15 @@ No media query for `xs` since this is the default in Bootstrap */
   .navbar {
     padding: 24px 35px;
   }
+
+  .navbar-nav {
+   background: #FFFFFF;
+   margin-top: 5px;
+   margin-bottom: 10px;
+   /* width: 100%; */
+   text-align: right;
+  }
+
 
   #js-list-coupons-section .add-new-coupon-btn {
     position: absolute;
