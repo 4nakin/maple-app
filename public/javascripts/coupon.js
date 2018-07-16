@@ -202,8 +202,8 @@ function sendAddCouponDataToAPI() {
       dataType:'json',
   		success: function(res){
 
-        //const companyname = $('.input-add-merchantName').val();
-        //getCompanyLogoImageDataFromApi(companyname);
+        const companyname = $('.input-add-merchantName').val();
+        getCompanyLogoImageDataFromApi(companyname);
 
         $('.input-add-merchantName').val('');
         $('.input-add-code').val('');
@@ -217,7 +217,6 @@ function sendAddCouponDataToAPI() {
         couponHTML.animate({
           opacity: 1,
         }, 500);
-
 
         $('#js-msg-output').show();
 
@@ -369,13 +368,20 @@ function sendCouponToEditFromApi(id) {
 
 function getCompanyLogoImageDataFromApi(searchTerm) {
   console.log(`Get Company function ${searchTerm}`);
+
+  var str = searchTerm;
+  var newStr = str.replace(/\s+/g, '');
+  console.log(`This string should not have spaces ${newStr}`);
+
   $.ajax({
-    url: `https://logo.clearbit.com/${searchTerm}.com`,
+    url: `https://logo.clearbit.com/${newStr}.com`,
     type: 'GET',
     dataType: 'html',
     success: function(res) {
-      console.log('the get company call was successful' + res);
-      $('#test').html('<img src="data:image/png;base64,' + res + '" />');
+      //console.log('the get company call was successful' + res);
+
+
+      $('#test').html(`<img src="data:image/png;base64,${res}"/>`);
     },
     error: function(res) {
       console.log('there is an err');
