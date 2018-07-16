@@ -1,5 +1,29 @@
 'use strict';
 
+function renderCoupons(res, companyLogoImage) {
+  return`<section role="role" class="all-coupon-container" data-id="${res._id}">
+            <section role="region" class="coupon-container js-coupon-container">
+              <div class="js-coupon-merchant-logo coupon-merchant-logo">
+                <img src="${companyLogoImage}" alt="This is an image of the company logo" class="coupon-merchant-logo">
+              </div>
+              <h2 class="coupon-merchant-name">${res.merchantName}</h2>
+              <p class="coupon-description">${res.description}</p>
+              <div class="dashed">
+                <img src="images/dashed-line.png">
+              </div>
+              <p class="coupon-title">COUPON CODE</p>
+              <p class="coupon-code js-coupon-code">${res.code}</p>
+              <p class="coupon-expiration-date">${res.expirationDate}</p>
+            </section>
+            <section role="region" class="coupon-actions-nav">
+              <img src="images/ui-compose.svg" alt="edit-icon" class="icon edit-icon js-edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
+              <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4">
+              <img src="images/notification.svg" alt="" class="icon notification-icon js-notification-icon" tabindex="4">
+              <img src="images/trash.svg" alt="" class="icon trash-icon js-delete-icon" tabindex="4">
+            </section>
+          </section>`;
+}
+
 function getUserCoupons() {
   $.ajax({
     beforeSend: function(xhr) {
@@ -17,27 +41,14 @@ function getUserCoupons() {
 
       console.log(`The user made it to the Dashboard`);
       console.log(`The user id is: ${res._userId}`);
+
       var html = "";
       res.coupons.map(function(coupon){
-        html +=`<section role="role" class="all-coupon-container" data-id="${coupon._id}">
-                  <section role="region" class="coupon-container js-coupon-container">
-                    <div class="coupon-merchant-logo"></div>
-                    <h2 class="coupon-merchant-name">${coupon.merchantName}</h2>
-                    <p class="coupon-description">${coupon.description}</p>
-                    <div class="dashed">
-                      <img src="images/dashed-line.png">
-                    </div>
-                    <p class="coupon-title">COUPON CODE</p>
-                    <p class="coupon-code js-coupon-code">${coupon.code}</p>
-                    <p class="coupon-expiration-date">${coupon.expirationDate}</p>
-                  </section>
-                  <section role="region" class="coupon-actions-nav">
-                    <img src="images/ui-compose.svg" alt="edit-icon" class="icon edit-icon js-edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
-                    <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4">
-                    <img src="images/notification.svg" alt="" class="icon notification-icon js-notification-icon" tabindex="4">
-                    <img src="images/trash.svg" alt="" class="icon delete-icon js-delete-icon" tabindex="4">
-                  </section>
-                </section>`;
+        console.log(coupon.merchantName);
+        var str = coupon.merchantName;
+        var newStr = str.replace(/\s+/g, '');
+        const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=134`;
+        html += renderCoupons(coupon,companyLogoImage);
       });
       $('#coupons').html(html);
     },
@@ -50,28 +61,6 @@ function getUserCoupons() {
       }
     }
   })
-}
-
-function renderCoupons(res) {
-  return`<section role="role" class="all-coupon-container" data-id="${res._id}">
-            <section role="region" class="coupon-container js-coupon-container">
-              <div class="coupon-merchant-logo"></div>
-              <h2 class="coupon-merchant-name">${res.merchantName}</h2>
-              <p class="coupon-description">${res.description}</p>
-              <div class="dashed">
-                <img src="images/dashed-line.png">
-              </div>
-              <p class="coupon-title">COUPON CODE</p>
-              <p class="coupon-code js-coupon-code">${res.code}</p>
-              <p class="coupon-expiration-date">${res.expirationDate}</p>
-            </section>
-            <section role="region" class="coupon-actions-nav">
-              <img src="images/ui-compose.svg" alt="edit-icon" class="icon edit-icon js-edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
-              <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4">
-              <img src="images/notification.svg" alt="" class="icon notification-icon js-notification-icon" tabindex="4">
-              <img src="images/trash.svg" alt="" class="icon trash-icon js-delete-icon" tabindex="4">
-            </section>
-          </section`;
 }
 
 function renderAddModal() {
@@ -187,6 +176,12 @@ function watchSubmitAddNewCouponHandler() {
 }
 
 function sendAddCouponDataToAPI() {
+  const companyname = $('.input-add-merchantName').val();
+  var str = companyname;
+  var newStr = str.replace(/\s+/g, '');
+  //console.log('start of sendAddCouponDataToAPI function. I grabbed the company name from input: ' + companyname);
+  const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=134`;
+
     $.ajax({
   		url: '/coupon',
       type: 'POST',
@@ -202,15 +197,12 @@ function sendAddCouponDataToAPI() {
       dataType:'json',
   		success: function(res){
 
-        const companyname = $('.input-add-merchantName').val();
-        getCompanyLogoImageDataFromApi(companyname);
-
         $('.input-add-merchantName').val('');
         $('.input-add-code').val('');
         $('.input-add-expirationDate').val('');
         $('.input-add-description').val('');
 
-        const couponHTML = $(renderCoupons(res));
+        const couponHTML = $(renderCoupons(res,companyLogoImage));
         couponHTML.css('opacity', '0');
         $('#coupons').append(couponHTML);
 
@@ -366,42 +358,51 @@ function sendCouponToEditFromApi(id) {
     });
 }
 
-function getCompanyLogoImageDataFromApi(searchTerm) {
-  console.log(`Get Company function ${searchTerm}`);
 
+/* NOT USING BC OF COMPLEXITY THIS ASK MENTOR....
+function getCompanyLogoImageDataFromApi(searchTerm) {
   var str = searchTerm;
   var newStr = str.replace(/\s+/g, '');
-  console.log(`This string should not have spaces ${newStr}`);
-
+  //console.log(`This string should not have spaces ${newStr}`);
   $.ajax({
-    url: `https://logo.clearbit.com/${newStr}.com`,
+    url: `https://logo.clearbit.com/${newStr}.com?size=134`,
     type: 'GET',
-    dataType: 'html',
-    success: function(res) {
-      //console.log('the get company call was successful' + res);
-
-      $('#test').html(`<img src="data:image/png;base64,${res}"/>`);
+    mimeType: 'text/plain; charset=x-user-defined',
+    success: function(res){
+      const baseEncoded = base64Encode(res);
     },
     error: function(res) {
-      console.log('there is an err');
+      console.log('There is an err at getCompanyLogoImageDataFromApi. Load a default image that is 134px wide.');
     }
   });
 }
-
-function displaySearchData(data) {
-  console.log("This is gets returned" + data);
+function base64Encode(str) {
+  var CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  var out = "", i = 0, len = str.length, c1, c2, c3;
+  while (i < len) {
+      c1 = str.charCodeAt(i++) & 0xff;
+      if (i == len) {
+          out += CHARS.charAt(c1 >> 2);
+          out += CHARS.charAt((c1 & 0x3) << 4);
+          out += "==";
+          break;
+      }
+      c2 = str.charCodeAt(i++);
+      if (i == len) {
+          out += CHARS.charAt(c1 >> 2);
+          out += CHARS.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
+          out += CHARS.charAt((c2 & 0xF) << 2);
+          out += "=";
+          break;
+      }
+      c3 = str.charCodeAt(i++);
+      out += CHARS.charAt(c1 >> 2);
+      out += CHARS.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4));
+      out += CHARS.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >> 6));
+      out += CHARS.charAt(c3 & 0x3F);
+  }
+  return out;
 }
-
-
-/*
-//HAVE TO GET THIS WORKING
-function copyCouponCodeToClipboard() {
-  $('.js-coupon-container').on('click','.js-coupon-code', (e) => {
-    e.stopPropagation();
-    console.log('coupon code copied to clipboard.');
-  });
-}
-
 */
 
 function initalizeCouponApp() {
