@@ -256,6 +256,7 @@ function sendCouponToDeleteFromApi(id, container) {
       },
       dataType: 'json',
       success: function(res) {
+        $('.js-delete-icon').tooltip('hide')
         console.log(`you successfully deleted a coupon`);
 
         container.animate({
@@ -350,8 +351,6 @@ function sendCouponToEditFromApi(id) {
         var expirationDate = $('.input-edit-expirationDate').val();
         var inputDescription = $('.input-edit-description').val();
 
-        //<img src="${companyLogoImage}" alt="This is an image of the company logo" class="coupon-merchant-logo">
-        //$('.js-logo-img').attr('src', companyLogoImage);
         $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', companyLogoImage);
         $(`[data-id = ${_couponId}] .coupon-merchant-name`).html(merchantName);
         $(`[data-id = ${_couponId}] .coupon-code`).html(inputCode);
