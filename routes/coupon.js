@@ -55,32 +55,8 @@ router.post('/', jwtAuth, (req, res) => {
     userId: _userId
   });
 
+  //TODO: need to add expiration validation
 
-  // var today = new Date();
-  // console.log(today);
-  // var dd = today.getDate();
-  // var mm = today.getMonth()+1; //January is 0!
-  // var yyyy = today.getFullYear();
-  //
-  // if(dd<10) {
-  //     dd = '0'+dd
-  //   }
-  //
-  //   if(mm<10) {
-  //     mm = '0'+mm
-  // }
-  //
-  // today = mm + '/' + dd + '/' + yyyy;
-  // console.log(`Today is: ${today}`);
-  //
-  // //need to do validations on expirationDate: req.body.expirationDate
-  // console.log(`The date entered in form is ${req.body.expirationDate}`);
-  // if(req.body.expirationDate < today){
-  //   console.log('Invalid Date. This date is in the past');
-  //   res.status(400).json({
-  //       error: 'Invalid Date. This date is in the past'
-  //   });
-  // }
 
   newCoupon.save()
       .then(function(coupon) {

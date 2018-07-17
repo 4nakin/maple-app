@@ -2,9 +2,9 @@
 
 function renderCoupons(res, companyLogoImage) {
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
-            <section role="region" class="coupon-container js-coupon-container">
-              <div class="js-coupon-merchant-logo coupon-merchant-logo">
-                <img src="${companyLogoImage}" alt="This is an image of the company logo" class="coupon-merchant-logo js-logo-img">
+            <section role="region" class="coupon-container js-coupon-container coupon-active">
+              <div class="js-coupon-merchant-logo">
+                <img src="${companyLogoImage}" alt="This is an image of the ${res.merchantName} logo" class="coupon-merchant-logo js-logo-img" data-default-src="images/default-image.png">
               </div>
               <h2 class="coupon-merchant-name">${res.merchantName}</h2>
               <p class="coupon-description">${res.description}</p>
@@ -41,7 +41,6 @@ function getUserCoupons() {
       $('.js-signup').addClass('hide');
       $('.js-login').addClass('hide');
 
-
       $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
       });
@@ -53,12 +52,16 @@ function getUserCoupons() {
       res.coupons.map(function(coupon){
         var str = coupon.merchantName;
         var newStr = str.replace(/\s+/g, '');
-        const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=134`;
+        const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
         html += renderCoupons(coupon,companyLogoImage);
       });
 
       $('#coupons').css('opacity', '0');
       $('#coupons').html(html);
+
+      //check to see if get request is Valid
+      //if not then replace with another image
+
 
       $('#coupons').animate({
         opacity: 1,
@@ -184,6 +187,7 @@ function sendAddCouponDataToAPI() {
   var newStr = str.replace(/\s+/g, '');
   const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
 
+
     $.ajax({
   		url: '/coupon',
       type: 'POST',
@@ -233,7 +237,6 @@ function sendAddCouponDataToAPI() {
 function watchDeleteBtnHandler() {
     $('#js-list-coupons-section').on('click','.js-delete-icon', function(e) {
         e.preventDefault();
-        //console.log($(this).parent().parent().attr('data-id'));
         const couponId = $(this).parent().parent().attr('data-id');
         console.log(`The coupon id: ${couponId}`);
         const container = $(this).parent().parent();
@@ -379,6 +382,34 @@ function setMinDateToTodaysDate(){
     $('.js-date-field').attr("min", today);
 }
 
+function markingCouponUsed() {
+  $('#coupons').on('click','.coupon-container', (e) => {
+    console.log('Do you want to mark this coupon as used');
+    //const couponId = $(e.currentTarget).data('id');
+    //console.log($(e.currentTarget));
+    //console.log($(e.currentTarget).children());
+    const couponContainerObject = $(e.currentTarget).children().children();
+    console.log(couponContainerObject);
+    const merchantLogo = $(couponContainerObject).find('img.coupon-merchant-logo.js-logo-img').addClass('test');
+    //console.log(merchantLogo);
+
+
+
+    if($(e.currentTarget).hasClass('coupon-disabled')){
+      $(e.currentTarget).removeClass('coupon-disabled');
+      $(e.currentTarget).addClass('coupon-active');
+      console.log('toggle and turn to coupon active');
+    }
+    else if($(e.currentTarget).hasClass('coupon-active')){
+      $(e.currentTarget).removeClass('coupon-active');
+      $(e.currentTarget).addClass('coupon-disabled');
+      console.log('toggle and turn to coupon disabled');
+    }
+    else{
+      console.log("something went wrong with marking coupon!");
+    }
+  });
+}
 /* NOT USING BC OF COMPLEXITY THIS ASK MENTOR....
 function getCompanyLogoImageDataFromApi(searchTerm) {
   var str = searchTerm;
@@ -430,6 +461,7 @@ function initalizeCouponApp() {
     watchAddBtnHandler();
     watchDeleteBtnHandler();
     watchEditBtnHandler();
+    markingCouponUsed();
 }
 
 $(initalizeCouponApp);
