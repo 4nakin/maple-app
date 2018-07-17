@@ -13,13 +13,15 @@ function renderCoupons(res, companyLogoImage) {
               </div>
               <p class="coupon-title">COUPON CODE</p>
               <p class="coupon-code js-coupon-code">${res.code}</p>
-              <p class="coupon-expiration-date">${res.expirationDate}</p>
+              <p class="coupon-expiration-date">Valid til ${res.expirationDate}</p>
             </section>
             <section role="region" class="coupon-actions-nav">
-              <img src="images/ui-compose.svg" alt="edit-icon" class="icon edit-icon js-edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
-              <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4">
-              <img src="images/notification.svg" alt="" class="icon notification-icon js-notification-icon" tabindex="4">
-              <img src="images/trash.svg" alt="" class="icon trash-icon js-delete-icon" tabindex="4">
+              <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon data" class="edit-icon">
+                <img src="images/ui-compose.svg" alt="edit-icon" class="icon edit-icon js-edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
+              </a>
+              <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4" data-toggle="tooltip" data-placement="bottom" title="Upload image of this coupon">
+              <img src="images/notification.svg" alt="" class="icon notification-icon js-notification-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Set up notification email">
+              <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete this coupon">
             </section>
           </section>`;
 }
@@ -38,6 +40,12 @@ function getUserCoupons() {
 
       $('.js-signup').addClass('hide');
       $('.js-login').addClass('hide');
+
+
+      $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+      });
+
 
       console.log(`The user made it to the Dashboard`);
       console.log(`The user id is: ${res._userId}`);

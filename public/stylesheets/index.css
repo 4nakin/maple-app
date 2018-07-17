@@ -48,15 +48,15 @@ body {
 
 .modal-title {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 .modal-body {
-  padding: 0 92px 60px 92px;
+  padding: 0 30px 20px 30px;
 }
 
 .form-group {
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 
 .form-control {
@@ -343,6 +343,10 @@ main .coupon-main-img {
   cursor: pointer;
 }
 
+.edit-icon:hover {
+  text-decoration: none;
+}
+
 .coupon-container {
   border: 1px solid #d8d8d8;
   border-radius: 25px;
@@ -430,7 +434,41 @@ No media query for `xs` since this is the default in Bootstrap */
 @media (min-width: 576px) { ... }
 
 /* Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) { ... }
+@media (min-width: 768px) {
+
+  .modal {
+    height: 800px;
+  }
+
+  .modal-content {
+    border-radius: 25px;
+    border: none;
+  }
+
+  .modal-header {
+    border-bottom: 0;
+  }
+
+  .modal-title {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .modal-body {
+    padding: 0 92px 60px 92px;
+  }
+
+  .form-group {
+    margin-bottom: 30px;
+  }
+
+  .form-control {
+    border: 1px solid #C7C7C7;
+    border-radius: 14px;
+    padding: 10px 20px;
+  }
+
+}
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
@@ -446,7 +484,6 @@ No media query for `xs` since this is the default in Bootstrap */
    /* width: 100%; */
    text-align: right;
   }
-
 
   #js-list-coupons-section .add-new-coupon-btn {
     position: absolute;
