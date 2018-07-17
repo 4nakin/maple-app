@@ -4,7 +4,7 @@ function renderCoupons(res, companyLogoImage) {
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
             <section role="region" class="coupon-container js-coupon-container">
               <div class="js-coupon-merchant-logo coupon-merchant-logo">
-                <img src="${companyLogoImage}" alt="This is an image of the company logo" class="coupon-merchant-logo">
+                <img src="${companyLogoImage}" alt="This is an image of the company logo" class="coupon-merchant-logo js-logo-img">
               </div>
               <h2 class="coupon-merchant-name">${res.merchantName}</h2>
               <p class="coupon-description">${res.description}</p>
@@ -322,6 +322,11 @@ function watchSubmitEditCouponHandler(id) {
 }
 
 function sendCouponToEditFromApi(id) {
+  const companyname = $('.input-edit-merchantName').val();
+  var str = companyname;
+  var newStr = str.replace(/\s+/g, '');
+  const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=134`;
+
   let _couponId = id;
   console.log(`If I got here then I should edit this id: ${id} on the DB`);
     $.ajax({
@@ -345,22 +350,25 @@ function sendCouponToEditFromApi(id) {
         var expirationDate = $('.input-edit-expirationDate').val();
         var inputDescription = $('.input-edit-description').val();
 
+        //<img src="${companyLogoImage}" alt="This is an image of the company logo" class="coupon-merchant-logo">
+        //$('.js-logo-img').attr('src', companyLogoImage);
+        $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', companyLogoImage);
         $(`[data-id = ${_couponId}] .coupon-merchant-name`).html(merchantName);
         $(`[data-id = ${_couponId}] .coupon-code`).html(inputCode);
         $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(expirationDate);
         $(`[data-id = ${_couponId}] .coupon-description`).html(inputDescription);
 
-        $('#js-msg-output').show();
+        // $('#js-msg-output').show();
+        //
+        // $('#js-msg-output').html(`<div class="alert alert-success alert-dismissible fade show text-center" role="alert">You have successfully edited a coupon!
+        //   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        //     <span aria-hidden="true">&times;</span>
+        //   </button>
+        //   </div`);
 
-        $('#js-msg-output').html(`<div class="alert alert-success alert-dismissible fade show text-center" role="alert">You have successfully edited a coupon!
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          </div`);
-
-        setTimeout(() => {
-          $('#js-msg-output').hide();
-        }, 2000);
+        // setTimeout(() => {
+        //   $('#js-msg-output').hide();
+        // }, 2000);
       },
       error: function(err) {
         console.log(`Something happened when trying to edit ${err}`);
