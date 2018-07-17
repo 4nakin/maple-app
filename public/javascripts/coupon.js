@@ -18,12 +18,12 @@ function renderCoupons(res, companyLogoImage, companyUrl) {
               <p class="coupon-expiration-date">Valid till ${res.expirationDate}</p>
             </section>
             <section role="region" class="coupon-actions-nav">
-              <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon data" class="edit-icon">
+              <img src="images/tick-sign.svg" alt="" class="icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Archive coupon">
+              <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon" class="edit-icon">
                 <img src="images/ui-compose.svg" alt="edit-icon" class="icon js-edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
               </a>
-              <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4" data-toggle="tooltip" data-placement="bottom" title="Upload image of this coupon">
-              <img src="images/notification.svg" alt="" class="icon notification-icon js-notification-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Set up notification email">
-              <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete this coupon">
+              <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4" data-toggle="tooltip" data-placement="bottom" title="Upload image">
+              <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete coupon">
             </section>
           </section>`;
 }
@@ -392,6 +392,58 @@ function setMinDateToTodaysDate(){
 }
 
 function markingCouponUsed() {
+  $('#coupons').on('click','.js-complete-icon', (e) => {
+    console.log('Do you want to mark this coupon as used');
+    //const couponId = $(e.currentTarget).data('id');
+    const couponContainerObject = $(e.currentTarget).parent().prev();
+    //console.log(couponContainerObject);
+    const merchantLogoLink = $(couponContainerObject).find('div.js-coupon-merchant-logo').children();
+    //console.log(merchantLogoLink.children());
+    merchantLogoLink.children().attr('src');
+    //console.log(merchantLogoLink.children().attr('src'));
+    const merchantName = $(couponContainerObject).find('h2.coupon-merchant-name').text();
+    //console.log(merchantName);
+
+    var str = merchantName;
+    var newStr = str.replace(/\s+/g, '');
+
+    const companyLogoImageIsDisabled = `https://logo.clearbit.com/${newStr}.com?size=500&greyscale=true`;
+
+    if(merchantLogoLink.attr('href')){
+      //console.log('link is not empty : '+ merchantLogoLink.attr('href'));
+      const link = merchantLogoLink.attr('href');
+    }
+    else {
+      //get merchant name and recreate str link
+
+      //console.log(`merchant name inside edit function ${newStr}`);
+      const companyUrl = `https://www.${newStr}.com`;
+      const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
+      merchantLogoLink.children().attr('src', companyLogoImage);
+      merchantLogoLink.attr('href', companyUrl);
+    }
+
+    if(couponContainerObject.hasClass('coupon-disabled')){
+      couponContainerObject.removeClass('coupon-disabled');
+      couponContainerObject.addClass('coupon-active');
+      //console.log('toggle and turn to coupon active');
+    }
+    else if(couponContainerObject.hasClass('coupon-active')){
+      couponContainerObject.removeClass('coupon-active');
+      couponContainerObject.addClass('coupon-disabled');
+      merchantLogoLink.children().attr('src', companyLogoImageIsDisabled);
+      merchantLogoLink.removeAttr('href');
+      //console.log('toggle and turn to coupon disabled');
+    }
+    else{
+      console.log(`${couponContainerObject}`);
+      console.log("something went wrong with marking coupon!");
+    }
+  });
+}
+
+/*
+function markingCouponUsed() {
   $('#coupons').on('click','.coupon-container', (e) => {
     console.log('Do you want to mark this coupon as used');
     //const couponId = $(e.currentTarget).data('id');
@@ -415,6 +467,8 @@ function markingCouponUsed() {
     }
   });
 }
+*/
+
 /* NOT USING BC OF COMPLEXITY THIS ASK MENTOR....
 function getCompanyLogoImageDataFromApi(searchTerm) {
   var str = searchTerm;

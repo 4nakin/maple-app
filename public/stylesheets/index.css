@@ -415,7 +415,6 @@ main .coupon-main-img {
   display: block;
   width: 134px;
   height: 134px;
-  /* background: rgba(255,255,255,.09); */
   border-radius: 50%;
   box-shadow: 0 5px 13px 0 rgba(0,0,0,.09);
   margin-bottom: 48px;
@@ -423,10 +422,13 @@ main .coupon-main-img {
   margin-left: auto;
 }
 
-.company-logo-disabled {
-  background: rgba(255,255,255,.09);
+.is-disabled {
+  background: rgba(246,246,246,.34);
+  color: currentColor;
+  cursor: not-allowed;
+  opacity: 0.5;
+  text-decoration: none;
 }
-
 
 .dashed {
   margin-bottom: 26px;
@@ -443,10 +445,6 @@ main .coupon-main-img {
   margin-top: 15px;
   padding: 15px 20px;
   width: 100%;
-}
-
-.test {
-  background-image: linear-gradient(to bottom right,#002f4b,#dc4225);
 }
 
 
