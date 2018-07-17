@@ -142,7 +142,7 @@ function renderEditModal() {
 
                                 <div class="form-group">
                                     <label for="expirationDate">Expiration Date</label>
-                                    <input type="date" name="expirationDate" class="form-control input-edit-expirationDate js-date-field" min="2018-07-01" max="2024-12-31" required>
+                                    <input type="date" name="expirationDate" class="form-control input-edit-expirationDate js-date-field" required>
                                 </div>
 
                                 <div class="form-group">
@@ -275,19 +275,6 @@ function watchEditBtnHandler() {
       $('#editCouponModal').modal('show');
       setMinDateToTodaysDate();
 
-      //var date = new Date();
-      // date.setDate(date.getDate()-1); //to get previous day
-      //date.setDate(date.getDate());
-
-      // $('[data-toggle="datepicker"]').datepicker({
-      //   autoHide: true,
-      //   zIndex: 2048,
-      //   startDate: date
-      // });
-
-      // const couponId = $(this).parent().parent().attr('data-id');
-      // console.log(`The coupon id of the edit coupon ${couponId}`);
-
       const couponId = $(this).parent().parent().parent().attr('data-id');
       console.log(`The coupon id: ${couponId}`);
 
@@ -301,8 +288,12 @@ function watchEditBtnHandler() {
 
       $('.input-edit-merchantName').val(merchantNameText);
       $('.input-edit-code').val(codeText);
-      $('.input-edit-expirationDate').val(expirationDateText);
+      //$('.input-edit-expirationDate').val(expirationDateText);
       $('.input-edit-description').val(descriptionText);
+
+      document.querySelector(".input-edit-expirationDate").valueAsDate = new Date(expirationDateText);
+
+      console.log(`The inital added date is: ${expirationDateText}`);
 
       //pull the values that the user types in the inputs
       watchSubmitEditCouponHandler(couponId)
@@ -350,7 +341,7 @@ function sendCouponToEditFromApi(id) {
         $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', companyLogoImage);
         $(`[data-id = ${_couponId}] .coupon-merchant-name`).html(merchantName);
         $(`[data-id = ${_couponId}] .coupon-code`).html(inputCode);
-        $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(`Valid til${expirationDate}`);
+        $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(`Valid til ${expirationDate}`);
         $(`[data-id = ${_couponId}] .coupon-description`).html(inputDescription);
 
         // $('#js-msg-output').show();
