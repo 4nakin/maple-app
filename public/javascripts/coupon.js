@@ -19,7 +19,7 @@ function renderCoupons(res, companyLogoImage, companyUrl) {
             </section>
             <section role="region" class="coupon-actions-nav">
               <img src="images/tick-sign.svg" alt="" class="icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Archive coupon">
-              <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon" class="edit-icon">
+              <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon" class="edit-icon js-edit-icon">
                 <img src="images/ui-compose.svg" alt="edit-icon" class="icon js-edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
               </a>
               <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4" data-toggle="tooltip" data-placement="bottom" title="Upload image">
@@ -257,7 +257,10 @@ function sendCouponToDeleteFromApi(id, container) {
       },
       dataType: 'json',
       success: function(res) {
-        $('.js-delete-icon').tooltip('hide')
+        $('.js-delete-icon').tooltip('hide');
+        $('.js-complete-icon').tooltip('hide');
+        $('.js-upload-icon').tooltip('hide');
+        $('.js-edit-icon').tooltip('hide');
         console.log(`you successfully deleted a coupon`);
 
         container.animate({
@@ -277,32 +280,33 @@ function watchEditBtnHandler() {
   $('#js-list-coupons-section').on('click','.js-edit-icon', function(e) {
       e.preventDefault();
 
+
+
       $('#editCouponModelSection').html(renderEditModal());
       $('#editCouponModal').modal('show');
       setMinDateToTodaysDate();
 
-      const couponId = $(this).parent().parent().parent().attr('data-id');
+      const couponId = $(this).parent().parent().attr('data-id');
       console.log(`The coupon id: ${couponId}`);
 
       //get the values currently in the input fields for that getCouponid
-      const couponObject = $(this).parent().parent().parent();
+      const couponObject = $(this).parent().parent();
+      console.log(couponObject);
       const merchantNameText = $(couponObject).find('h2.coupon-merchant-name').text();
       const codeText = $(couponObject).find('p.coupon-code').text();
       const expirationDateText = $(couponObject).find('p.coupon-expiration-date').text();
       const descriptionText = $(couponObject).find('p.coupon-description').text();
 
-
       $('.input-edit-merchantName').val(merchantNameText);
       $('.input-edit-code').val(codeText);
-      //$('.input-edit-expirationDate').val(expirationDateText);
+      $('.input-edit-expirationDate').val(expirationDateText);
+      document.querySelector(".input-edit-expirationDate").valueAsDate = new Date(expirationDateText);
       $('.input-edit-description').val(descriptionText);
 
-      document.querySelector(".input-edit-expirationDate").valueAsDate = new Date(expirationDateText);
-
-      console.log(`The inital added date is: ${expirationDateText}`);
+      //console.log(`The inital added date is: ${expirationDateText}`);
 
       //pull the values that the user types in the inputs
-      watchSubmitEditCouponHandler(couponId)
+      //watchSubmitEditCouponHandler(couponId)
   });
 }
 
@@ -310,7 +314,7 @@ function watchSubmitEditCouponHandler(id) {
   $('#js-edit-coupon-form').on('submit', function(e) {
       e.preventDefault();
       console.log('you want to update a coupon');
-      $('#editCouponModal').modal('toggle');
+      $('#editCouponModal').modal('hide');
       sendCouponToEditFromApi(id);
   });
 }
@@ -394,6 +398,7 @@ function setMinDateToTodaysDate(){
 function markingCouponUsed() {
   $('#coupons').on('click','.js-complete-icon', (e) => {
     console.log('Do you want to mark this coupon as used');
+    $('.js-complete-icon').tooltip('hide');
     //const couponId = $(e.currentTarget).data('id');
     const couponContainerObject = $(e.currentTarget).parent().prev();
     //console.log(couponContainerObject);
