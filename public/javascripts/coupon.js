@@ -13,7 +13,7 @@ function renderCoupons(res, companyLogoImage) {
               </div>
               <p class="coupon-title">COUPON CODE</p>
               <p class="coupon-code js-coupon-code">${res.code}</p>
-              <p class="coupon-expiration-date">Valid til ${res.expirationDate}</p>
+              <p class="coupon-expiration-date">Valid till ${res.expirationDate}</p>
             </section>
             <section role="region" class="coupon-actions-nav">
               <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon data" class="edit-icon">
@@ -46,19 +46,24 @@ function getUserCoupons() {
         $('[data-toggle="tooltip"]').tooltip();
       });
 
-
       console.log(`The user made it to the Dashboard`);
       console.log(`The user id is: ${res._userId}`);
 
       var html = "";
       res.coupons.map(function(coupon){
-        console.log(coupon.merchantName);
         var str = coupon.merchantName;
         var newStr = str.replace(/\s+/g, '');
         const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=134`;
         html += renderCoupons(coupon,companyLogoImage);
       });
+
+      $('#coupons').css('opacity', '0');
       $('#coupons').html(html);
+
+      $('#coupons').animate({
+        opacity: 1,
+      }, 150);
+
     },
     error: function(err) {
       if(token === null) {
@@ -95,7 +100,7 @@ function renderAddModal() {
 
                               <div class="form-group">
                                   <label for="expirationDate">Expiration Date</label>
-                                  <input type="text" name="expirationDate" class="form-control input-add-expirationDate" data-toggle="datepicker" required>
+                                  <input type="date" name="expirationDate" class="form-control input-add-expirationDate js-date-field" min="2018-07-01" max="2020-12-31" required>
                               </div>
 
                               <div class="form-group">
@@ -137,7 +142,7 @@ function renderEditModal() {
 
                                 <div class="form-group">
                                     <label for="expirationDate">Expiration Date</label>
-                                    <input type="text" name="expirationDate" class="form-control input-edit-expirationDate" data-toggle="datepicker" required>
+                                    <input type="date" name="expirationDate" class="form-control input-edit-expirationDate js-date-field" min="2018-07-01" max="2024-12-31" required>
                                 </div>
 
                                 <div class="form-group">
@@ -159,17 +164,7 @@ function watchAddBtnHandler() {
   $('.js-add-new-coupon-btn').on('click', (e) => {
     $('#addNewCouponModelSection').html(renderAddModal());
     $('#addNewCouponModal').modal('show');
-
-    var date = new Date();
-    // date.setDate(date.getDate()-1); //to get previous day
-    date.setDate(date.getDate());
-
-    $('[data-toggle="datepicker"]').datepicker({
-      autoHide: true,
-      zIndex: 2048,
-      startDate: date
-    });
-
+    setMinDateToTodaysDate();
     watchSubmitAddNewCouponHandler();
   })
 }
@@ -187,7 +182,7 @@ function sendAddCouponDataToAPI() {
   const companyname = $('.input-add-merchantName').val();
   var str = companyname;
   var newStr = str.replace(/\s+/g, '');
-  const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=134`;
+  const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
 
     $.ajax({
   		url: '/coupon',
@@ -278,16 +273,17 @@ function watchEditBtnHandler() {
 
       $('#editCouponModelSection').html(renderEditModal());
       $('#editCouponModal').modal('show');
+      setMinDateToTodaysDate();
 
-      var date = new Date();
+      //var date = new Date();
       // date.setDate(date.getDate()-1); //to get previous day
-      date.setDate(date.getDate());
+      //date.setDate(date.getDate());
 
-      $('[data-toggle="datepicker"]').datepicker({
-        autoHide: true,
-        zIndex: 2048,
-        startDate: date
-      });
+      // $('[data-toggle="datepicker"]').datepicker({
+      //   autoHide: true,
+      //   zIndex: 2048,
+      //   startDate: date
+      // });
 
       // const couponId = $(this).parent().parent().attr('data-id');
       // console.log(`The coupon id of the edit coupon ${couponId}`);
@@ -326,7 +322,7 @@ function sendCouponToEditFromApi(id) {
   const companyname = $('.input-edit-merchantName').val();
   var str = companyname;
   var newStr = str.replace(/\s+/g, '');
-  const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=134`;
+  const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
 
   let _couponId = id;
   console.log(`If I got here then I should edit this id: ${id} on the DB`);
@@ -354,7 +350,7 @@ function sendCouponToEditFromApi(id) {
         $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', companyLogoImage);
         $(`[data-id = ${_couponId}] .coupon-merchant-name`).html(merchantName);
         $(`[data-id = ${_couponId}] .coupon-code`).html(inputCode);
-        $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(expirationDate);
+        $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(`Valid til${expirationDate}`);
         $(`[data-id = ${_couponId}] .coupon-description`).html(inputDescription);
 
         // $('#js-msg-output').show();
@@ -375,6 +371,22 @@ function sendCouponToEditFromApi(id) {
     });
 }
 
+function setMinDateToTodaysDate(){
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth()+1; //January is 0!
+  var yyyy = today.getFullYear();
+    if(dd<10){
+        dd='0'+dd
+    }
+
+    if(mm<10){
+        mm='0'+mm
+    }
+
+    today = yyyy+'-'+mm+'-'+dd;
+    $('.js-date-field').attr("min", today);
+}
 
 /* NOT USING BC OF COMPLEXITY THIS ASK MENTOR....
 function getCompanyLogoImageDataFromApi(searchTerm) {
