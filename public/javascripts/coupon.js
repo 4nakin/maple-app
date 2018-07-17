@@ -17,7 +17,7 @@ function renderCoupons(res, companyLogoImage) {
             </section>
             <section role="region" class="coupon-actions-nav">
               <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon data" class="edit-icon">
-                <img src="images/ui-compose.svg" alt="edit-icon" class="icon edit-icon js-edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
+                <img src="images/ui-compose.svg" alt="edit-icon" class="icon js-edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
               </a>
               <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4" data-toggle="tooltip" data-placement="bottom" title="Upload image of this coupon">
               <img src="images/notification.svg" alt="" class="icon notification-icon js-notification-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Set up notification email">
@@ -187,7 +187,6 @@ function sendAddCouponDataToAPI() {
   const companyname = $('.input-add-merchantName').val();
   var str = companyname;
   var newStr = str.replace(/\s+/g, '');
-  //console.log('start of sendAddCouponDataToAPI function. I grabbed the company name from input: ' + companyname);
   const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=134`;
 
     $.ajax({
@@ -218,17 +217,17 @@ function sendAddCouponDataToAPI() {
           opacity: 1,
         }, 500);
 
-        $('#js-msg-output').show();
+        //$('#js-msg-output').show();
 
-        $('#js-msg-output').html(`<div class="alert alert-success alert-dismissible fade show text-center" role="alert">You have successfully added a coupon!
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          </div`);
+        // $('#js-msg-output').html(`<div class="alert alert-success alert-dismissible fade show text-center" role="alert">You have successfully added a coupon!
+        //   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        //     <span aria-hidden="true">&times;</span>
+        //   </button>
+        //   </div`);
 
-          setTimeout(() => {
-             $('#js-msg-output').hide();
-          }, 2000);
+          // setTimeout(() => {
+          //    $('#js-msg-output').hide();
+          // }, 2000);
   		},
   		error: function(err){
         console.log('something went wrong');
@@ -240,7 +239,7 @@ function watchDeleteBtnHandler() {
     $('#js-list-coupons-section').on('click','.js-delete-icon', function(e) {
         e.preventDefault();
         //console.log($(this).parent().parent().attr('data-id'));
-        const couponId = $(this).parent().parent().attr('data-id')
+        const couponId = $(this).parent().parent().attr('data-id');
         console.log(`The coupon id: ${couponId}`);
         const container = $(this).parent().parent();
         sendCouponToDeleteFromApi(couponId, container);
@@ -289,11 +288,14 @@ function watchEditBtnHandler() {
         startDate: date
       });
 
-      const couponId = $(this).parent().parent().attr('data-id');
-      console.log(`The coupon id of the edit coupon ${couponId}`);
+      // const couponId = $(this).parent().parent().attr('data-id');
+      // console.log(`The coupon id of the edit coupon ${couponId}`);
+
+      const couponId = $(this).parent().parent().parent().attr('data-id');
+      console.log(`The coupon id: ${couponId}`);
 
       //get the values currently in the input fields for that getCouponid
-      const couponObject = $(this).parent().parent();
+      const couponObject = $(this).parent().parent().parent();
       const merchantNameText = $(couponObject).find('h2.coupon-merchant-name').text();
       const codeText = $(couponObject).find('p.coupon-code').text();
       const expirationDateText = $(couponObject).find('p.coupon-expiration-date').text();
@@ -311,7 +313,7 @@ function watchEditBtnHandler() {
 }
 
 function watchSubmitEditCouponHandler(id) {
-  $('#js-submit-edit-coupon-btn').on('submit', function(e) {
+  $('#js-edit-coupon-form').on('submit', function(e) {
       e.preventDefault();
       console.log('you want to update a coupon');
       $('#editCouponModal').modal('toggle');

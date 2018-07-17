@@ -33,11 +33,11 @@ function signupHandler() {
         $('#input-username').val('');
         $('#input-password').val('');
 
-        $('#js-msg-output').html(`<div class="alert alert-success alert-dismissible fade show text-center" role="alert">Your Account has been registered!
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          </div`);
+        // $('#js-msg-output').html(`<div class="alert alert-success alert-dismissible fade show text-center" role="alert">Your Account has been registered!
+        //   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        //     <span aria-hidden="true">&times;</span>
+        //   </button>
+        //   </div`);
 
         window.location.href = '/login';
       },
@@ -54,22 +54,21 @@ function logoutHandler() {
 
     if(token) {
       localStorage.removeItem('Token');
-      // location.reload();
       console.log('you are logged out!');
 
-      $('#js-msg-output').show();
-
-      $('#js-msg-output').html(`<div class="alert alert-success alert-dismissible fade show text-center" role="alert">You have successfully Logged out!
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        </div`);
+      // $('#js-msg-output').show();
+      //
+      // $('#js-msg-output').html(`<div class="alert alert-success alert-dismissible fade show text-center" role="alert">You have successfully Logged out!
+      //   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      //     <span aria-hidden="true">&times;</span>
+      //   </button>
+      //   </div`);
 
       window.location.href = '/';
 
-      setTimeout(() => {
-        $('#js-msg-output').hide();
-      }, 1000);
+      // setTimeout(() => {
+      //   $('#js-msg-output').hide();
+      // }, 1000);
     }
     else{
       console.log('there is no token. you you are not signed in');
@@ -99,11 +98,11 @@ function loginHandler() {
       },
       error: (err) => {
         console.log(err);
-        $('#js-msg-output').html(`<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">Something is wrong!
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          </div`);
+        // $('#js-msg-output').html(`<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">Something is wrong!
+        //   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        //     <span aria-hidden="true">&times;</span>
+        //   </button>
+        //   </div`);
       }
     });
   });
