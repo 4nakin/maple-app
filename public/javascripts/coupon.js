@@ -1,10 +1,12 @@
 'use strict';
 
-function renderCoupons(res, companyLogoImage) {
+function renderCoupons(res, companyLogoImage, companyUrl) {
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
             <section role="region" class="coupon-container js-coupon-container coupon-active">
               <div class="js-coupon-merchant-logo">
-                <img src="${companyLogoImage}" alt="This is an image of the ${res.merchantName} logo" class="coupon-merchant-logo js-logo-img" data-default-src="images/default-image.png">
+                <a href="${companyUrl}" target="_blank">
+                  <img src="${companyLogoImage}" alt="This is an image of the ${res.merchantName} logo" class="coupon-merchant-logo js-logo-img" data-default-src="images/default-image.png">
+                </a>
               </div>
               <h2 class="coupon-merchant-name">${res.merchantName}</h2>
               <p class="coupon-description">${res.description}</p>
@@ -53,7 +55,8 @@ function getUserCoupons() {
         var str = coupon.merchantName;
         var newStr = str.replace(/\s+/g, '');
         const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
-        html += renderCoupons(coupon,companyLogoImage);
+        const companyUrl = `https://www.${newStr}.com`;
+        html += renderCoupons(coupon, companyLogoImage, companyUrl);
       });
 
       $('#coupons').css('opacity', '0');
@@ -186,7 +189,7 @@ function sendAddCouponDataToAPI() {
   var str = companyname;
   var newStr = str.replace(/\s+/g, '');
   const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
-
+  const companyUrl = `https://www.${newStr}.com`;
 
     $.ajax({
   		url: '/coupon',
@@ -208,7 +211,7 @@ function sendAddCouponDataToAPI() {
         $('.input-add-expirationDate').val('');
         $('.input-add-description').val('');
 
-        const couponHTML = $(renderCoupons(res,companyLogoImage));
+        const couponHTML = $(renderCoupons(res,companyLogoImage,companyUrl));
         couponHTML.css('opacity', '0');
         $('#coupons').append(couponHTML);
 
@@ -316,9 +319,12 @@ function sendCouponToEditFromApi(id) {
   const companyname = $('.input-edit-merchantName').val();
   var str = companyname;
   var newStr = str.replace(/\s+/g, '');
+  console.log(`merchant name inside edit function ${newStr}`);
   const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
+  const companyUrl = `https://www.${newStr}.com`;
 
   let _couponId = id;
+
   console.log(`If I got here then I should edit this id: ${id} on the DB`);
     $.ajax({
       url: `/coupon/${id}`,
@@ -341,6 +347,9 @@ function sendCouponToEditFromApi(id) {
         var expirationDate = $('.input-edit-expirationDate').val();
         var inputDescription = $('.input-edit-description').val();
 
+        console.log('upon success of edit ' + merchantName + ' ' + companyUrl);
+
+        $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', companyUrl);
         $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', companyLogoImage);
         $(`[data-id = ${_couponId}] .coupon-merchant-name`).html(merchantName);
         $(`[data-id = ${_couponId}] .coupon-code`).html(inputCode);
@@ -386,14 +395,10 @@ function markingCouponUsed() {
   $('#coupons').on('click','.coupon-container', (e) => {
     console.log('Do you want to mark this coupon as used');
     //const couponId = $(e.currentTarget).data('id');
-    //console.log($(e.currentTarget));
-    //console.log($(e.currentTarget).children());
     const couponContainerObject = $(e.currentTarget).children().children();
-    console.log(couponContainerObject);
+    //console.log(couponContainerObject);
     const merchantLogo = $(couponContainerObject).find('img.coupon-merchant-logo.js-logo-img').addClass('test');
     //console.log(merchantLogo);
-
-
 
     if($(e.currentTarget).hasClass('coupon-disabled')){
       $(e.currentTarget).removeClass('coupon-disabled');
