@@ -1,5 +1,6 @@
 'use strict';
 
+
 function renderCoupons(res, companyLogoImage, companyUrl) {
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
             <section role="region" class="coupon-container js-coupon-container coupon-active">
@@ -11,7 +12,8 @@ function renderCoupons(res, companyLogoImage, companyUrl) {
               <h2 class="coupon-merchant-name">${res.merchantName}</h2>
               <p class="coupon-description">${res.description}</p>
               <div class="dashed">
-                <img src="images/dashed-line.png">
+                <img src="images/dashed-line.png" alt="dashed line active" class="dashed-line-active">
+                <img src="images/dashed-line-disable.png" alt="dashed line disable" class="dashed-line-disabled hide">
               </div>
               <p class="coupon-title">COUPON CODE</p>
               <p class="coupon-code js-coupon-code">${res.code}</p>
@@ -19,8 +21,8 @@ function renderCoupons(res, companyLogoImage, companyUrl) {
             </section>
             <section role="region" class="coupon-actions-nav">
               <img src="images/tick-sign.svg" alt="" class="icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Archive coupon">
-              <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon" class="edit-icon js-edit-icon">
-                <img src="images/ui-compose.svg" alt="edit-icon" class="icon js-edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
+              <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon" class="icon edit-icon js-edit-icon">
+                <img src="images/ui-compose.svg" alt="edit-icon" class="" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
               </a>
               <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4" data-toggle="tooltip" data-placement="bottom" title="Upload image">
               <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete coupon">
@@ -277,21 +279,19 @@ function sendCouponToDeleteFromApi(id, container) {
 }
 
 function watchEditBtnHandler() {
-  $('#js-list-coupons-section').on('click','.js-edit-icon', function(e) {
+  $('#coupons').on('click','.js-edit-icon', (e) => {
+
       e.preventDefault();
-
-
-
       $('#editCouponModelSection').html(renderEditModal());
-      $('#editCouponModal').modal('show');
+      //$('#editCouponModal').modal('show');
       setMinDateToTodaysDate();
 
-      const couponId = $(this).parent().parent().attr('data-id');
+      const couponId = $(e.currentTarget).parent().parent().attr('data-id')
+      //console.log($(e.currentTarget).parent().parent().attr('data-id'));
       console.log(`The coupon id: ${couponId}`);
 
       //get the values currently in the input fields for that getCouponid
-      const couponObject = $(this).parent().parent();
-      console.log(couponObject);
+      const couponObject = $(e.currentTarget).parent().parent();
       const merchantNameText = $(couponObject).find('h2.coupon-merchant-name').text();
       const codeText = $(couponObject).find('p.coupon-code').text();
       const expirationDateText = $(couponObject).find('p.coupon-expiration-date').text();
@@ -299,19 +299,17 @@ function watchEditBtnHandler() {
 
       $('.input-edit-merchantName').val(merchantNameText);
       $('.input-edit-code').val(codeText);
-      $('.input-edit-expirationDate').val(expirationDateText);
-      document.querySelector(".input-edit-expirationDate").valueAsDate = new Date(expirationDateText);
+      // $('.input-edit-expirationDate').val(expirationDateText);
+      document.querySelector('.input-edit-expirationDate').valueAsDate = new Date(expirationDateText);
       $('.input-edit-description').val(descriptionText);
 
-      //console.log(`The inital added date is: ${expirationDateText}`);
-
       //pull the values that the user types in the inputs
-      //watchSubmitEditCouponHandler(couponId)
+      watchSubmitEditCouponHandler(couponId);
   });
 }
 
 function watchSubmitEditCouponHandler(id) {
-  $('#js-edit-coupon-form').on('submit', function(e) {
+  $('#js-edit-coupon-form').on('submit', (e) => {
       e.preventDefault();
       console.log('you want to update a coupon');
       $('#editCouponModal').modal('hide');
@@ -395,19 +393,36 @@ function setMinDateToTodaysDate(){
     $('.js-date-field').attr("min", today);
 }
 
+function companyMaker(merchantName) {
+  var str = merchantName;
+  var newStr = str.replace(/\s+/g, '');
+
+  const companyInfo = {
+    url: `https://www.${newStr}.com`,
+    logoImage: `https://logo.clearbit.com/${newStr}.com?size=500`,
+    logoImageIsDisabled: `https://logo.clearbit.com/${newStr}.com?size=500&greyscale=true`
+  };
+
+  return companyInfo;
+}
+
 function markingCouponUsed() {
   $('#coupons').on('click','.js-complete-icon', (e) => {
-    console.log('Do you want to mark this coupon as used');
+    // console.log('Do you want to mark this coupon as used');
     $('.js-complete-icon').tooltip('hide');
-    //const couponId = $(e.currentTarget).data('id');
+
     const couponContainerObject = $(e.currentTarget).parent().prev();
-    //console.log(couponContainerObject);
     const merchantLogoLink = $(couponContainerObject).find('div.js-coupon-merchant-logo').children();
-    //console.log(merchantLogoLink.children());
+    //console.log(couponContainerObject);
+
+    //dashed png
+    const dashDisabled = $(couponContainerObject).find('img.dashed-line-disabled');
+    console.log(dashDisabled);
+    const dashed = $(couponContainerObject).find('img.dashed-line-active');
+    console.log(dashed);
+
     merchantLogoLink.children().attr('src');
-    //console.log(merchantLogoLink.children().attr('src'));
     const merchantName = $(couponContainerObject).find('h2.coupon-merchant-name').text();
-    //console.log(merchantName);
 
     var str = merchantName;
     var newStr = str.replace(/\s+/g, '');
@@ -419,9 +434,6 @@ function markingCouponUsed() {
       const link = merchantLogoLink.attr('href');
     }
     else {
-      //get merchant name and recreate str link
-
-      //console.log(`merchant name inside edit function ${newStr}`);
       const companyUrl = `https://www.${newStr}.com`;
       const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
       merchantLogoLink.children().attr('src', companyLogoImage);
@@ -431,6 +443,8 @@ function markingCouponUsed() {
     if(couponContainerObject.hasClass('coupon-disabled')){
       couponContainerObject.removeClass('coupon-disabled');
       couponContainerObject.addClass('coupon-active');
+      dashed.removeClass('hide');
+      dashDisabled.addClass('hide');
       //console.log('toggle and turn to coupon active');
     }
     else if(couponContainerObject.hasClass('coupon-active')){
@@ -438,6 +452,8 @@ function markingCouponUsed() {
       couponContainerObject.addClass('coupon-disabled');
       merchantLogoLink.children().attr('src', companyLogoImageIsDisabled);
       merchantLogoLink.removeAttr('href');
+      dashed.addClass('hide');
+      dashDisabled.removeClass('hide');
       //console.log('toggle and turn to coupon disabled');
     }
     else{

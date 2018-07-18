@@ -28,6 +28,10 @@ body {
   display: none;
 }
 
+.show {
+  display: block;
+}
+
 /* BOOTSTRAP OVERRIDES */
 .nav-item li{
   line-height: 24px;
@@ -203,7 +207,7 @@ main .coupon-main-img {
 }
 
 #signup-section label {
-  color: #999;
+  color: #6c757d;
   display: block;
   margin-bottom: 12px;
 }
@@ -256,7 +260,7 @@ main .coupon-main-img {
 }
 
 #login-section label {
-  color: #999;
+  color: #6c757d;
   display: block;
   margin-bottom: 12px;
 }
@@ -327,6 +331,14 @@ main .coupon-main-img {
   margin: 0 5.75px;
 }
 
+.coupon-container {
+  border-radius: 25px;
+  width: 300px;
+  height: 531px;
+  padding-top: 50px;
+  box-shadow: 0 5px 9px 0 rgba(0,0,0,.09);
+}
+
 .coupon-actions-nav {
   margin-top: 28px;
   margin-bottom: 50px;
@@ -341,21 +353,11 @@ main .coupon-main-img {
 .icon {
   margin: 0 19px;
   cursor: pointer;
-}
-
-.edit-icon:hover {
   text-decoration: none;
 }
 
-.coupon-container {
-  /* border: 1px solid #d8d8d8; */
-  border-radius: 25px;
-  /* background: linear-gradient(#6D5EF1, #C86DD7); */
-  /* color: #FFF; */
-  width: 300px;
-  height: 531px;
-  padding-top: 50px;
-  box-shadow: 0 5px 9px 0 rgba(0,0,0,.09);
+.icon:hover {
+  text-decoration: none;
 }
 
 .coupon-active {
@@ -365,7 +367,7 @@ main .coupon-main-img {
 }
 
 .coupon-disabled {
-  border: 2px dashed #4A4A4A;
+  border: 2px dashed rgba(74,74,74,.50);
   background: #E5E5E5;
   color: #9B9B9B;
 }
@@ -384,11 +386,15 @@ main .coupon-main-img {
 .coupon-container .coupon-description {
   font-size: 14px;
   font-weight: 300;
-  text-align: center;
   width: 244px;
   height: 54px;
-  margin: 0 auto;
+  margin: 0 auto 15px auto;
   line-height: 27px;
+  text-align: center;
+}
+
+.dashed {
+  margin-bottom: 15px;
 }
 
 .coupon-container .coupon-title {
@@ -430,8 +436,10 @@ main .coupon-main-img {
   text-decoration: none;
 }
 
-.dashed {
-  margin-bottom: 26px;
+
+button:disabled {
+  background-color: #d8d8d8;
+  cursor: no-drop;
 }
 
 /* ADD NEW COUPON MODAL */
