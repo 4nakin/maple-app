@@ -2,6 +2,9 @@ var express = require('express');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const passport = require('passport');
+const multer = require('multer');
+const upload = multer({dest: './uploads'});
+const path = require('path');
 const {JWT_SECRET} = require('../config');
 const CouponModel = require('../models/Coupon');
 
@@ -20,12 +23,13 @@ function getUserIdFromJwt(req){
   return userId;
 }
 
+
 // GETS ALL COUPONS
 router.get('/', jwtAuth, (req, res) => {
-  console.log(req);
+  //console.log(req);
 
   const _userId = getUserIdFromJwt(req);
-  console.log(`The current user is: ${_userId}`);
+  //console.log(`The current user is: ${_userId}`);
 
   CouponModel.find({userId: _userId})
     .then(coupons => res.json({coupons, _userId}))
@@ -42,7 +46,7 @@ router.post('/', jwtAuth, (req, res) => {
 
   const _userId = getUserIdFromJwt(req);
 
-  console.log(`The current user is: ${_userId}`);
+  //console.log(`The current user is: ${_userId}`);
   console.log("This is the request from adding a coupon");
 
   const newCoupon = new CouponModel({
@@ -50,13 +54,13 @@ router.post('/', jwtAuth, (req, res) => {
     code: req.body.code,
     expirationDate: req.body.expirationDate,
     description: req.body.description,
-    couponUsed: this.couponUsed,
-    companyLogo: this.companyLogo,
+    couponUsed: req.body.couponUsed,
+    companyLogo: req.body.companyLogo,
+    couponImage: req.body.couponImage,
     userId: _userId
   });
 
   //TODO: need to add expiration validation
-
 
   newCoupon.save()
       .then(function(coupon) {
@@ -85,13 +89,11 @@ router.put('/:id', jwtAuth, (req, res) => {
   console.log(`The request on the put coupon endpoint is: ${Object.values(req.body)}`);
   console.log(Object.values(req.body));
 
-
   // if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
   //   res.status(400).json({
   //     error: 'Request path id and request body id values must match'
   //   });
   // }
-
 
   const updated = {};
   const updateableFields = ['merchantName', 'code', 'expirationDate', 'description'];
@@ -108,5 +110,34 @@ router.put('/:id', jwtAuth, (req, res) => {
 
 });
 
+// UPDATES ONLY ITEMS PROVIDED OF AN IMAGE OF COUPON
+router.patch('/:id', jwtAuth, upload.single('filename'), (req, res) => {
+
+  console.log(req.file);
+  const updateOps = {};
+  const updateableFields = ['merchantName', 'code', 'expirationDate', 'description','couponImage'];
+
+  updateableFields.forEach(field => {
+    if(field in req.body) {
+      updateOps[field] = req.body[field];
+    }
+  });
+  //console.log(`updateOps: ${updateOps}`);
+
+  CouponModel.findByIdAndUpdate(req.params.id, {$set: updateOps })
+  .exec()
+  .then(result => {
+    res.status(200).json({
+      message: 'you updated fields'
+    })
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).json({
+      error: err
+    });
+  });
+
+});
 
 module.exports = router;

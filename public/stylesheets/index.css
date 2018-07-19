@@ -72,6 +72,7 @@ body {
 nav {
   height: 79px;
   padding: 24px 35px;
+  box-shadow: 0 5px 8px 0 rgba(0,0,0,.04);
 }
 
 nav ul {
@@ -443,17 +444,14 @@ button:disabled {
 }
 
 /* ADD NEW COUPON MODAL */
-
-.test-btn {
-  text-align: center;
-}
-
 .submit-add-coupon-btn,
-.submit-edit-coupon-btn {
+.submit-edit-coupon-btn,
+.submit-upload-image-coupon-btn {
   margin-top: 15px;
   padding: 15px 20px;
   width: 100%;
 }
+
 
 
 /* Extra small devices (portrait phones, less than 576px)

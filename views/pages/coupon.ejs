@@ -12,18 +12,25 @@
                   Add Coupon
                 </button>
               </div>
-
+              <% typeof msg != 'undefined' ? msg: '' %>
               <div id="coupons">
                   <!-- coupons will render here -->
               </div>
 
             </section>
+
             <section role="region" id="addNewCouponModelSection">
                 <!-- Add modal will render here -->
             </section>
+
             <section role="region" id="editCouponModelSection">
                 <!-- Edit modal will render here -->
             </section>
+
+            <section role="region" id="uploadImageModelSection">
+                <!-- upload Image modal will render here -->
+            </section>
+
         </section>
       <script src="/javascripts/index.js"></script>
       <script src="javascripts/coupon.js"></script>

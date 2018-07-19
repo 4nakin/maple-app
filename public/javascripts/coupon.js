@@ -20,11 +20,13 @@ function renderCoupons(res, companyLogoImage, companyUrl) {
               <p class="coupon-expiration-date">Valid till ${res.expirationDate}</p>
             </section>
             <section role="region" class="coupon-actions-nav">
-              <img src="images/tick-sign.svg" alt="" class="icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Archive coupon">
+              <img src="images/tick-sign.svg" alt="mark coupon used" class="icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Mark coupon used">
               <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon" class="icon edit-icon js-edit-icon">
-                <img src="images/ui-compose.svg" alt="edit-icon" class="" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
+                <img src="images/ui-compose.svg" alt="edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
               </a>
-              <img src="images/uploading-ui.svg" alt="" class="icon upload-icon js-upload-icon" tabindex="4" data-toggle="tooltip" data-placement="bottom" title="Upload image">
+              <a href="" data-toggle="tooltip" data-placement="bottom" title="Upload image" class="icon upload-icon js-upload-icon">
+                  <img src="images/uploading-ui.svg" alt="Upload an image" data-toggle="modal" data-target="#uploadImageModal" tabindex="4">
+              </a>
               <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete coupon">
             </section>
           </section>`;
@@ -116,7 +118,7 @@ function renderAddModal() {
                                   <input type="text" name="description" class="form-control input-add-description" required>
                               </div>
 
-                              <div class="test-btn">
+                              <div class="">
                                   <button type="submit" class="button solid submit-add-coupon-btn" id="js-submit-add-coupon-btn">Add new coupon</button>
                               </div>
                           </form>
@@ -158,7 +160,7 @@ function renderEditModal() {
                                     <input type="text" name="description" class="form-control input-edit-description" required>
                                 </div>
 
-                                <div class="center">
+                                <div class="">
                                     <button type="submit" class="button solid submit-edit-coupon-btn" id="js-submit-edit-coupon-btn">save edited coupon</button>
                                 </div>
                             </form>
@@ -166,6 +168,95 @@ function renderEditModal() {
                     </div>
                 </div>
             </div>`;
+}
+
+function renderUploadImageModal() {
+  return `<div class="modal fade" id="uploadImageModal" tabindex="-1" role="dialog" aria-labelledby="uploadImageModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                    <form id="js-upload-image-coupon-form">
+                      <h5 class="modal-title" id="uploadImageModalLabel">Upload Image</h5>
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" name="filename" id="myFile">
+                          <label class="custom-file-label" for="myFile">Choose Image</label>
+                        </div>
+                      <div class="">
+                        <button type="submit" class="button solid submit-upload-image-coupon-btn" id="js-submit-upload-image-coupon-btn">Upload Image</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+}
+
+function watchUploadImageHandler() {
+  $('#coupons').on('click','.js-upload-icon', (e) => {
+    e.preventDefault();
+
+    $('#uploadImageModelSection').html(renderUploadImageModal());
+    $('#uploadImageModal').modal('show');
+
+    const couponId = $(e.currentTarget).parent().parent().attr('data-id');
+    console.log(`The coupon id: ${couponId}`);
+
+    getFileName(couponId);
+  });
+}
+
+function getFileName(id) {
+  $('#myFile').on('change', function() {
+    const fileName = $('#myFile').val();
+    console.log(fileName);
+
+      // $('#select_file').html(filename);
+    watchSubmitCouponImage(fileName,id);
+  });
+}
+
+function watchSubmitCouponImage(fileName,id) {
+  console.log(`The id inside watch SubmitCouponImage ${id}`);
+
+  $('#js-upload-image-coupon-form').on('submit', (e) => {
+      e.preventDefault();
+
+      //console.log(fileName);
+      console.log('you uploaded an image');
+      $('#uploadImageModal').modal('hide');
+
+      // const couponId = $(e.currentTarget).parent().parent().attr('data-id');
+      console.log(`The coupon id: ${id}: ${fileName}`);
+
+
+      sendUploadedImageToAPI(id, fileName);
+  });
+}
+
+function sendUploadedImageToAPI(id, fileName){
+  $.ajax({
+    url: `/coupon/${id}`,
+    type: 'PATCH',
+    beforeSend: function(xhr) {
+      xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
+    },
+    data: {
+      couponImage: fileName,
+    },
+    dataType:'json',
+    success: function(res){
+      //console.log(res);
+      console.log('Coupon Image should be uploaded');
+    },
+    error: function(err){
+      console.log('something went wrong');
+    }
+  });
 }
 
 function watchAddBtnHandler() {
@@ -178,12 +269,12 @@ function watchAddBtnHandler() {
 }
 
 function watchSubmitAddNewCouponHandler() {
-    $('#js-add-coupon-form').on('submit', (e) => {
-        e.preventDefault();
-        console.log('you added a coupon');
-        $('#addNewCouponModal').modal('hide');
-        sendAddCouponDataToAPI();
-    });
+  $('#js-add-coupon-form').on('submit', (e) => {
+    e.preventDefault();
+    console.log('you added a coupon');
+    $('#addNewCouponModal').modal('hide');
+    sendAddCouponDataToAPI();
+  });
 }
 
 function sendAddCouponDataToAPI() {
@@ -240,17 +331,19 @@ function sendAddCouponDataToAPI() {
 }
 
 function watchDeleteBtnHandler() {
-    $('#js-list-coupons-section').on('click','.js-delete-icon', function(e) {
-        e.preventDefault();
-        const couponId = $(this).parent().parent().attr('data-id');
-        console.log(`The coupon id: ${couponId}`);
-        const container = $(this).parent().parent();
-        sendCouponToDeleteFromApi(couponId, container);
+  $('#js-list-coupons-section').on('click','.js-delete-icon', (e) => {
+      e.preventDefault();
+      //const couponId = $(this).parent().parent().attr('data-id');
+      const couponId = $(e.currentTarget).parent().parent().attr('data-id');
+      console.log(`The coupon id: ${couponId}`);
+      const container = $(e.currentTarget).parent().parent();
+      sendCouponToDeleteFromApi(couponId, container);
     });
 }
 
 function sendCouponToDeleteFromApi(id, container) {
   console.log(`if I got here then i should delete this id: ${id} from the DB`);
+
     $.ajax({
       url: `/coupon/${id}`,
       type: 'DELETE',
@@ -259,10 +352,12 @@ function sendCouponToDeleteFromApi(id, container) {
       },
       dataType: 'json',
       success: function(res) {
+
         $('.js-delete-icon').tooltip('hide');
         $('.js-complete-icon').tooltip('hide');
         $('.js-upload-icon').tooltip('hide');
         $('.js-edit-icon').tooltip('hide');
+
         console.log(`you successfully deleted a coupon`);
 
         container.animate({
@@ -282,12 +377,12 @@ function watchEditBtnHandler() {
   $('#coupons').on('click','.js-edit-icon', (e) => {
 
       e.preventDefault();
+
       $('#editCouponModelSection').html(renderEditModal());
       //$('#editCouponModal').modal('show');
       setMinDateToTodaysDate();
 
-      const couponId = $(e.currentTarget).parent().parent().attr('data-id')
-      //console.log($(e.currentTarget).parent().parent().attr('data-id'));
+      const couponId = $(e.currentTarget).parent().parent().attr('data-id');
       console.log(`The coupon id: ${couponId}`);
 
       //get the values currently in the input fields for that getCouponid
@@ -299,7 +394,7 @@ function watchEditBtnHandler() {
 
       $('.input-edit-merchantName').val(merchantNameText);
       $('.input-edit-code').val(codeText);
-      // $('.input-edit-expirationDate').val(expirationDateText);
+      //$('.input-edit-expirationDate').val(expirationDateText);
       document.querySelector('.input-edit-expirationDate').valueAsDate = new Date(expirationDateText);
       $('.input-edit-description').val(descriptionText);
 
@@ -408,29 +503,25 @@ function companyMaker(merchantName) {
 
 function markingCouponUsed() {
   $('#coupons').on('click','.js-complete-icon', (e) => {
-    // console.log('Do you want to mark this coupon as used');
+
     $('.js-complete-icon').tooltip('hide');
 
     const couponContainerObject = $(e.currentTarget).parent().prev();
     const merchantLogoLink = $(couponContainerObject).find('div.js-coupon-merchant-logo').children();
-    //console.log(couponContainerObject);
 
     //dashed png
     const dashDisabled = $(couponContainerObject).find('img.dashed-line-disabled');
-    console.log(dashDisabled);
     const dashed = $(couponContainerObject).find('img.dashed-line-active');
-    console.log(dashed);
+
 
     merchantLogoLink.children().attr('src');
     const merchantName = $(couponContainerObject).find('h2.coupon-merchant-name').text();
 
     var str = merchantName;
     var newStr = str.replace(/\s+/g, '');
-
     const companyLogoImageIsDisabled = `https://logo.clearbit.com/${newStr}.com?size=500&greyscale=true`;
 
     if(merchantLogoLink.attr('href')){
-      //console.log('link is not empty : '+ merchantLogoLink.attr('href'));
       const link = merchantLogoLink.attr('href');
     }
     else {
@@ -542,6 +633,7 @@ function initalizeCouponApp() {
     watchDeleteBtnHandler();
     watchEditBtnHandler();
     markingCouponUsed();
+    watchUploadImageHandler();
 }
 
 $(initalizeCouponApp);

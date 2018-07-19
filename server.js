@@ -6,13 +6,13 @@ const morgan = require('morgan');
 const passport = require('passport');
 const bodyParser = require('body-parser');
 const path = require('path');
+const multer = require('multer');
 const {localStrategy, jwtStrategy } = require('./strategies');
 const { PORT, DATABASE_URL } = require('./config');
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/user');
 const authRouter = require('./routes/auth');
 const couponRouter = require('./routes/coupon');
-
 
 mongoose.Promise = global.Promise;
 
@@ -24,6 +24,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+//handle file uploads
+
 
 
 // CORS

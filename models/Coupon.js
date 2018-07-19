@@ -24,6 +24,9 @@ const CouponSchema = mongoose.Schema({
     companyLogo: {
       type: String
     },
+    couponImage: {
+      type: String
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId
       //required: true
@@ -39,6 +42,7 @@ CouponSchema.methods.serialize = function () {
         description: this.description,
         couponUsed: this.couponUsed,
         companyLogo: this.companyLogo,
+        couponImage: this.couponImage,
         userId: this.userId
     };
 }
