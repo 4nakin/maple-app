@@ -118,6 +118,11 @@ function renderAddModal() {
                                   <input type="text" name="description" class="form-control input-add-description" required>
                               </div>
 
+                              <div class="custom-file">
+                                <input type="file" class="custom-file-input" name="couponImage" id="couponImage">
+                                <label class="custom-file-label" for="couponImage">Choose Image</label>
+                              </div>
+
                               <div class="">
                                   <button type="submit" class="button solid submit-add-coupon-btn" id="js-submit-add-coupon-btn">Add new coupon</button>
                               </div>
@@ -183,8 +188,8 @@ function renderUploadImageModal() {
                     <form id="js-upload-image-coupon-form">
                       <h5 class="modal-title" id="uploadImageModalLabel">Upload Image</h5>
                         <div class="custom-file">
-                          <input type="file" class="custom-file-input" name="filename" id="myFile">
-                          <label class="custom-file-label" for="myFile">Choose Image</label>
+                          <input type="file" class="custom-file-input" name="couponImage" id="couponImage">
+                          <label class="custom-file-label" for="couponImage">Choose Image</label>
                         </div>
                       <div class="">
                         <button type="submit" class="button solid submit-upload-image-coupon-btn" id="js-submit-upload-image-coupon-btn">Upload Image</button>
@@ -211,44 +216,59 @@ function watchUploadImageHandler() {
 }
 
 function getFileName(id) {
-  $('#myFile').on('change', function() {
-    const fileName = $('#myFile').val();
-    console.log(fileName);
+  // $('#couponImage').on('change', function() {
+  //   const fileName = $('#couponImage').val();
+  //   console.log(fileName);
+  //   // $('#select_file').html(filename);
+  //   watchSubmitCouponImage(fileName,id);
+  // });
 
-      // $('#select_file').html(filename);
-    watchSubmitCouponImage(fileName,id);
-  });
+  $('#couponImage').change(function(e) {
+    //alert('hi');
+    var file = e.target.files[0];
+    console.log(file);
+    var formData = new FormData();
+    console.log(formData);
+    formData.append('couponImage',file);
+    watchSubmitCouponImage(formData, id);
+  })
 }
 
-function watchSubmitCouponImage(fileName,id) {
+function watchSubmitCouponImage(formData,id) {
   console.log(`The id inside watch SubmitCouponImage ${id}`);
 
   $('#js-upload-image-coupon-form').on('submit', (e) => {
       e.preventDefault();
-
-      //console.log(fileName);
+      console.log(formData);
       console.log('you uploaded an image');
       $('#uploadImageModal').modal('hide');
-
       // const couponId = $(e.currentTarget).parent().parent().attr('data-id');
-      console.log(`The coupon id: ${id}: ${fileName}`);
-
-
-      sendUploadedImageToAPI(id, fileName);
+      //console.log(`The coupon id: ${id}: ${fileName}`);
+      sendUploadedImageToAPI(id, formData);
   });
 }
 
-function sendUploadedImageToAPI(id, fileName){
+function sendUploadedImageToAPI(id, formData){
+  console.log('File name is:' + formData);
+  console.log(` ${Object.values(formData)}`);
+  console.log('The id is: ' + id);
+
   $.ajax({
     url: `/coupon/${id}`,
     type: 'PATCH',
     beforeSend: function(xhr) {
       xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
     },
-    data: {
-      couponImage: fileName,
-    },
-    dataType:'json',
+    //data: {
+      // couponImage: $('input[name="myFile"]').val(),
+      //couponImage: fileName,
+    //},
+    data: formData,
+    contentType: false,
+    processData: false,  // Important!
+    crossDomain: true,
+    //cache: false,
+    //dataType:'json',
     success: function(res){
       //console.log(res);
       console.log('Coupon Image should be uploaded');

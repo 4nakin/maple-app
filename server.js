@@ -19,15 +19,12 @@ mongoose.Promise = global.Promise;
 const app = express();
 
 app.use(morgan('common'));
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads',express.static(path.join(__dirname, 'uploads')));
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
-//handle file uploads
-
-
 
 // CORS
 app.use(function (req, res, next) {

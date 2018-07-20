@@ -332,11 +332,22 @@ main .coupon-main-img {
   margin: 0 5.75px;
 }
 
+.coupon-image-container {
+  display: block;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: #000;
+}
+
 .coupon-container {
+  position: relative;
   border-radius: 25px;
   width: 300px;
   height: 531px;
-  padding-top: 50px;
   box-shadow: 0 5px 9px 0 rgba(0,0,0,.09);
 }
 
@@ -389,7 +400,7 @@ main .coupon-main-img {
   font-weight: 300;
   width: 244px;
   height: 54px;
-  margin: 0 auto 15px auto;
+  margin: 0 auto 10px auto;
   line-height: 27px;
   text-align: center;
 }
@@ -424,9 +435,10 @@ main .coupon-main-img {
   height: 134px;
   border-radius: 50%;
   box-shadow: 0 5px 13px 0 rgba(0,0,0,.09);
-  margin-bottom: 48px;
+  margin-bottom: 40px;
   margin-right: auto;
   margin-left: auto;
+  margin-top: 50px;
 }
 
 .is-disabled {
