@@ -1,5 +1,6 @@
 'use strict';
 
+let currentCouponId = null;
 
 function renderCoupons(res, companyLogoImage, companyUrl) {
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
@@ -119,8 +120,7 @@ function renderAddModal() {
                               </div>
 
                               <div class="custom-file">
-                                <input type="file" class="custom-file-input" name="couponImage" id="couponImage">
-                                <label class="custom-file-label" for="couponImage">Choose Image</label>
+                                <input type="file" name="couponImage" id="couponImage" accept="image/png, image/jpeg" required>
                               </div>
 
                               <div class="">
@@ -187,10 +187,9 @@ function renderUploadImageModal() {
                   <div class="modal-body">
                     <form id="js-upload-image-coupon-form">
                       <h5 class="modal-title" id="uploadImageModalLabel">Upload Image</h5>
-                        <div class="custom-file">
-                          <input type="file" class="custom-file-input" name="couponImage" id="couponImage">
-                          <label class="custom-file-label" for="couponImage">Choose Image</label>
-                        </div>
+                      <div class="custom-file">
+                        <input type="file" name="couponImage" id="couponImage" accept="image/png, image/jpeg" required>
+                      </div>
                       <div class="">
                         <button type="submit" class="button solid submit-upload-image-coupon-btn" id="js-submit-upload-image-coupon-btn">Upload Image</button>
                       </div>
@@ -208,69 +207,37 @@ function watchUploadImageHandler() {
     $('#uploadImageModelSection').html(renderUploadImageModal());
     $('#uploadImageModal').modal('show');
 
-    const couponId = $(e.currentTarget).parent().parent().attr('data-id');
-    console.log(`The coupon id: ${couponId}`);
-
-    getFileName(couponId);
+    currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
+    console.log(`The coupon id: ${currentCouponId}`);
   });
 }
 
-function getFileName(id) {
-  // $('#couponImage').on('change', function() {
-  //   const fileName = $('#couponImage').val();
-  //   console.log(fileName);
-  //   // $('#select_file').html(filename);
-  //   watchSubmitCouponImage(fileName,id);
-  // });
-
-  $('#couponImage').change(function(e) {
-    //alert('hi');
-    var file = e.target.files[0];
-    console.log(file);
-    var formData = new FormData();
-    console.log(formData);
-    formData.append('couponImage',file);
-    watchSubmitCouponImage(formData, id);
-  })
-}
-
-function watchSubmitCouponImage(formData,id) {
-  console.log(`The id inside watch SubmitCouponImage ${id}`);
-
-  $('#js-upload-image-coupon-form').on('submit', (e) => {
+function watchSubmitCouponImage() {
+  $('#uploadImageModelSection').on('submit', '#js-upload-image-coupon-form', (e) => {
       e.preventDefault();
-      console.log(formData);
-      console.log('you uploaded an image');
-      $('#uploadImageModal').modal('hide');
+      console.log(e);
+      console.log(`The id inside watch SubmitCouponImage ${currentCouponId}`);
+
+      //$('#uploadImageModal').modal('hide');
       // const couponId = $(e.currentTarget).parent().parent().attr('data-id');
       //console.log(`The coupon id: ${id}: ${fileName}`);
-      sendUploadedImageToAPI(id, formData);
+
+      const formData = new FormData(e.target);
+      sendUploadedImageToAPI(currentCouponId, formData);
   });
 }
 
 function sendUploadedImageToAPI(id, formData){
-  console.log('File name is:' + formData);
-  console.log(` ${Object.values(formData)}`);
-  console.log('The id is: ' + id);
-
   $.ajax({
     url: `/coupon/${id}`,
     type: 'PATCH',
     beforeSend: function(xhr) {
       xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
     },
-    //data: {
-      // couponImage: $('input[name="myFile"]').val(),
-      //couponImage: fileName,
-    //},
     data: formData,
     contentType: false,
-    processData: false,  // Important!
-    crossDomain: true,
-    //cache: false,
-    //dataType:'json',
+    processData: false,
     success: function(res){
-      //console.log(res);
       console.log('Coupon Image should be uploaded');
     },
     error: function(err){
@@ -292,33 +259,30 @@ function watchSubmitAddNewCouponHandler() {
   $('#js-add-coupon-form').on('submit', (e) => {
     e.preventDefault();
     console.log('you added a coupon');
-    $('#addNewCouponModal').modal('hide');
-    sendAddCouponDataToAPI();
+
+    sendAddCouponDataToAPI(e);
   });
 }
 
-function sendAddCouponDataToAPI() {
+function sendAddCouponDataToAPI(e) {
+  const formData = new FormData(e.target);
   const companyname = $('.input-add-merchantName').val();
   var str = companyname;
   var newStr = str.replace(/\s+/g, '');
   const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
   const companyUrl = `https://www.${newStr}.com`;
-
+    console.log(formData.get('couponImage'));
     $.ajax({
   		url: '/coupon',
       type: 'POST',
       beforeSend: function(xhr) {
         xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
       },
-      data: {
-        merchantName: $('.input-add-merchantName').val(),
-        code: $('.input-add-code').val(),
-        expirationDate: $('.input-add-expirationDate').val(),
-        description: $('.input-add-description').val()
-      },
-      dataType:'json',
+      data: formData,
+      processData: false,
+      contentType: false,
   		success: function(res){
-
+        $('#addNewCouponModal').modal('hide');
         $('.input-add-merchantName').val('');
         $('.input-add-code').val('');
         $('.input-add-expirationDate').val('');
@@ -353,11 +317,10 @@ function sendAddCouponDataToAPI() {
 function watchDeleteBtnHandler() {
   $('#js-list-coupons-section').on('click','.js-delete-icon', (e) => {
       e.preventDefault();
-      //const couponId = $(this).parent().parent().attr('data-id');
-      const couponId = $(e.currentTarget).parent().parent().attr('data-id');
-      console.log(`The coupon id: ${couponId}`);
+      currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
+      console.log(`The coupon id: ${currentCouponId}`);
       const container = $(e.currentTarget).parent().parent();
-      sendCouponToDeleteFromApi(couponId, container);
+      sendCouponToDeleteFromApi(currentCouponId, container);
     });
 }
 
@@ -402,8 +365,8 @@ function watchEditBtnHandler() {
       //$('#editCouponModal').modal('show');
       setMinDateToTodaysDate();
 
-      const couponId = $(e.currentTarget).parent().parent().attr('data-id');
-      console.log(`The coupon id: ${couponId}`);
+      currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
+      console.log(`The coupon id: ${currentCouponId}`);
 
       //get the values currently in the input fields for that getCouponid
       const couponObject = $(e.currentTarget).parent().parent();
@@ -414,12 +377,11 @@ function watchEditBtnHandler() {
 
       $('.input-edit-merchantName').val(merchantNameText);
       $('.input-edit-code').val(codeText);
-      //$('.input-edit-expirationDate').val(expirationDateText);
       document.querySelector('.input-edit-expirationDate').valueAsDate = new Date(expirationDateText);
       $('.input-edit-description').val(descriptionText);
 
       //pull the values that the user types in the inputs
-      watchSubmitEditCouponHandler(couponId);
+      watchSubmitEditCouponHandler(currentCouponId);
   });
 }
 
@@ -648,6 +610,7 @@ function base64Encode(str) {
 */
 
 function initalizeCouponApp() {
+    watchSubmitCouponImage();
     getUserCoupons();
     watchAddBtnHandler();
     watchDeleteBtnHandler();
