@@ -5,30 +5,34 @@ let currentCouponId = null;
 function renderCoupons(res, companyLogoImage, companyUrl) {
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
             <section role="region" class="coupon-container js-coupon-container coupon-active">
-              <div class="js-coupon-merchant-logo">
+              <div class="js-coupon-merchant-logo coupon-merchant-logo">
                 <a href="${companyUrl}" target="_blank">
-                  <img src="${companyLogoImage}" alt="This is an image of the ${res.merchantName} logo" class="coupon-merchant-logo js-logo-img" data-default-src="images/default-image.png">
+                  <img src="${companyLogoImage}" alt="This is an image of the ${res.merchantName} logo" class="js-logo-img" data-default-src="images/default-image.png">
                 </a>
               </div>
               <h2 class="coupon-merchant-name">${res.merchantName}</h2>
-              <p class="coupon-description">${res.description}</p>
+              <p class="coupon-description no-margin">${res.description}</p>
               <div class="dashed">
                 <img src="images/dashed-line.png" alt="dashed line active" class="dashed-line-active">
                 <img src="images/dashed-line-disable.png" alt="dashed line disable" class="dashed-line-disabled hide">
               </div>
-              <p class="coupon-title">COUPON CODE</p>
-              <p class="coupon-code js-coupon-code">${res.code}</p>
-              <p class="coupon-expiration-date">Valid till ${res.expirationDate}</p>
+              <p class="coupon-title no-margin">COUPON CODE</p>
+              <p class="coupon-code js-coupon-code no-margin">${res.code}</p>
+              <p class="coupon-expiration-date no-margin">Valid till ${res.expirationDate}</p>
             </section>
             <section role="region" class="coupon-actions-nav">
-              <img src="images/tick-sign.svg" alt="mark coupon used" class="icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Mark coupon used">
+              <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Mark coupon used">
+
               <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon" class="icon edit-icon js-edit-icon">
-                <img src="images/ui-compose.svg" alt="edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4">
+                <img src="images/ui-compose.svg" alt="edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4" class="budicon">
               </a>
+
               <a href="" data-toggle="tooltip" data-placement="bottom" title="Upload image" class="icon upload-icon js-upload-icon">
-                  <img src="images/uploading-ui.svg" alt="Upload an image" data-toggle="modal" data-target="#uploadImageModal" tabindex="4">
+                  <img src="images/uploading-ui.svg" alt="Upload an image" data-toggle="modal" data-target="#uploadImageModal" tabindex="4" class="budicon">
               </a>
-              <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete coupon">
+
+              <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="budicon icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete coupon">
+
             </section>
           </section>`;
 }

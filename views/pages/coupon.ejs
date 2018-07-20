@@ -1,15 +1,13 @@
 <% include ../partials/header %>
     <% include ../partials/navigation %>
     <% include ../partials/outputMessage %>
-        <section role="region" class="container js-coupon-section">
+        <section role="region" class="js-coupon-section container">
             <section role="region" class="list-coupons-section" id="js-list-coupons-section">
               <div class="wrapper">
                 <h1>Dashboard</h1>
                 <button class="button solid js-add-new-coupon-btn add-new-coupon-btn" data-toggle="modal" data-target="#addNewCouponModal">
-                  <span>
-                    <img src="images/add-icon@3x.svg" alt="add-icon" class="add-icon">
-                  </span>
-                  Add Coupon
+                    <img src="images/add-icon@3x.svg" alt="add-icon" class="budicon add-icon">
+                    Add Coupon
                 </button>
               </div>
               <% typeof msg != 'undefined' ? msg: '' %>
