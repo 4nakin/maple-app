@@ -11,6 +11,12 @@ body {
   font-weight: 400;
 }
 
+.ellipse-text {
+  overflow-y: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .container {
   max-width: 974px;
 }
@@ -45,12 +51,12 @@ body {
   line-height: 24px;
 }
 
-.modal {
+/* .modal {
   height: 800px;
-}
+} */
 
 .modal-content {
-  border-radius: 25px;
+  border-radius: 18px;
   border: none;
 }
 
@@ -60,7 +66,8 @@ body {
 
 .modal-title {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
+  font-size: 18px;
 }
 
 .modal-body {
@@ -73,8 +80,9 @@ body {
 
 .form-control {
   border: 1px solid #C7C7C7;
-  border-radius: 14px;
-  padding: 10px 20px;
+  border-radius: 8px;
+  padding: 8px 8px;
+  font-size: 12px;
 }
 
 nav {
@@ -106,7 +114,6 @@ nav li a {
  background: #FFFFFF;
  margin-top: 5px;
  margin-bottom: 10px;
- /* width: 100%; */
  text-align: right;
 }
 
@@ -179,6 +186,11 @@ main .coupon-main-img {
   border-radius: 25px;
   -webkit-transition-duration: 0.4s; /* Safari */
   transition-duration: 0.4s;
+}
+
+button:disabled {
+  background-color: #d8d8d8;
+  cursor: no-drop;
 }
 
 .solid {
@@ -389,6 +401,10 @@ main .coupon-main-img {
   text-align: center;
   margin-bottom: 12px;
   font-size: 22px;
+  line-height: 24px;
+  width: 163px;
+  height: 30px;
+  margin: 0 auto;
 }
 
 .coupon-container .coupon-description {
@@ -399,6 +415,7 @@ main .coupon-main-img {
   line-height: 20px;
   margin: 0 auto 5px auto;
   text-align: center;
+  overflow-y: scroll;
 }
 
 .dashed {
@@ -453,11 +470,6 @@ main .coupon-main-img {
   text-decoration: none;
 }
 
-button:disabled {
-  background-color: #d8d8d8;
-  cursor: no-drop;
-}
-
 /* ADD NEW COUPON MODAL */
 .submit-add-coupon-btn,
 .submit-edit-coupon-btn,
@@ -477,38 +489,6 @@ No media query for `xs` since this is the default in Bootstrap */
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
-
-  .modal {
-    height: 800px;
-  }
-
-  .modal-content {
-    border-radius: 25px;
-    border: none;
-  }
-
-  .modal-header {
-    border-bottom: 0;
-  }
-
-  .modal-title {
-    text-align: center;
-    margin-bottom: 50px;
-  }
-
-  .modal-body {
-    padding: 0 92px 60px 92px;
-  }
-
-  .form-group {
-    margin-bottom: 30px;
-  }
-
-  .form-control {
-    border: 1px solid #C7C7C7;
-    border-radius: 14px;
-    padding: 10px 20px;
-  }
 
   #js-list-coupons-section .wrapper {
     width: 100%;
