@@ -117,7 +117,7 @@ function renderAddModal() {
 
                               <div class="form-group">
                                   <label for="description">Description</label>
-                                  <input type="text" name="description" class="form-control input-add-description" required>
+                                  <input type="text" name="description" class="form-control input-add-description"  maxlength="100" required>
                               </div>
                               <div class="form-group">
                                 <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required class="inputfile"/>
@@ -162,7 +162,7 @@ function renderEditModal() {
 
                                 <div class="form-group">
                                     <label for="description">Description</label>
-                                    <input type="text" name="description" class="form-control input-edit-description" required>
+                                    <input type="text" name="description" class="form-control input-edit-description" maxlength="100" required>
                                 </div>
 
                                 <div class="">
