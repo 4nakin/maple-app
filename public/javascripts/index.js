@@ -15,8 +15,7 @@ function loginBtnHandler() {
 function signupHandler() {
   $('#signup-section').on('submit', '#js-signup-form', (e) => {
     e.preventDefault();
-    console.log("signup form submitted");
-
+    //console.log("signup form submitted");
     $.ajax({
       url: '/api/users',
       type: 'POST',
@@ -42,7 +41,8 @@ function signupHandler() {
         window.location.href = '/login';
       },
       error: (err) => {
-        $('#js-msg-output').html(`<div class="alert alert-danger text-center" role="alert">This username is taken or the password is invalid</div>`);
+        console.log(err);
+        $('#js-msg-output').html(`<div class="alert alert-danger text-center" role="alert">${err.responseJSON.message}</div>`);
       }
     });
   });

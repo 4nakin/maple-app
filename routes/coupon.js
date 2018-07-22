@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const multer = require('multer');
+
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, './uploads/');
@@ -11,6 +12,7 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   }
 });
+
 const upload = multer({storage: storage});
 const path = require('path');
 const {JWT_SECRET} = require('../config');
@@ -21,21 +23,15 @@ const jwtAuth = passport.authenticate('jwt', { session: false });
 
 //GETS THE USERID FROM JWT - returns the userid from a request 'authorization' header
 function getUserIdFromJwt(req){
-  //This removes the Bearer in front of the token and just gets token
   const token = req.headers.authorization.split(' ')[1];
-  //console.log('The token is: ' + token);
 	const tokenPayload = jwt.verify(token, JWT_SECRET);
 	const userId = tokenPayload.user.userId;
-  //console.log("This is the userId from JWT: " + userId);
   return userId;
 }
 
 // GETS ALL COUPONS
 router.get('/', jwtAuth, (req, res) => {
-  //console.log(req);
   const _userId = getUserIdFromJwt(req);
-  //console.log(`The current user is: ${_userId}`);
-
   CouponModel.find({userId: _userId})
     .then(coupons => res.status(200).json({coupons, _userId}))
     .catch(err => {
@@ -64,8 +60,6 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
     couponImage: req.file.path,
     userId: _userId
   });
-
-  //TODO: need to add expiration validation
 
   newCoupon.save()
       .then(function(coupon) {

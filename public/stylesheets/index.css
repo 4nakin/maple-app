@@ -51,10 +51,6 @@ body {
   line-height: 24px;
 }
 
-/* .modal {
-  height: 800px;
-} */
-
 .modal-content {
   border-radius: 18px;
   border: none;
@@ -490,23 +486,6 @@ No media query for `xs` since this is the default in Bootstrap */
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
 
-  #js-list-coupons-section .wrapper {
-    width: 100%;
-    position: relative;
-    /* background: yellow; */
-    /* display: flex;
-    flex-direction:;
-    align-content: center;
-    justify-content: center; */
-  }
-
-  #js-list-coupons-section .add-new-coupon-btn {
-    position: absolute;
-    /* right: 99.5px; */
-    right: 5%;
-    top: .5px;
-  }
-
 }
 
 /* Large devices (desktops, 992px and up) */
@@ -522,6 +501,18 @@ No media query for `xs` since this is the default in Bootstrap */
    margin-bottom: 10px;
    /* width: 100%; */
    text-align: right;
+  }
+
+  #js-list-coupons-section .wrapper {
+    width: 100%;
+    position: relative;
+  }
+
+  #js-list-coupons-section .add-new-coupon-btn {
+    position: absolute;
+    /* right: 99.5px; */
+    right: 5%;
+    top: .5px;
   }
 
 }
