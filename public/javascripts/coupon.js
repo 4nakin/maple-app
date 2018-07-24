@@ -45,7 +45,6 @@ function getUserCoupons() {
       displayDropDownList(merchants);
       clickedOnMerchantFilter(res, merchants);
 
-
       $('.js-logout').removeClass('hide');
       $('.js-coupon').removeClass('hide');
 
@@ -280,8 +279,10 @@ function sendAddCouponDataToAPI(e) {
   var newStr = str.replace(/\s+/g, '');
   const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
   const companyUrl = `https://www.${newStr}.com`;
-    console.log(formData.get('couponImage'));
-    //console.log(formData.get('merchantName'));
+
+  console.log(formData.get('couponImage'));
+  console.log(formData.get('couponImage').name);
+
     $.ajax({
   		url: '/coupon',
       type: 'POST',
@@ -298,7 +299,6 @@ function sendAddCouponDataToAPI(e) {
         $('.input-add-code').val('');
         $('.input-add-expirationDate').val('');
         $('.input-add-description').val('');
-
         const couponHTML = $(renderCoupons(res,companyLogoImage,companyUrl));
         couponHTML.css('opacity', '0');
         $('#coupons').append(couponHTML);
@@ -368,8 +368,10 @@ function watchEditBtnHandler() {
       currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
       console.log(`The coupon id: ${currentCouponId}`);
 
+
       //get the values currently in the input fields for that getCouponid
       const couponObject = $(e.currentTarget).parent().parent();
+      //console.log(couponObject);
       const merchantNameText = $(couponObject).find('h2.coupon-merchant-name').text();
       const codeText = $(couponObject).find('p.coupon-code').text();
       const expirationDateText = $(couponObject).find('p.coupon-expiration-date').text();
@@ -401,6 +403,7 @@ function sendCouponToEditFromApi(id) {
   console.log(`merchant name inside edit function ${newStr}`);
   const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
   const companyUrl = `https://www.${newStr}.com`;
+  console.log(formData.get('couponImage').name);
 
   let _couponId = id;
 
@@ -484,6 +487,7 @@ function renderDropDown(htmlCode) {
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               ${htmlCode}
+              <a class="dropdown-item" href="#" data-index="-1">Show all merchants</a>
             </div>
           </div>`;
 }
@@ -527,12 +531,46 @@ function clickedOnMerchantFilter(res, merchants) {
 
     currentMerchant = clickedIndex;
 
-    // Generate filtered coupons to then be rendered
-    filteredCoupons = coupons.filter(function(coupon, index) {
-      return coupon.merchantName === merchants[currentMerchant];
-    });
+    if(currentMerchant >= 0) {
+      // Generate filtered coupons to then be rendered
+      filteredCoupons = coupons.filter(function(coupon, index) {
+        return coupon.merchantName === merchants[currentMerchant];
+      });
+    }
+    else {
+      $.ajax({
+        beforeSend: function(xhr) {
+          xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
+        },
+        url: '/coupon/',
+        type: 'GET',
+        success: (res) => {
+          console.log(res);
 
-    //console.log(filteredCoupons);
+          var html = "";
+          res.coupons.map(function(coupon){
+            var str = coupon.merchantName;
+            var newStr = str.replace(/\s+/g, '');
+            const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
+            const companyUrl = `https://www.${newStr}.com`;
+            html += renderCoupons(coupon, companyLogoImage, companyUrl);
+          });
+
+          $('#coupons').css('opacity', '0');
+          $('#coupons').html(html);
+
+          //check to see if get request is Valid
+          //if not then replace with another image
+
+          $('#coupons').animate({
+            opacity: 1,
+          }, 150);
+        },
+        error: function(err) {
+        }
+      });
+    }
+    console.log(filteredCoupons);
     renderSpecificMerchantCouponsOnDOM(filteredCoupons);
   });
 
@@ -552,18 +590,14 @@ function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
     html += renderCoupons(coupon, companyLogoImage, companyUrl);
   });
 
-  /*
   $('#coupons').css('opacity', '0');
-  */
 
   //replace it with filtered ones
   $('#coupons').html(html);
-
-  /*
   $('#coupons').animate({
     opacity: 1,
   }, 150);
-  */
+
 }
 
 function updateMerchantTofilter() {
@@ -594,7 +628,6 @@ function markingCouponUsed() {
     //dashed png
     const dashDisabled = $(couponContainerObject).find('img.dashed-line-disabled');
     const dashed = $(couponContainerObject).find('img.dashed-line-active');
-
 
     merchantLogoLink.children().attr('src');
     const merchantName = $(couponContainerObject).find('h2.coupon-merchant-name').text();
@@ -643,6 +676,20 @@ function checkIfCouponIsPastDue() {
   //from coupons array get expiration Date
   //then compare if value of expirationDate and today's current date.
 }
+
+function pressed() {
+    var a = document.getElementById('aa');
+    if(a.value == "")
+    {
+        fileLabel.innerHTML = "Choose file";
+    }
+    else
+    {
+        var theSplit = a.value.split('\\');
+        fileLabel.innerHTML = theSplit[theSplit.length-1];
+    }
+}
+
 /*
 function markingCouponUsed() {
   $('#coupons').on('click','.coupon-container', (e) => {
