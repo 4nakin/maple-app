@@ -45,6 +45,7 @@ function getUserCoupons() {
       displayDropDownList(merchants);
       clickedOnMerchantFilter(res, merchants);
 
+
       $('.js-logout').removeClass('hide');
       $('.js-coupon').removeClass('hide');
 
@@ -510,7 +511,7 @@ function displayDropDownList(merchants) {
   return $('#filter').html(renderDropDown(htmlCode));
 }
 
-function clickedOnMerchantFilter(res,merchants) {
+function clickedOnMerchantFilter(res, merchants) {
   const coupons = res.coupons;
   let filteredCoupons = [];
   let currentMerchant = 0;
@@ -519,21 +520,50 @@ function clickedOnMerchantFilter(res,merchants) {
     e.preventDefault();
 
     let currentTarget = $(e.currentTarget);
-    console.log(currentTarget);
+    //console.log(currentTarget);
 
     const clickedIndex = currentTarget.attr('data-index');
     console.log(clickedIndex);
 
-    let currentMerchant = clickedIndex;
+    currentMerchant = clickedIndex;
 
     // Generate filtered coupons to then be rendered
     filteredCoupons = coupons.filter(function(coupon, index) {
       return coupon.merchantName === merchants[currentMerchant];
     });
 
-    console.log(filteredCoupons);
-
+    //console.log(filteredCoupons);
+    renderSpecificMerchantCouponsOnDOM(filteredCoupons);
   });
+
+  //return filteredCoupons;
+}
+
+function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
+  //get filter results
+  console.log(filteredByMerchantCoupons);
+
+  var html = "";
+  filteredByMerchantCoupons.map(function(coupon){
+    var str = coupon.merchantName;
+    var newStr = str.replace(/\s+/g, '');
+    const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
+    const companyUrl = `https://www.${newStr}.com`;
+    html += renderCoupons(coupon, companyLogoImage, companyUrl);
+  });
+
+  /*
+  $('#coupons').css('opacity', '0');
+  */
+
+  //replace it with filtered ones
+  $('#coupons').html(html);
+
+  /*
+  $('#coupons').animate({
+    opacity: 1,
+  }, 150);
+  */
 }
 
 function updateMerchantTofilter() {
