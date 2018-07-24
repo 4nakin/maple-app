@@ -40,7 +40,7 @@ function getUserCoupons() {
     },
     url: '/coupon/',
     type: 'GET',
-    success: function(res) {
+    success: (res) => {
       renderFilterByMerchants(res);
 
       $('.js-logout').removeClass('hide');
@@ -71,7 +71,6 @@ function getUserCoupons() {
       //check to see if get request is Valid
       //if not then replace with another image
 
-
       $('#coupons').animate({
         opacity: 1,
       }, 150);
@@ -85,7 +84,7 @@ function getUserCoupons() {
         console.log('something went wrong when trying to get to the protected endpoint');
       }
     }
-  })
+  });
 }
 
 function renderAddModal() {
@@ -289,7 +288,7 @@ function sendAddCouponDataToAPI(e) {
       data: formData,
       processData: false,
       contentType: false,
-  		success: function(res){
+  		success: (res) => {
         $('#addNewCouponModal').modal('hide');
         $('.input-add-merchantName').val('');
         $('.input-add-code').val('');
@@ -304,6 +303,10 @@ function sendAddCouponDataToAPI(e) {
           opacity: 1,
         }, 500);
 
+        //called getUserCoupons because I wanted filter to refresh  I probably don't want to do this
+        //getUserCoupons();
+
+        updateMerchantTofilter(res);
   		},
   		error: function(err){
         console.log('something went wrong');
@@ -330,7 +333,7 @@ function sendCouponToDeleteFromApi(id, container) {
         xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
       },
       dataType: 'json',
-      success: function(res) {
+      success: (res) => {
 
         $('.js-delete-icon').tooltip('hide');
         $('.js-complete-icon').tooltip('hide');
@@ -345,6 +348,10 @@ function sendCouponToDeleteFromApi(id, container) {
           container.remove();
         });
 
+        //console.log(res);
+
+        updateMerchantTofilter()
+        //updateMerchantTofilter(res)
       },
       error: function(err) {
         console.log(`Something happened when trying to delete ${err}`);
@@ -509,18 +516,15 @@ function renderFilterByMerchants(res) {
   });
 
   merchants.map(function(merchant, index){
-    console.log(index);
-    console.log(capitalizeFirstLetter(merchant));
     merchants[index] = capitalizeFirstLetter(merchant);
   })
 
-  console.log(merchants);
+  //console.log(merchants);
 
   var htmlCode = "";
   merchants.map(function(coupon){
     htmlCode += renderDropDownlist(coupon);
   });
-  //console.log(htmlCode);
 
   return $('#filter').html(renderDropDown(htmlCode));
 }
@@ -545,6 +549,25 @@ function filterByCurrentMerchant(res){
 
 }
 
+function updateMerchantTofilter() {
+  //get merchant that was just added
+  //console.log(res.merchantName);
+
+  //then check to see if merchant already exists
+  $.ajax({
+    beforeSend: function(xhr) {
+      xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
+    },
+    url: '/coupon/',
+    type: 'GET',
+    success: (res) => {
+      renderFilterByMerchants(res);
+    },
+    error: function(err) {
+    }
+  });
+
+}
 function markingCouponUsed() {
   $('#coupons').on('click','.js-complete-icon', (e) => {
 
