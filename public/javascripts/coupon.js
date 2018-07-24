@@ -368,7 +368,6 @@ function watchEditBtnHandler() {
       currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
       console.log(`The coupon id: ${currentCouponId}`);
 
-
       //get the values currently in the input fields for that getCouponid
       const couponObject = $(e.currentTarget).parent().parent();
       //console.log(couponObject);
@@ -392,18 +391,20 @@ function watchSubmitEditCouponHandler(id) {
       e.preventDefault();
       console.log('you want to update a coupon');
       $('#editCouponModal').modal('hide');
-      sendCouponToEditFromApi(id);
+      sendCouponToEditFromApi(id, e);
   });
 }
 
-function sendCouponToEditFromApi(id) {
+function sendCouponToEditFromApi(id, e) {
+  const formData = new FormData(e.target);
+
   const companyname = $('.input-edit-merchantName').val();
   var str = companyname;
   var newStr = str.replace(/\s+/g, '');
   console.log(`merchant name inside edit function ${newStr}`);
   const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
   const companyUrl = `https://www.${newStr}.com`;
-  console.log(formData.get('couponImage').name);
+  console.log(formData.get('couponImage'));
 
   let _couponId = id;
 
@@ -414,13 +415,16 @@ function sendCouponToEditFromApi(id) {
       beforeSend: function(xhr) {
         xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
       },
-      data: {
-        merchantName: $('.input-edit-merchantName').val(),
-        code: $('.input-edit-code').val(),
-        expirationDate: $('.input-edit-expirationDate').val(),
-        description: $('.input-edit-description').val()
-      },
-      dataType: 'json',
+      data: formData,
+      processData: false,
+      contentType: false,
+      // data: {
+      //   merchantName: $('.input-edit-merchantName').val(),
+      //   code: $('.input-edit-code').val(),
+      //   expirationDate: $('.input-edit-expirationDate').val(),
+      //   description: $('.input-edit-description').val()
+      // },
+      // dataType: 'json',
       success: function(res) {
         console.log(`you successfully updated a coupon: ${_couponId}`);
 
@@ -487,7 +491,7 @@ function renderDropDown(htmlCode) {
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               ${htmlCode}
-              <a class="dropdown-item" href="#" data-index="-1">Show all merchants</a>
+              <a class="dropdown-item" href="#" data-index="-1">Show All Merchants</a>
             </div>
           </div>`;
 }
@@ -527,7 +531,7 @@ function clickedOnMerchantFilter(res, merchants) {
     //console.log(currentTarget);
 
     const clickedIndex = currentTarget.attr('data-index');
-    console.log(clickedIndex);
+    //console.log(clickedIndex);
 
     currentMerchant = clickedIndex;
 
@@ -545,7 +549,7 @@ function clickedOnMerchantFilter(res, merchants) {
         url: '/coupon/',
         type: 'GET',
         success: (res) => {
-          console.log(res);
+          //console.log(res);
 
           var html = "";
           res.coupons.map(function(coupon){
@@ -570,7 +574,7 @@ function clickedOnMerchantFilter(res, merchants) {
         }
       });
     }
-    console.log(filteredCoupons);
+    //console.log(filteredCoupons);
     renderSpecificMerchantCouponsOnDOM(filteredCoupons);
   });
 
@@ -579,7 +583,7 @@ function clickedOnMerchantFilter(res, merchants) {
 
 function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
   //get filter results
-  console.log(filteredByMerchantCoupons);
+  //console.log(filteredByMerchantCoupons);
 
   var html = "";
   filteredByMerchantCoupons.map(function(coupon){
