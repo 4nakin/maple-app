@@ -21,6 +21,17 @@ var router = express.Router();
 const jsonParser = bodyParser.json();
 const jwtAuth = passport.authenticate('jwt', { session: false });
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function formatMerchantName(string){
+  string.toLowerCase();
+  console.log(string.toLowerCase());
+  const newstring = string.toLowerCase();
+  return capitalizeFirstLetter(newstring);
+}
+
 //GETS THE USERID FROM JWT - returns the userid from a request 'authorization' header
 function getUserIdFromJwt(req){
   const token = req.headers.authorization.split(' ')[1];
@@ -48,10 +59,12 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   const _userId = getUserIdFromJwt(req);
 
   //console.log(`The current user is: ${_userId}`);
-  console.log("This is the request from adding a coupon");
+  //console.log("This is the request from adding a coupon");
+
+  console.log('************* Merchant Name: ' + formatMerchantName(req.body.merchantName) + '*****************');
 
   const newCoupon = new CouponModel({
-    merchantName: req.body.merchantName,
+    merchantName: formatMerchantName(req.body.merchantName),
     code: req.body.code,
     expirationDate: req.body.expirationDate,
     description: req.body.description,

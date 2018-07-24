@@ -42,6 +42,7 @@ function getUserCoupons() {
     type: 'GET',
     success: (res) => {
       renderFilterByMerchants(res);
+      //filterByCurrentMerchant(res);
 
       $('.js-logout').removeClass('hide');
       $('.js-coupon').removeClass('hide');
@@ -500,26 +501,25 @@ function renderDropDown(htmlCode) {
           </div>`;
 }
 
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
 function renderFilterByMerchants(res) {
   const coupons = res.coupons;
   let merchants = [];
+  let filteredCoupons = [];
+  let currentMerchant = 0;
 
   // Generate unique list of merchants
   coupons.map(function(coupon) {
-    if(!merchants.includes(coupon.merchantName.toLowerCase())) {
-        merchants.push(coupon.merchantName.toLowerCase());
+    if(!merchants.includes(coupon.merchantName)) {
+        merchants.push(coupon.merchantName);
     }
   });
 
-  merchants.map(function(merchant, index){
-    merchants[index] = capitalizeFirstLetter(merchant);
-  })
+  // Generate filtered coupons to then be rendered
+  filteredCoupons = coupons.filter(function(coupon, index) {
+    return coupon.merchantName === merchants[currentMerchant];
+  });
 
-  //console.log(merchants);
+  console.log(filteredCoupons);
 
   var htmlCode = "";
   merchants.map(function(coupon){
@@ -533,27 +533,28 @@ function filterByCurrentMerchant(res){
   const coupons = res.coupons;
 
   let filteredCoupons = [];
-  let currentMerchant = 2;
+  let currentMerchant = 0;
+  let merchants = [];
+
+  // Generate unique list of merchants
+  coupons.map(function(coupon) {
+    if(!merchants.includes(coupon.merchantName.toLowerCase())) {
+        merchants.push(coupon.merchantName.toLowerCase());
+    }
+  });
 
   // Generate filtered coupons to then be rendered
-  filteredCoupons = coupons.filter(function(coupon) {
+  filteredCoupons = coupons.filter(function(coupon, index) {
+    //console.log(index);
     return coupon.merchantName === merchants[currentMerchant];
   });
 
-  //console.log(filteredCoupons);
+  console.log(filteredCoupons);
   //renderFilter(merchants);
-
-  //first get coupons object and get coupons array
-  //coupons.map(coupon => console.log(coupon));
-
 
 }
 
 function updateMerchantTofilter() {
-  //get merchant that was just added
-  //console.log(res.merchantName);
-
-  //then check to see if merchant already exists
   $.ajax({
     beforeSend: function(xhr) {
       xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
@@ -566,8 +567,8 @@ function updateMerchantTofilter() {
     error: function(err) {
     }
   });
-
 }
+
 function markingCouponUsed() {
   $('#coupons').on('click','.js-complete-icon', (e) => {
 
