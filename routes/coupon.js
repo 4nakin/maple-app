@@ -25,11 +25,22 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function capitalizeFirstLetterOfEveryWord(str){
+  var splitStr = str.toLowerCase().split(' ');
+   for (var i = 0; i < splitStr.length; i++) {
+       // You do not need to check if i is larger than splitStr length, as your for does that for you
+       // Assign it back to the array
+       splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+   }
+   // Directly return the joined string
+   return splitStr.join(' ');
+}
+
 function formatMerchantName(string){
   string.toLowerCase();
   console.log(string.toLowerCase());
   const newstring = string.toLowerCase();
-  return capitalizeFirstLetter(newstring);
+  return capitalizeFirstLetterOfEveryWord(newstring);
 }
 
 //GETS THE USERID FROM JWT - returns the userid from a request 'authorization' header
@@ -98,8 +109,17 @@ router.delete('/:id', jwtAuth, (req, res) => {
 router.put('/:id', jwtAuth, (req, res) => {
   console.log(`req.params.id:  ${req.params.id}`);
   console.log(`req.body.id: ${req.body.id}`);
-  console.log(`The request on the put coupon endpoint is: ${Object.values(req.body)}`);
-  console.log(Object.values(req.body));
+
+  console.log('************** User Edited **************');
+  Object.keys(req.body)
+  .forEach(function eachKey(key) {
+    console.log(key+ ' : '+ req.body[key]); // alerts key and value
+    if(key === 'merchantName'){
+      req.body[key] = formatMerchantName(req.body[key]);
+      console.log('** Formatted Merchant Name  ' + req.body[key] + '  **');
+    }
+  });
+  console.log('************** End of User Edited **************\n');
 
   // if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
   //   res.status(400).json({
@@ -110,11 +130,14 @@ router.put('/:id', jwtAuth, (req, res) => {
   const updated = {};
   const updateableFields = ['merchantName', 'code', 'expirationDate', 'description'];
 
+  console.log('************** Updated Fields **************');
   updateableFields.forEach(field => {
     if(field in req.body) {
       updated[field] = req.body[field];
+      console.log(field +' : ' + updated[field]);
     }
   });
+  console.log('************** End of Updated Fields **************\n');
 
   CouponModel.findByIdAndUpdate(req.params.id, {$set: updated }, { new: true})
   .then(updatedCoupon => res.status(204).end())

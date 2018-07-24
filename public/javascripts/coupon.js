@@ -41,8 +41,9 @@ function getUserCoupons() {
     url: '/coupon/',
     type: 'GET',
     success: (res) => {
-      renderFilterByMerchants(res);
-      //filterByCurrentMerchant(res);
+      const merchants = renderFilterByMerchants(res);
+      displayDropDownList(merchants);
+      clickedOnMerchantFilter(res, merchants);
 
       $('.js-logout').removeClass('hide');
       $('.js-coupon').removeClass('hide');
@@ -290,6 +291,7 @@ function sendAddCouponDataToAPI(e) {
       processData: false,
       contentType: false,
   		success: (res) => {
+
         $('#addNewCouponModal').modal('hide');
         $('.input-add-merchantName').val('');
         $('.input-add-code').val('');
@@ -304,10 +306,7 @@ function sendAddCouponDataToAPI(e) {
           opacity: 1,
         }, 500);
 
-        //called getUserCoupons because I wanted filter to refresh  I probably don't want to do this
-        //getUserCoupons();
-
-        updateMerchantTofilter(res);
+        updateMerchantTofilter();
   		},
   		error: function(err){
         console.log('something went wrong');
@@ -348,11 +347,8 @@ function sendCouponToDeleteFromApi(id, container) {
         }, 500, function(){
           container.remove();
         });
-
         //console.log(res);
-
-        updateMerchantTofilter()
-        //updateMerchantTofilter(res)
+        updateMerchantTofilter();
       },
       error: function(err) {
         console.log(`Something happened when trying to delete ${err}`);
@@ -438,17 +434,7 @@ function sendCouponToEditFromApi(id) {
         $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(`Valid til ${expirationDate}`);
         $(`[data-id = ${_couponId}] .coupon-description`).html(inputDescription);
 
-        // $('#js-msg-output').show();
-        //
-        // $('#js-msg-output').html(`<div class="alert alert-success alert-dismissible fade show text-center" role="alert">You have successfully edited a coupon!
-        //   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        //     <span aria-hidden="true">&times;</span>
-        //   </button>
-        //   </div`);
-
-        // setTimeout(() => {
-        //   $('#js-msg-output').hide();
-        // }, 2000);
+        updateMerchantTofilter();
       },
       error: function(err) {
         console.log(`Something happened when trying to edit ${err}`);
@@ -486,16 +472,16 @@ function companyMaker(merchantName) {
   return companyInfo;
 }
 
-function renderDropDownlist(merchant) {
-  return `<a class="dropdown-item" href="#">${merchant}</a>`
+function renderDropDownlist(merchant, index) {
+  return `<a class="dropdown-item" href="#" data-index="${index}">${merchant}</a>`
 }
 
 function renderDropDown(htmlCode) {
-  return `<div class="dropdown show">
-            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  return `<div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Filter by Merchant
-            </a>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               ${htmlCode}
             </div>
           </div>`;
@@ -504,54 +490,50 @@ function renderDropDown(htmlCode) {
 function renderFilterByMerchants(res) {
   const coupons = res.coupons;
   let merchants = [];
-  let filteredCoupons = [];
-  let currentMerchant = 0;
-
   // Generate unique list of merchants
   coupons.map(function(coupon) {
     if(!merchants.includes(coupon.merchantName)) {
         merchants.push(coupon.merchantName);
     }
   });
+  //console.log(merchants);
+  return merchants;
+}
 
-  // Generate filtered coupons to then be rendered
-  filteredCoupons = coupons.filter(function(coupon, index) {
-    return coupon.merchantName === merchants[currentMerchant];
-  });
-
-  console.log(filteredCoupons);
-
+function displayDropDownList(merchants) {
   var htmlCode = "";
-  merchants.map(function(coupon){
-    htmlCode += renderDropDownlist(coupon);
+  merchants.map(function(coupon, index){
+    htmlCode += renderDropDownlist(coupon, index);
   });
+  //console.log(htmlCode);
 
   return $('#filter').html(renderDropDown(htmlCode));
 }
 
-function filterByCurrentMerchant(res){
+function clickedOnMerchantFilter(res,merchants) {
   const coupons = res.coupons;
-
   let filteredCoupons = [];
   let currentMerchant = 0;
-  let merchants = [];
 
-  // Generate unique list of merchants
-  coupons.map(function(coupon) {
-    if(!merchants.includes(coupon.merchantName.toLowerCase())) {
-        merchants.push(coupon.merchantName.toLowerCase());
-    }
+  $('.dropdown').on('click','.dropdown-item', (e) => {
+    e.preventDefault();
+
+    let currentTarget = $(e.currentTarget);
+    console.log(currentTarget);
+
+    const clickedIndex = currentTarget.attr('data-index');
+    console.log(clickedIndex);
+
+    let currentMerchant = clickedIndex;
+
+    // Generate filtered coupons to then be rendered
+    filteredCoupons = coupons.filter(function(coupon, index) {
+      return coupon.merchantName === merchants[currentMerchant];
+    });
+
+    console.log(filteredCoupons);
+
   });
-
-  // Generate filtered coupons to then be rendered
-  filteredCoupons = coupons.filter(function(coupon, index) {
-    //console.log(index);
-    return coupon.merchantName === merchants[currentMerchant];
-  });
-
-  console.log(filteredCoupons);
-  //renderFilter(merchants);
-
 }
 
 function updateMerchantTofilter() {
@@ -562,7 +544,9 @@ function updateMerchantTofilter() {
     url: '/coupon/',
     type: 'GET',
     success: (res) => {
-      renderFilterByMerchants(res);
+      const merchants = renderFilterByMerchants(res);
+      displayDropDownList(merchants);
+      clickedOnMerchantFilter(res, merchants);
     },
     error: function(err) {
     }
