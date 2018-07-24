@@ -1,9 +1,8 @@
 <% include ../partials/header %>
   <% include ../partials/navigation %>
-    <main role="main"></main>
-      <% include ../partials/outputMessage %>
-        <section role="region" class="container" id="login-section">
+        <main role="main" class="container" id="login-section">
             <h1>Login</h1>
+            <% include ../partials/outputMessage %>
             <form action="/auth" method="post" id="js-login-form" class="login-form">
             <div class="form-group">
                 <label>Username:</label>
@@ -18,9 +17,11 @@
             </div>
               <button type="submit" class="button solid" value="Login">Login</button>
             </form>
-        </section>
+        </main>
+
         <section role="region" id="signup-link-section">
             <p>Not yet a user? <a href="/signup">Sign up</a></p>
         </section>
+
         <script src="/javascripts/index.js"></script>
 <% include ../partials/footer %>

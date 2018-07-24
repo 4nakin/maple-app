@@ -10,7 +10,7 @@ function renderCoupons(res, companyLogoImage, companyUrl) {
                   <img src="${companyLogoImage}" alt="This is an image of the ${res.merchantName} logo" class="js-logo-img" data-default-src="images/default-image.png">
                 </a>
               </div>
-              <h2 class="coupon-merchant-name ellipse-text">${res.merchantName}</h2>
+              <h2 class="coupon-merchant-name">${res.merchantName}</h2>
               <p class="coupon-description no-margin">${res.description}</p>
               <div class="dashed">
                 <img src="images/dashed-line.png" alt="dashed line active" class="dashed-line-active">
@@ -29,7 +29,6 @@ function renderCoupons(res, companyLogoImage, companyUrl) {
                 <img src="images/uploading-ui.svg" alt="Upload an image" data-toggle="modal" data-target="#uploadImageModal" tabindex="4" class="budicon">
               </a>
               <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="budicon icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete coupon">
-
             </section>
           </section>`;
 }
@@ -42,6 +41,7 @@ function getUserCoupons() {
     url: '/coupon/',
     type: 'GET',
     success: function(res) {
+      renderFilterByMerchants(res);
 
       $('.js-logout').removeClass('hide');
       $('.js-coupon').removeClass('hide');
@@ -89,48 +89,51 @@ function getUserCoupons() {
 }
 
 function renderAddModal() {
-  return`<div class="modal fade" id="addNewCouponModal" tabindex="-1" role="dialog" aria-labelledby="addNewCouponModalLabel" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                      <div class="modal-header">
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                          </button>
-                      </div>
-                      <div class="modal-body">
-                          <h5 class="modal-title" id="addNewCouponModalLabel">Add new coupon</h5>
-                          <form id="js-add-coupon-form">
-                              <div class="form-group">
-                                  <label for="merchantName">Merchant Name</label>
-                                  <input type="text" name="merchantName" class="form-control input-add-merchantName" required>
-                              </div>
+  return `<div class="modal fade" id="addNewCouponModal" tabindex="-1" role="dialog" aria-labelledby="addNewCouponModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
 
-                              <div class="form-group">
-                                  <label for="code">Code</label>
-                                  <input type="text" name="code" class="form-control input-add-code" required>
-                              </div>
+                <div class="modal-body">
+                  <h5 class="modal-title" id="addNewCouponModalLabel">Add new coupon</h5>
+                  <form id="js-add-coupon-form">
+                    <div class="form-group">
+                      <label for="merchantName">Merchant Name</label>
+                      <input type="text" name="merchantName" class="form-control input-add-merchantName" required>
+                    </div>
 
-                              <div class="form-group">
-                                  <label for="expirationDate">Expiration Date</label>
-                                  <input type="date" name="expirationDate" class="form-control input-add-expirationDate js-date-field" min="2018-07-01" max="2020-12-31" required>
-                              </div>
+                    <div class="form-group">
+                      <label for="code">Code</label>
+                      <input type="text" name="code" class="form-control input-add-code" maxlength="15" required>
+                    </div>
 
-                              <div class="form-group">
-                                  <label for="description">Description</label>
-                                  <input type="text" name="description" class="form-control input-add-description"  maxlength="100" required>
-                              </div>
-                              <div class="form-group">
-                                <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
-                                <label for="couponImage" class="custom-file-upload"></label>
-                              </div>
-                              <div class="">
-                                  <button type="submit" class="button solid submit-add-coupon-btn" id="js-submit-add-coupon-btn">Add new coupon</button>
-                              </div>
-                          </form>
-                      </div>
-                  </div>
+                    <div class="form-group">
+                      <label for="expirationDate">Expiration Date</label>
+                      <input type="date" name="expirationDate" class="form-control input-add-expirationDate js-date-field" min="2018-07max="2020-12-31" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="description">Description</label>
+                      <input type="text" name="description" class="form-control input-add-description"  maxlength="40" required>
+                    </div>
+
+                    <div class="form-group">
+                      <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
+                      <label for="couponImage" class="custom-file-upload"></label>
+                    </div>
+
+                    <div class="">
+                      <button type="submit" class="button solid submit-add-coupon-btn" id="js-submit-add-coupon-btn">Add new coupon</button>
+                    </div>
+                  </form>
               </div>
-          </div>`;
+            </div>
+          </div>
+        </div>`;
 }
 
 function renderEditModal() {
@@ -264,7 +267,6 @@ function watchSubmitAddNewCouponHandler() {
   $('#js-add-coupon-form').on('submit', (e) => {
     e.preventDefault();
     console.log('you added a coupon');
-
     sendAddCouponDataToAPI(e);
   });
 }
@@ -277,6 +279,7 @@ function sendAddCouponDataToAPI(e) {
   const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
   const companyUrl = `https://www.${newStr}.com`;
     console.log(formData.get('couponImage'));
+    //console.log(formData.get('merchantName'));
     $.ajax({
   		url: '/coupon',
       type: 'POST',
@@ -301,17 +304,6 @@ function sendAddCouponDataToAPI(e) {
           opacity: 1,
         }, 500);
 
-        //$('#js-msg-output').show();
-
-        // $('#js-msg-output').html(`<div class="alert alert-success alert-dismissible fade show text-center" role="alert">You have successfully added a coupon!
-        //   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        //     <span aria-hidden="true">&times;</span>
-        //   </button>
-        //   </div`);
-
-          // setTimeout(() => {
-          //    $('#js-msg-output').hide();
-          // }, 2000);
   		},
   		error: function(err){
         console.log('something went wrong');
@@ -331,7 +323,6 @@ function watchDeleteBtnHandler() {
 
 function sendCouponToDeleteFromApi(id, container) {
   console.log(`if I got here then i should delete this id: ${id} from the DB`);
-
     $.ajax({
       url: `/coupon/${id}`,
       type: 'DELETE',
@@ -363,7 +354,6 @@ function sendCouponToDeleteFromApi(id, container) {
 
 function watchEditBtnHandler() {
   $('#coupons').on('click','.js-edit-icon', (e) => {
-
       e.preventDefault();
 
       $('#editCouponModelSection').html(renderEditModal());
@@ -488,6 +478,73 @@ function companyMaker(merchantName) {
   return companyInfo;
 }
 
+function renderDropDownlist(merchant) {
+  return `<a class="dropdown-item" href="#">${merchant}</a>`
+}
+
+function renderDropDown(htmlCode) {
+  return `<div class="dropdown show">
+            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Filter by Merchant
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              ${htmlCode}
+            </div>
+          </div>`;
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function renderFilterByMerchants(res) {
+  const coupons = res.coupons;
+  let merchants = [];
+
+  // Generate unique list of merchants
+  coupons.map(function(coupon) {
+    if(!merchants.includes(coupon.merchantName.toLowerCase())) {
+        merchants.push(coupon.merchantName.toLowerCase());
+    }
+  });
+
+  merchants.map(function(merchant, index){
+    console.log(index);
+    console.log(capitalizeFirstLetter(merchant));
+    merchants[index] = capitalizeFirstLetter(merchant);
+  })
+
+  console.log(merchants);
+
+  var htmlCode = "";
+  merchants.map(function(coupon){
+    htmlCode += renderDropDownlist(coupon);
+  });
+  //console.log(htmlCode);
+
+  return $('#filter').html(renderDropDown(htmlCode));
+}
+
+function filterByCurrentMerchant(res){
+  const coupons = res.coupons;
+
+  let filteredCoupons = [];
+  let currentMerchant = 2;
+
+  // Generate filtered coupons to then be rendered
+  filteredCoupons = coupons.filter(function(coupon) {
+    return coupon.merchantName === merchants[currentMerchant];
+  });
+
+  //console.log(filteredCoupons);
+  //renderFilter(merchants);
+
+  //first get coupons object and get coupons array
+  //coupons.map(coupon => console.log(coupon));
+
+
+}
+
 function markingCouponUsed() {
   $('#coupons').on('click','.js-complete-icon', (e) => {
 
@@ -533,6 +590,7 @@ function markingCouponUsed() {
       dashed.addClass('hide');
       dashDisabled.removeClass('hide');
       //console.log('toggle and turn to coupon disabled');
+      //send a patch request change boolean of coupon
     }
     else{
       console.log(`${couponContainerObject}`);
@@ -541,6 +599,12 @@ function markingCouponUsed() {
   });
 }
 
+function checkIfCouponIsPastDue() {
+  console.log('checking if coupon is past due based on date');
+  //check coupons get responseJSON
+  //from coupons array get expiration Date
+  //then compare if value of expirationDate and today's current date.
+}
 /*
 function markingCouponUsed() {
   $('#coupons').on('click','.coupon-container', (e) => {
@@ -613,8 +677,6 @@ function base64Encode(str) {
   return out;
 }
 */
-
-
 
 function initalizeCouponApp() {
     watchSubmitCouponImage();
