@@ -181,7 +181,7 @@ function renderEditModal() {
 
                                 <div class="form-group">
                                     <label for="description">Description</label>
-                                    <input type="text" name="description" class="form-control input-edit-description" maxlength="100" required>
+                                    <input type="text" name="description" class="form-control input-edit-description" maxlength="40" required>
                                 </div>
 
                                 <div class="form-group">
