@@ -17,16 +17,13 @@ function renderCoupons(res, companyLogoImage, companyUrl) {
                 <img src="images/dashed-line-disable.png" alt="dashed line disable" class="dashed-line-disabled hide">
               </div>
               <p class="coupon-title no-margin">COUPON CODE</p>
-              <p class="coupon-code js-coupon-code no-margin ellipse-text">${res.code}</p>
+              <p class="coupon-code js-coupon-code no-margin ellipse-text" data-toggle="modal" data-target="showCouponImageModal">${res.code}</p>
               <p class="coupon-expiration-date no-margin">Valid till ${res.expirationDate}</p>
             </section>
             <section role="region" class="coupon-actions-nav">
               <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Mark coupon used">
               <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon" class="icon edit-icon js-edit-icon">
                 <img src="images/ui-compose.svg" alt="edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4" class="budicon">
-              </a>
-              <a href="" data-toggle="tooltip" data-placement="bottom" title="Upload image" class="icon upload-icon js-upload-icon">
-                <img src="images/uploading-ui.svg" alt="Upload an image" data-toggle="modal" data-target="#uploadImageModal" tabindex="4" class="budicon">
               </a>
               <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="budicon icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete coupon">
             </section>
@@ -137,6 +134,24 @@ function renderAddModal() {
         </div>`;
 }
 
+function renderShowCouponImageModal(){
+  return `<div class="modal fade" id="showCouponImageModal" tabindex="-1" role="dialog" aria-labelledby="showCouponImageModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <h5 class="modal-title" id="showCouponImageModalLabel">Coupon details</h5>
+                  <img src="" alt="" class="couponImageContainer coupon-Image-Big">
+              </div>
+            </div>
+          </div>
+        </div>`;
+}
+
 function renderEditModal() {
   return `<div class="modal fade" id="editCouponModal" tabindex="-1" role="dialog" aria-labelledby="editCouponModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -147,7 +162,7 @@ function renderEditModal() {
                             </button>
                         </div>
                         <div class="modal-body">
-                            <h5 class="modal-title" id="editCouponModalLabel">Edit existing coupon</h5>
+                            <h5 class="modal-title" id="editCouponModalLabel">Edit Coupon</h5>
                             <form id="js-edit-coupon-form">
                                 <div class="form-group">
                                     <label for="merchantName">Merchant Name</label>
@@ -172,10 +187,12 @@ function renderEditModal() {
                                 <div class="form-group">
                                   <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
                                   <label for="couponImage" class="custom-file-upload"></label>
+                                  <img src="" alt="" class="couponImageContainer">
                                 </div>
 
+
                                 <div class="">
-                                    <button type="submit" class="button solid submit-edit-coupon-btn" id="js-submit-edit-coupon-btn">save edited coupon</button>
+                                  <button type="submit" class="button solid submit-edit-coupon-btn" id="js-submit-edit-coupon-btn">Save</button>
                                 </div>
                             </form>
                         </div>
@@ -361,6 +378,10 @@ function watchEditBtnHandler() {
   $('#coupons').on('click','.js-edit-icon', (e) => {
       e.preventDefault();
 
+      $('.js-delete-icon').tooltip('hide');
+      $('.js-complete-icon').tooltip('hide');
+      $('.js-edit-icon').tooltip('hide');
+
       $('#editCouponModelSection').html(renderEditModal());
       //$('#editCouponModal').modal('show');
       setMinDateToTodaysDate();
@@ -490,8 +511,8 @@ function renderDropDown(htmlCode) {
               Filter by Merchant
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              ${htmlCode}
               <a class="dropdown-item" href="#" data-index="-1">Show All Merchants</a>
+              ${htmlCode}
             </div>
           </div>`;
 }
@@ -514,7 +535,6 @@ function displayDropDownList(merchants) {
   merchants.map(function(coupon, index){
     htmlCode += renderDropDownlist(coupon, index);
   });
-  //console.log(htmlCode);
 
   return $('#filter').html(renderDropDown(htmlCode));
 }
@@ -582,9 +602,6 @@ function clickedOnMerchantFilter(res, merchants) {
 }
 
 function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
-  //get filter results
-  //console.log(filteredByMerchantCoupons);
-
   var html = "";
   filteredByMerchantCoupons.map(function(coupon){
     var str = coupon.merchantName;
@@ -694,6 +711,13 @@ function pressed() {
     }
 }
 
+function showCoupondetails(){
+  $('#coupons').on('click', '.js-coupon-code', (e) => {
+      alert('yes you made it');
+      $('#showuploadedImageModelSection').html(renderShowCouponImageModal());
+      $('#showCouponImageModal').modal('show');
+  });
+}
 /*
 function markingCouponUsed() {
   $('#coupons').on('click','.coupon-container', (e) => {
@@ -775,6 +799,7 @@ function initalizeCouponApp() {
     watchEditBtnHandler();
     markingCouponUsed();
     watchUploadImageHandler();
+    showCoupondetails();
 }
 
 $(initalizeCouponApp);

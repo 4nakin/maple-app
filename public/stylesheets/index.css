@@ -372,17 +372,6 @@ button:disabled {
   margin: 0 5.75px;
 }
 
-/* .coupon-image-container {
-  display: block;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: #000;
-} */
-
 .coupon-active {
   border: 1px solid #d8d8d8;
   background: linear-gradient(#6D5EF1, #C86DD7);
@@ -425,7 +414,6 @@ button:disabled {
   font-size: 22px;
   line-height: 24px;
   width: 163px;
-  height: 30px;
   margin: 0 auto;
   text-transform: capitalize;
 }
@@ -498,7 +486,7 @@ button:disabled {
 .submit-edit-coupon-btn,
 .submit-upload-image-coupon-btn {
   margin-top: 15px;
-  padding: 15px 20px;
+  padding: 10px 20px;
   width: 100%;
 }
 
@@ -513,6 +501,26 @@ No media query for `xs` since this is the default in Bootstrap */
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
 
+  #couponImage {
+    margin-top: 5px;
+    padding: 15px 0;
+  }
+  .couponImageContainer{
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    text-align: right;
+    background: #000;
+  }
+
+  .coupon-Image-Big{
+    width: 200px;
+    height: 200px;
+    display: inline-block;
+    text-align: center;
+    background: #000;
+  }
+
 }
 
 /* Large devices (desktops, 992px and up) */
@@ -526,7 +534,6 @@ No media query for `xs` since this is the default in Bootstrap */
    background: #FFFFFF;
    margin-top: 5px;
    margin-bottom: 10px;
-   /* width: 100%; */
    text-align: right;
   }
 
