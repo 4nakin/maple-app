@@ -414,7 +414,7 @@ button:disabled {
   font-size: 22px;
   line-height: 24px;
   width: 163px;
-  margin: 0 auto;
+  margin: 0 auto 5px auto;
   text-transform: capitalize;
 }
 
@@ -490,6 +490,17 @@ button:disabled {
   width: 100%;
 }
 
+input[type=file]{
+  display: block;
+}
+
+.couponImageContainer{
+  width: 50px;
+  height: 50px;
+  display: block;
+  background: #000;
+}
+
 
 
 /* Extra small devices (portrait phones, less than 576px)
@@ -501,10 +512,11 @@ No media query for `xs` since this is the default in Bootstrap */
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
 
-  #couponImage {
+  /* #couponImage {
     margin-top: 5px;
     padding: 15px 0;
   }
+
   .couponImageContainer{
     width: 50px;
     height: 50px;
@@ -519,7 +531,7 @@ No media query for `xs` since this is the default in Bootstrap */
     display: inline-block;
     text-align: center;
     background: #000;
-  }
+  } */
 
 }
 

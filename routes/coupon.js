@@ -21,10 +21,6 @@ var router = express.Router();
 const jsonParser = bodyParser.json();
 const jwtAuth = passport.authenticate('jwt', { session: false });
 
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
 function capitalizeFirstLetterOfEveryWord(str){
   var splitStr = str.toLowerCase().split(' ');
    for (var i = 0; i < splitStr.length; i++) {
@@ -64,22 +60,31 @@ router.get('/', jwtAuth, (req, res) => {
     });
 });
 
+// GETS SPECIFIC COUPON
+router.get('/:id', jwtAuth, (req, res) => {
+  const _userId = getUserIdFromJwt(req);
+  CouponModel.findById(req.params.id)
+    .then(coupons => res.status(200).json(coupons))
+    .catch(err => {
+        console.error(err);
+        res.status(500).json({
+          message: 'Internal server error'
+        });
+    });
+});
+
 // CREATES A NEW COUPON
 router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
-  console.log(req.file);
+  //console.log(req.file);
   const _userId = getUserIdFromJwt(req);
-
-  //console.log(`The current user is: ${_userId}`);
-  //console.log("This is the request from adding a coupon");
-
-  console.log('************* Merchant Name: ' + formatMerchantName(req.body.merchantName) + '*****************');
+  //console.log('************* Merchant Name: ' + formatMerchantName(req.body.merchantName) + '*****************');
 
   const newCoupon = new CouponModel({
     merchantName: formatMerchantName(req.body.merchantName),
     code: req.body.code,
     expirationDate: req.body.expirationDate,
     description: req.body.description,
-    couponUsed: req.body.couponUsed,
+    couponUsed: false,
     companyLogo: req.body.companyLogo,
     couponImage: req.file.path,
     userId: _userId
@@ -147,10 +152,8 @@ router.put('/:id', jwtAuth, (req, res) => {
 
 // UPDATES ONLY ITEMS PROVIDED OF AN IMAGE OF COUPON
 router.patch('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
-  console.log(req.file);
-
   const updateOps = {};
-  const updateableFields = ['merchantName', 'code', 'expirationDate', 'description','couponImage'];
+  const updateableFields = ['merchantName', 'code', 'expirationDate', 'description','couponImage', 'couponUsed'];
 
   updateableFields.forEach(field => {
     if(field in req.body) {
@@ -158,11 +161,13 @@ router.patch('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
     }
   });
 
-  CouponModel.findByIdAndUpdate(req.params.id, {$set: updateOps })
-  .then(result => {
+  console.log(CouponModel.findByIdAndUpdate(req.params.id, {$set: updateOps },{ new: true }));
+
+  CouponModel.findByIdAndUpdate(req.params.id, {$set: updateOps },{ new: true })
+  .then(coupon => {
     res.status(200).json({
-      message: 'patch request done to updated fields'
-    })
+      coupon: coupon
+    });
   })
   .catch(err => {
     console.log(err);

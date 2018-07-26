@@ -1,13 +1,16 @@
 'use strict';
 
 let currentCouponId = null;
+let currentEventListener = null;
+let entireCouponElement = null;
 
-function renderCoupons(res, companyLogoImage, companyUrl) {
+
+function renderCoupons(res, company, classes) {
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
-            <section role="region" class="coupon-container js-coupon-container coupon-active">
+            <section role="region" class="coupon-container js-coupon-container ${classes.classes}">
               <div class="js-coupon-merchant-logo coupon-merchant-logo">
-                <a href="${companyUrl}" target="_blank">
-                  <img src="${companyLogoImage}" alt="This is an image of the ${res.merchantName} logo" class="js-logo-img" data-default-src="images/default-image.png">
+                <a href="${company.domain}" target="_blank">
+                  <img src="${classes.companyLogoStates}" alt="This is an image of the ${res.merchantName} logo" class="js-logo-img" data-default-src="images/default-image.png">
                 </a>
               </div>
               <h2 class="coupon-merchant-name">${res.merchantName}</h2>
@@ -21,13 +24,93 @@ function renderCoupons(res, companyLogoImage, companyUrl) {
               <p class="coupon-expiration-date no-margin">Valid till ${res.expirationDate}</p>
             </section>
             <section role="region" class="coupon-actions-nav">
-              <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Mark coupon used">
-              <a href="" data-toggle="tooltip" data-placement="top" title="Edit coupon" class="icon edit-icon js-edit-icon">
+
+              <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Mark used" data-isused="${res.couponUsed}">
+
+              <a href="" data-toggle="tooltip" data-placement="top" title="Edit" class="icon edit-icon js-edit-icon">
                 <img src="images/ui-compose.svg" alt="edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4" class="budicon">
               </a>
-              <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="budicon icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete coupon">
+
+              <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="budicon icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete">
+
             </section>
           </section>`;
+}
+
+function getCouponById(id, callback) {
+  $.ajax({
+    beforeSend: function(xhr) {
+      xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
+    },
+    url: `/coupon/${id}`,
+    type: 'GET',
+    success: callback,
+    error: function(err) {
+      if(token === null) {
+        console.log('Token is empty and you are not logged in. Please log in!!!');
+      }
+      else{
+        console.log('something went wrong when trying to get to the protected endpoint');
+      }
+    }
+  });
+}
+
+function renderMerchantUsedLogo(merchantName) {
+  return $.ajax({
+            url: `https://company.clearbit.com/v1/domains/find`,
+            type: 'GET',
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader('Authorization', `Bearer sk_7e1d77b7b10477e9d101f3e756dac154`);
+            },
+            data: {
+              name: `${merchantName}`
+            },
+            dataType: 'json',
+            async: false,
+            success: (res) =>{
+            },
+            error: function(err){
+              console.log('something went wrong');
+            }
+          });
+}
+
+function renderCompanyAssets(res){
+  const company = {
+    domain: res.domain,
+    logo: res.logo+'?size=500',
+    logoDisabled: res.logo+ '?size=500&greyscale=true'
+  };
+
+  return company;
+}
+
+function checkIfCouponShouldBeDisabled(res, company) {
+  //console.log('Response in checkIfCouponShouldBeDisabled couponUsed: ' + res.couponUsed);
+  //console.log('Response in checkIfCouponShouldBeDisabled company logo: ' + company.logo);
+
+  let classes = '';
+  let companyLogoStates = '';
+
+  if(res.couponUsed !== null && res.couponUsed !== '') {
+    if(res.couponUsed === false){
+      classes = 'coupon-active';
+      companyLogoStates = company.logo;
+    }
+    if(res.couponUsed === true) {
+      classes = 'coupon-disabled';
+      companyLogoStates = company.logoDisabled;
+    }
+  }
+
+  const couponStates = {
+    classes: classes,
+    companyLogoStates: companyLogoStates
+  }
+  //console.log('Response in checkIfCouponShouldBeDisabled companyLogoStates: ' + couponStates.companyLogoStates);
+
+  return couponStates;
 }
 
 function getUserCoupons() {
@@ -48,20 +131,21 @@ function getUserCoupons() {
       $('.js-signup').addClass('hide');
       $('.js-login').addClass('hide');
 
-      $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
-      });
-
       console.log(`The user made it to the Dashboard`);
       console.log(`The user id is: ${res._userId}`);
 
       var html = "";
-      res.coupons.map(function(coupon){
-        var str = coupon.merchantName;
-        var newStr = str.replace(/\s+/g, '');
-        const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
-        const companyUrl = `https://www.${newStr}.com`;
-        html += renderCoupons(coupon, companyLogoImage, companyUrl);
+      res.coupons.map((coupon) => {
+        //made renderMerchantUsedLogo sync instead of async
+        let responseClearbit = renderMerchantUsedLogo(coupon.merchantName).responseJSON;
+        //console.log(responseClearbit);
+        let company = renderCompanyAssets(responseClearbit);
+        //console.log(company);
+
+        const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+        //console.log(toggleCouponState);
+
+        html += renderCoupons(coupon, company, toggleCouponState);
       });
 
       $('#coupons').css('opacity', '0');
@@ -97,7 +181,7 @@ function renderAddModal() {
                 </div>
 
                 <div class="modal-body">
-                  <h5 class="modal-title" id="addNewCouponModalLabel">Add new coupon</h5>
+                  <h5 class="modal-title" id="addNewCouponModalLabel">Add Coupon</h5>
                   <form id="js-add-coupon-form">
                     <div class="form-group">
                       <label for="merchantName">Merchant Name</label>
@@ -120,12 +204,13 @@ function renderAddModal() {
                     </div>
 
                     <div class="form-group">
+                      <label for="couponImage">Upload an image of your coupon</label>
                       <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
                       <label for="couponImage" class="custom-file-upload"></label>
                     </div>
 
                     <div class="">
-                      <button type="submit" class="button solid submit-add-coupon-btn" id="js-submit-add-coupon-btn">Add new coupon</button>
+                      <button type="submit" class="button solid submit-add-coupon-btn" id="js-submit-add-coupon-btn">Add</button>
                     </div>
                   </form>
               </div>
@@ -185,11 +270,9 @@ function renderEditModal() {
                                 </div>
 
                                 <div class="form-group">
-                                  <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
-                                  <label for="couponImage" class="custom-file-upload"></label>
+                                  <label for="couponImage">Upload an image of your coupon</label>
                                   <img src="" alt="" class="couponImageContainer">
                                 </div>
-
 
                                 <div class="">
                                   <button type="submit" class="button solid submit-edit-coupon-btn" id="js-submit-edit-coupon-btn">Save</button>
@@ -229,31 +312,25 @@ function renderUploadImageModal() {
 function watchUploadImageHandler() {
   $('#coupons').on('click','.js-upload-icon', (e) => {
     e.preventDefault();
-
     $('#uploadImageModelSection').html(renderUploadImageModal());
     $('#uploadImageModal').modal('show');
-
     currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
     console.log(`The coupon id: ${currentCouponId}`);
   });
 }
-
+/*
 function watchSubmitCouponImage() {
   $('#uploadImageModelSection').on('submit', '#js-upload-image-coupon-form', (e) => {
       e.preventDefault();
       console.log(e);
       console.log(`The id inside watch SubmitCouponImage ${currentCouponId}`);
-
-      //$('#uploadImageModal').modal('hide');
-      // const couponId = $(e.currentTarget).parent().parent().attr('data-id');
-      //console.log(`The coupon id: ${id}: ${fileName}`);
-
       const formData = new FormData(e.target);
-      sendUploadedImageToAPI(currentCouponId, formData);
+      sendUpdateDataToAPI(currentCouponId, formData);
   });
 }
+*/
 
-function sendUploadedImageToAPI(id, formData){
+function sendUpdateDataToAPI(id, formData){
   $.ajax({
     url: `/coupon/${id}`,
     type: 'PATCH',
@@ -263,13 +340,121 @@ function sendUploadedImageToAPI(id, formData){
     data: formData,
     contentType: false,
     processData: false,
-    success: function(res){
-      console.log('Coupon Image should be uploaded');
+    success: (res) => {
+      console.log('updated field(s) is a success ');
+      console.log(res.coupon.merchantName);
+
+      let responseClearbit = renderMerchantUsedLogo(res.coupon.merchantName).responseJSON;
+      //console.log(responseClearbit);
+
+      let company = renderCompanyAssets(responseClearbit);
+      //console.log(company);
+
+      const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon, company);
+      //console.log(toggleCouponState);
+
+      markCouponUsedonDOM(res.coupon, company, toggleCouponState);
+
     },
     error: function(err){
       console.log('something went wrong');
     }
   });
+}
+
+function markCouponUsedonDOM(res, company, toggleCouponState) {
+  console.log(res);
+  console.log(company);
+  console.log(toggleCouponState);
+
+  $('.js-complete-icon').tooltip('hide');
+
+  const couponContainerObject = $(entireCouponElement);
+  const couponContainer = $(couponContainerObject).find('.js-coupon-container');
+  const merchantLogoLink = entireCouponElement.find('div.js-coupon-merchant-logo').children();
+  const dashDisabled = entireCouponElement.find('img.dashed-line-disabled');
+  const dashed = entireCouponElement.find('img.dashed-line-active');
+
+
+  if (merchantLogoLink.attr('href')){
+    const link = merchantLogoLink.attr('href');
+  }
+  else {
+    merchantLogoLink.children().attr('src', toggleCouponState.companyLogoStates);
+    merchantLogoLink.attr('href', company.url);
+  }
+
+  console.log(res.couponUsed);
+
+  if (res.couponUsed === false){
+    couponContainer.removeClass('coupon-disabled');
+    couponContainer.addClass(toggleCouponState.classes);
+    merchantLogoLink.children().attr('src', toggleCouponState.companyLogoStates);
+    dashed.removeClass('hide');
+    dashDisabled.addClass('hide');
+  }
+  else if (res.couponUsed === true){
+    couponContainer.removeClass('coupon-active');
+    couponContainer.addClass(toggleCouponState.classes);
+    merchantLogoLink.children().attr('src', toggleCouponState.companyLogoStates);
+    merchantLogoLink.removeAttr('href');
+    dashed.addClass('hide');
+    dashDisabled.removeClass('hide');
+  }
+  else {
+    console.log('something is up in the patch request conditionals');
+  }
+
+
+  /*
+  const couponContainerObject = $(entireCouponElement);
+  const merchantLogoLink = entireCouponElement.find('div.js-coupon-merchant-logo').children();
+
+  //dashed png
+  const dashDisabled = entireCouponElement.find('img.dashed-line-disabled');
+  const dashed = entireCouponElement.find('img.dashed-line-active');
+
+  merchantLogoLink.children().attr('src');
+
+
+  var str = merchantName;
+  var newStr = str.replace(/\s+/g, '');
+  const companyLogoImageIsDisabled = `https://logo.clearbit.com/${newStr}.com?size=500&greyscale=true`;
+
+  if (merchantLogoLink.attr('href')){
+    const link = merchantLogoLink.attr('href');
+  }
+  else {
+    const companyUrl = `https://www.${newStr}.com`;
+    const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
+    merchantLogoLink.children().attr('src', companyLogoImage);
+    merchantLogoLink.attr('href', companyUrl);
+  }
+
+  const couponContainer = $(couponContainerObject).find('.js-coupon-container');
+
+  if (res.coupon.couponUsed === false){
+    const couponContainerObject = $(entireCouponElement);
+    const couponContainer = $(couponContainerObject).find('.js-coupon-container');
+    couponContainer.removeClass('coupon-disabled');
+    couponContainer.addClass('coupon-active');
+    dashed.removeClass('hide');
+    dashDisabled.addClass('hide');
+  }
+  else if (res.coupon.couponUsed === true){
+    couponContainer.removeClass('coupon-active');
+    couponContainer.addClass('coupon-disabled');
+    merchantLogoLink.children().attr('src', companyLogoImageIsDisabled);
+    merchantLogoLink.removeAttr('href');
+    dashed.addClass('hide');
+    dashDisabled.removeClass('hide');
+  }
+  else {
+    console.log('something is up in the patch request conditionals');
+  }
+*/
+
+
 }
 
 function watchAddBtnHandler() {
@@ -278,7 +463,7 @@ function watchAddBtnHandler() {
     $('#addNewCouponModal').modal('show');
     setMinDateToTodaysDate();
     watchSubmitAddNewCouponHandler();
-  })
+  });
 }
 
 function watchSubmitAddNewCouponHandler() {
@@ -291,45 +476,61 @@ function watchSubmitAddNewCouponHandler() {
 
 function sendAddCouponDataToAPI(e) {
   const formData = new FormData(e.target);
+
+  for (var value of formData.values()) {
+     console.log(value);
+  }
+
   const companyname = $('.input-add-merchantName').val();
-  var str = companyname;
-  var newStr = str.replace(/\s+/g, '');
-  const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
-  const companyUrl = `https://www.${newStr}.com`;
 
-  console.log(formData.get('couponImage'));
-  console.log(formData.get('couponImage').name);
+  // var str = companyname;
+  // var newStr = str.replace(/\s+/g, '');
+  // const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
+  // const companyUrl = `https://www.${newStr}.com`;
 
-    $.ajax({
-  		url: '/coupon',
-      type: 'POST',
-      beforeSend: function(xhr) {
-        xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
-      },
-      data: formData,
-      processData: false,
-      contentType: false,
-  		success: (res) => {
+  $.ajax({
+    url: '/coupon',
+    type: 'POST',
+    beforeSend: function(xhr) {
+      xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
+    },
+    data: formData,
+    processData: false,
+    contentType: false,
+    success: (res) => {
 
-        $('#addNewCouponModal').modal('hide');
-        $('.input-add-merchantName').val('');
-        $('.input-add-code').val('');
-        $('.input-add-expirationDate').val('');
-        $('.input-add-description').val('');
-        const couponHTML = $(renderCoupons(res,companyLogoImage,companyUrl));
-        couponHTML.css('opacity', '0');
-        $('#coupons').append(couponHTML);
+      $('#addNewCouponModal').modal('hide');
+      $('.input-add-merchantName').val('');
+      $('.input-add-code').val('');
+      $('.input-add-expirationDate').val('');
+      $('.input-add-description').val('');
 
-        couponHTML.animate({
-          opacity: 1,
-        }, 500);
+      console.log(res.merchantName);
 
-        updateMerchantTofilter();
-  		},
-  		error: function(err){
-        console.log('something went wrong');
-  		}
-  	});
+      let responseClearbit = renderMerchantUsedLogo(res.merchantName).responseJSON;
+      console.log(responseClearbit);
+      let company = renderCompanyAssets(responseClearbit);
+      console.log(company);
+
+      const toggleCouponState = checkIfCouponShouldBeDisabled(res, company);
+      console.log(toggleCouponState);
+
+      const couponHTML = $(renderCoupons(res, company, toggleCouponState));
+      couponHTML.css('opacity', '0');
+      $('#coupons').append(couponHTML);
+      //$('#coupons').prepend(couponHTML);
+
+      couponHTML.animate({
+        opacity: 1,
+      }, 500);
+
+      updateMerchantTofilter();
+    },
+    error: function(err){
+      console.log('something went wrong');
+    }
+  });
+
 }
 
 function watchDeleteBtnHandler() {
@@ -573,11 +774,20 @@ function clickedOnMerchantFilter(res, merchants) {
 
           var html = "";
           res.coupons.map(function(coupon){
-            var str = coupon.merchantName;
-            var newStr = str.replace(/\s+/g, '');
-            const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
-            const companyUrl = `https://www.${newStr}.com`;
-            html += renderCoupons(coupon, companyLogoImage, companyUrl);
+            // var str = coupon.merchantName;
+            // var newStr = str.replace(/\s+/g, '');
+            // const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
+            // const companyUrl = `https://www.${newStr}.com`;
+
+            let responseClearbit = renderMerchantUsedLogo(coupon.merchantName).responseJSON;
+            console.log(responseClearbit);
+            let company = renderCompanyAssets(responseClearbit);
+            console.log(company);
+
+            const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+            console.log(toggleCouponState);
+
+            html += renderCoupons(coupon, company, toggleCouponState);
           });
 
           $('#coupons').css('opacity', '0');
@@ -604,11 +814,20 @@ function clickedOnMerchantFilter(res, merchants) {
 function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
   var html = "";
   filteredByMerchantCoupons.map(function(coupon){
-    var str = coupon.merchantName;
-    var newStr = str.replace(/\s+/g, '');
-    const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
-    const companyUrl = `https://www.${newStr}.com`;
-    html += renderCoupons(coupon, companyLogoImage, companyUrl);
+    // var str = coupon.merchantName;
+    // var newStr = str.replace(/\s+/g, '');
+    // const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
+    // const companyUrl = `https://www.${newStr}.com`;
+
+    let responseClearbit = renderMerchantUsedLogo(coupon.merchantName).responseJSON;
+    console.log(responseClearbit);
+    let company = renderCompanyAssets(responseClearbit);
+    console.log(company);
+
+    const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+    console.log(toggleCouponState);
+
+    html += renderCoupons(coupon, company, toggleCouponState);
   });
 
   $('#coupons').css('opacity', '0');
@@ -638,13 +857,93 @@ function updateMerchantTofilter() {
   });
 }
 
+function clickedOnMarkUsed() {
+  $('#coupons').on('click','.js-complete-icon', (e) => {
+    e.preventDefault();
+    console.log('clicked on complete icon');
+
+    currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
+    getCouponById(currentCouponId, renderCouponAsUsed);
+
+    currentEventListener = e;
+    entireCouponElement = $(e.currentTarget).parent().parent();
+  });
+}
+
+function renderCouponAsUsed(res) {
+  currentCouponId = res._id;
+  let couponUsedBoolVal = res.couponUsed;
+  let couponImagePath = res.couponImage;
+  let couponExpirationDate = res.expirationDate;
+
+
+  // console.log(`coupon id:  ${currentCouponId}`);
+  // console.log(`coupon used:  ${couponUsedBoolVal}`);
+  // console.log(`coupon image path: ${couponImagePath}`);
+  // console.log(`coupon image expire date: ${couponExpirationDate}`);
+
+  const formData = new FormData();
+
+  const completeIconElement = entireCouponElement.find('section.coupon-actions-nav img.budicon.icon.complete-icon');
+
+  // active coupon
+  if (couponUsedBoolVal === false) {
+      //console.log(completeIconElement);
+
+      if ($(completeIconElement).attr('data-isused')) {
+          $(completeIconElement).removeAttr('data-isused');
+      }
+
+      formData.append('couponUsed', Boolean(1));
+      sendUpdateDataToAPI(currentCouponId, formData);
+
+  }
+  // disable coupon
+  else if (couponUsedBoolVal === true) {
+
+    if ($(completeIconElement).attr('data-isused')) {
+      $(completeIconElement).removeAttr('data-isused');
+    }
+
+    formData.append('couponUsed', Boolean(0));
+    sendUpdateDataToAPI(currentCouponId, formData);
+
+  }
+  else {
+    console.log(`${couponContainerObject}`);
+    console.log("something went wrong with marking coupon!");
+  }
+
+}
+/*
 function markingCouponUsed() {
   $('#coupons').on('click','.js-complete-icon', (e) => {
+
+
+    //console.log($(e.target).data('isused'));
+    //$(e.target).data('isused', 'false');
+    //console.log($(e.target).data('isused'));
 
     $('.js-complete-icon').tooltip('hide');
 
     const couponContainerObject = $(e.currentTarget).parent().prev();
     const merchantLogoLink = $(couponContainerObject).find('div.js-coupon-merchant-logo').children();
+
+    console.log(couponContainerObject);
+    console.log(merchantLogoLink);
+
+    //get the bool value of coupon
+
+
+    //console.log('This coupon id is currently  ' + currentCouponId);
+    console.log('This coupons state is currently ' + boolCouponValue);
+    //console.log('This coupons state is currently ' + typeof(boolCouponValue));
+
+
+
+    //then pass the bool value to the API
+    const formData = new FormData();
+    // Display the values
 
     //dashed png
     const dashDisabled = $(couponContainerObject).find('img.dashed-line-disabled');
@@ -667,53 +966,70 @@ function markingCouponUsed() {
       merchantLogoLink.attr('href', companyUrl);
     }
 
-    if(couponContainerObject.hasClass('coupon-disabled')){
-      couponContainerObject.removeClass('coupon-disabled');
-      couponContainerObject.addClass('coupon-active');
-      dashed.removeClass('hide');
-      dashDisabled.addClass('hide');
-      //console.log('toggle and turn to coupon active');
+    // active coupon
+    // if(couponContainerObject.hasClass('coupon-disabled') && boolCouponValue === false){
+    if(boolCouponValue === false){
+      console.log('I got here the state is  FALSE');
+      $(e.target).removeAttr('data-isused');
+      $(e.target).attr('data-isused', Boolean(1));
+      console.log('I just changed the state to ' + $(e.currentTarget).data('isused'));
+      formData.append('couponUsed', Boolean(1));
+      //sendUpdateDataToAPI(currentCouponId, formData);
+
+
+
+      // couponContainerObject.removeClass('coupon-disabled');
+      // couponContainerObject.addClass('coupon-active');
+      // dashed.removeClass('hide');
+      // dashDisabled.addClass('hide');
+
+      //$(e.currentTarget).data('isused', true);
+      //console.log('currently toggling state of coupon to:  ' + $(e.currentTarget).data('isused'));
+
+
     }
-    else if(couponContainerObject.hasClass('coupon-active')){
-      couponContainerObject.removeClass('coupon-active');
-      couponContainerObject.addClass('coupon-disabled');
-      merchantLogoLink.children().attr('src', companyLogoImageIsDisabled);
-      merchantLogoLink.removeAttr('href');
-      dashed.addClass('hide');
-      dashDisabled.removeClass('hide');
-      //console.log('toggle and turn to coupon disabled');
+    // disable coupon
+    // else if(couponContainerObject.hasClass('coupon-active')){
+    else if(boolCouponValue === true){
+      console.log('I got here the state is  TRUE');
+      $(e.target).removeAttr('data-isused');
+      $(e.target).attr('data-isused', 'false');
+      console.log('I just changed the state to ' + $(e.currentTarget).data('isused'));
+      formData.append('couponUsed', Boolean(0));
+      //sendUpdateDataToAPI(currentCouponId, formData);
+
+
+
+      // couponContainerObject.removeClass('coupon-active');
+      // couponContainerObject.addClass('coupon-disabled');
+      // merchantLogoLink.children().attr('src', companyLogoImageIsDisabled);
+      // merchantLogoLink.removeAttr('href');
+      // dashed.addClass('hide');
+      // dashDisabled.removeClass('hide');
+
+      //$(e.currentTarget).data('isused', false);
+      //console.log('currently toggling state of coupon to:  ' + $(e.currentTarget).data('isused'));
+
+
       //send a patch request change boolean of coupon
     }
-    else{
+    else {
       console.log(`${couponContainerObject}`);
       console.log("something went wrong with marking coupon!");
     }
   });
 }
-
+*/
 function checkIfCouponIsPastDue() {
-  console.log('checking if coupon is past due based on date');
+  console.log('checking if coupon is past due based on date');//this should be done in the backend.
   //check coupons get responseJSON
   //from coupons array get expiration Date
   //then compare if value of expirationDate and today's current date.
 }
 
-function pressed() {
-    var a = document.getElementById('aa');
-    if(a.value == "")
-    {
-        fileLabel.innerHTML = "Choose file";
-    }
-    else
-    {
-        var theSplit = a.value.split('\\');
-        fileLabel.innerHTML = theSplit[theSplit.length-1];
-    }
-}
-
 function showCoupondetails(){
   $('#coupons').on('click', '.js-coupon-code', (e) => {
-      alert('yes you made it');
+      //alert('yes you made it');
       $('#showuploadedImageModelSection').html(renderShowCouponImageModal());
       $('#showCouponImageModal').modal('show');
   });
@@ -792,14 +1108,13 @@ function base64Encode(str) {
 */
 
 function initalizeCouponApp() {
-    watchSubmitCouponImage();
     getUserCoupons();
     watchAddBtnHandler();
     watchDeleteBtnHandler();
     watchEditBtnHandler();
-    markingCouponUsed();
     watchUploadImageHandler();
     showCoupondetails();
+    clickedOnMarkUsed();
 }
 
 $(initalizeCouponApp);
