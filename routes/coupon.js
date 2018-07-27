@@ -144,10 +144,9 @@ router.put('/:id', jwtAuth, (req, res) => {
   });
   console.log('************** End of Updated Fields **************\n');
 
-  CouponModel.findByIdAndUpdate(req.params.id, {$set: updated }, { new: true})
+  CouponModel.findByIdAndUpdate(req.params.id, {$set: updated })
   .then(updatedCoupon => res.status(204).end())
   .catch(err => res.status(500).json({ message: 'Something went wrong'}));
-
 });
 
 // UPDATES ONLY ITEMS PROVIDED OF AN IMAGE OF COUPON
@@ -159,9 +158,10 @@ router.patch('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
     if(field in req.body) {
       updateOps[field] = req.body[field];
     }
+    //console.log(updateOps[field]);
   });
 
-  console.log(CouponModel.findByIdAndUpdate(req.params.id, {$set: updateOps },{ new: true }));
+  //console.log(CouponModel.findByIdAndUpdate(req.params.id, {$set: updateOps },{ new: true }));
 
   CouponModel.findByIdAndUpdate(req.params.id, {$set: updateOps },{ new: true })
   .then(coupon => {

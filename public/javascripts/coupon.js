@@ -9,7 +9,7 @@ function renderCoupons(res, company, classes) {
             <section role="region" class="coupon-container js-coupon-container ${classes.classes}">
               <div class="js-coupon-merchant-logo coupon-merchant-logo">
                 <a ${classes.companyUrl} target="_blank" class="js-domain-name">
-                  <img src="${classes.companyLogoStates}" alt="This is an image of the ${res.merchantName} logo" class="js-logo-img" data-default-src="images/default-image.png">
+                  <img src="${classes.companyLogoStates}" alt="This is an image of the ${res.merchantName} logo" class="js-logo-img">
                 </a>
               </div>
               <h2 class="coupon-merchant-name">${res.merchantName}</h2>
@@ -25,7 +25,7 @@ function renderCoupons(res, company, classes) {
 
               <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Mark used">
 
-              <a href="" data-toggle="tooltip" data-placement="top" title="Edit" class="icon edit-icon js-edit-icon">
+              <a href="" data-toggle="tooltip" data-placement="top" title="Edit" class="icon edit-icon js-edit-icon ${classes.editIconState}">
                 <img src="images/ui-compose.svg" alt="edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4" class="budicon">
               </a>
 
@@ -54,6 +54,25 @@ function getCouponById(id, callback) {
   });
 }
 
+function renderLogoImageFallback(merchantName) {
+  let newMerchantName = merchantName.replace(/\s+/g, '');
+  newMerchantName = newMerchantName.toLowerCase();
+
+  return $.ajax({
+            url: `https://logo.clearbit.com/${newMerchantName}.com?size=500`,
+            type: 'GET',
+            mimeType: 'text/plain; charset=x-user-defined',
+            async: false,
+            success: (res) =>{
+
+            },
+            error: (err) =>{
+              console.log('something went wrong in the request. I need to work on returning a default image');
+              let fallbackImageUrl = `https://source.unsplash.com/500x500/?people`;
+            }
+          });
+}
+
 function renderMerchantUsedLogo(merchantName) {
   return $.ajax({
             url: `https://company.clearbit.com/v1/domains/find`,
@@ -69,17 +88,28 @@ function renderMerchantUsedLogo(merchantName) {
             success: (res) =>{
             },
             error: function(err){
-              console.log('something went wrong in getting the logo. I need to work on returning a default image');
+              console.log('something went wrong in the request. I need to work on returning a default image');
             }
           });
 }
 
-function renderCompanyAssets(res){
-  const company = {
-    domain: `https://www.${res.domain}`,
-    logo: res.logo+'?size=500',
-    logoDisabled: res.logo+ '?size=500&greyscale=true'
-  };
+function renderCompanyAssets(res, useFallBackFlag){
+  let company = {};
+
+  if(useFallBackFlag = 1){
+    company = {
+      domain: `https://www.${res.domain}`,
+      logo: res.logo,
+      logoDisabled: res.logo+ '?size=500&greyscale=true'
+    };
+  }
+  else {
+    company = {
+      domain: `https://www.${res.domain}`,
+      logo: res.logo+'?size=500',
+      logoDisabled: res.logo+ '?size=500&greyscale=true'
+    };
+  }
 
   return company;
 }
@@ -90,6 +120,7 @@ function checkIfCouponShouldBeDisabled(res, company) {
   let dashedLineImage = '';
   let companyLogoStates = '';
   let companyUrl = '';
+  let editIconState = '';
 
   if(res.couponUsed !== null && res.couponUsed !== '') {
     if(res.couponUsed === false){
@@ -98,6 +129,7 @@ function checkIfCouponShouldBeDisabled(res, company) {
       dashedLineImage = 'images/dashed-line.png';
       companyLogoStates = company.logo;
       companyUrl = `href="${company.domain}"`;
+      editIconState = '';
     }
     if(res.couponUsed === true) {
       classes = 'coupon-disabled';
@@ -105,6 +137,7 @@ function checkIfCouponShouldBeDisabled(res, company) {
       dashedLineImage = 'images/dashed-line-disable.png';
       companyLogoStates = company.logoDisabled;
       companyUrl = '';
+      editIconState = 'hide';
     }
   }
 
@@ -113,7 +146,8 @@ function checkIfCouponShouldBeDisabled(res, company) {
     dashedStates: dashedStates,
     dashedLineImage: dashedLineImage,
     companyLogoStates: companyLogoStates,
-    companyUrl: companyUrl
+    companyUrl: companyUrl,
+    editIconState: editIconState
   }
 
   return couponStates;
@@ -127,6 +161,9 @@ function getUserCoupons() {
     url: '/coupon/',
     type: 'GET',
     success: (res) => {
+      $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+      });
       const merchants = renderFilterByMerchants(res);
       displayDropDownList(merchants);
       clickedOnMerchantFilter(res, merchants);
@@ -141,14 +178,38 @@ function getUserCoupons() {
       console.log(`The user id is: ${res._userId}`);
 
       let html = "";
+      let useFallBackFlag;
 
       res.coupons.map((coupon) => {
         //made renderMerchantUsedLogo sync instead of async
         let responseClearbit = renderMerchantUsedLogo(coupon.merchantName).responseJSON;
-        let company = renderCompanyAssets(responseClearbit);
-        const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
-        //console.log(toggleCouponState);
-        html += renderCoupons(coupon, company, toggleCouponState);
+        //console.log(responseClearbit);
+
+        //run fallback
+        if (responseClearbit.logo === null){
+          useFallBackFlag = 1;
+          let responseClearbitFallback = renderLogoImageFallback(coupon.merchantName).responseText;
+          const baseEncoded = base64Encode(responseClearbitFallback);
+          let logo =`data:image/png;base64,${baseEncoded}`;
+          let newMerchantName = coupon.merchantName.replace(/\s+/g, '');
+          let domain = `https://www.${newMerchantName}.com`;
+          let name = coupon.merchantName;
+          const fallbackCompanyInfo = {
+            name: name,
+            domain: domain,
+            logo: logo
+          }
+
+          let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
+          const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+          html += renderCoupons(coupon, company, toggleCouponState);
+        }
+        else {
+          useFallBackFlag = 0;
+          let company = renderCompanyAssets(responseClearbit, useFallBackFlag);
+          const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+          html += renderCoupons(coupon, company, toggleCouponState);
+        }
       });
 
       $('#coupons').css('opacity', '0');
@@ -314,10 +375,12 @@ function markCouponUsedonDOM(res, company, toggleCouponState) {
   const couponContainer = $(couponContainerObject).find('.js-coupon-container');
   const merchantLogoLink = entireCouponElement.find('div.js-coupon-merchant-logo').children();
   const dashed = entireCouponElement.find('div.dashed');
+  const editIcon = couponContainer.siblings().find('a.icon.edit-icon');
+  console.log(editIcon);
 
-  console.log(res.couponUsed);
-  console.log(toggleCouponState.dashedStates);
-  console.log(toggleCouponState.dashedLineImage);
+  //console.log(res.couponUsed);
+  //console.log(toggleCouponState.dashedStates);
+  //console.log(toggleCouponState.dashedLineImage);
 
   if (res.couponUsed === false){
     merchantLogoLink.attr('href', company.domain);
@@ -327,6 +390,8 @@ function markCouponUsedonDOM(res, company, toggleCouponState) {
     dashed.children().attr('src', toggleCouponState.dashedLineImage);
     dashed.children().removeClass('dashed-line-disabled');
     dashed.children().addClass(toggleCouponState.dashedStates);
+    // editIcon.toggleClass('hide');
+    editIcon.fadeIn('slow');
   }
   else if (res.couponUsed === true){
     couponContainer.removeClass('coupon-active');
@@ -336,6 +401,8 @@ function markCouponUsedonDOM(res, company, toggleCouponState) {
     dashed.children().attr('src', toggleCouponState.dashedLineImage);
     dashed.children().removeClass('dashed-line-active');
     dashed.children().addClass(toggleCouponState.dashedStates);
+    // editIcon.toggleClass('hide');
+    editIcon.fadeOut('slow');
   }
   else {
     console.log('something is up in the patch request conditionals');
@@ -356,15 +423,16 @@ function watchSubmitAddNewCouponHandler() {
   $('#js-add-coupon-form').on('submit', (e) => {
     e.preventDefault();
     console.log('you added a coupon');
+    //console.log(e);
     sendAddCouponDataToAPI(e);
   });
 }
 
 function sendAddCouponDataToAPI(e) {
   const formData = new FormData(e.target);
-  // for (var value of formData.values()) {
-  //    console.log(value);
-  // }
+  for (var value of formData.values()) {
+     console.log(value);
+  }
   const companyname = $('.input-add-merchantName').val();
   $.ajax({
     url: '/coupon',
@@ -383,7 +451,7 @@ function sendAddCouponDataToAPI(e) {
       $('.input-add-expirationDate').val('');
       $('.input-add-description').val('');
 
-      console.log(res.merchantName);
+      // console.log(res.merchantName);
 
       let responseClearbit = renderMerchantUsedLogo(res.merchantName).responseJSON;
       console.log(responseClearbit);
@@ -489,12 +557,17 @@ function watchSubmitEditCouponHandler(id) {
       e.preventDefault();
       console.log('you want to update a coupon');
       $('#editCouponModal').modal('hide');
+      console.log(e);
       sendCouponToEditFromApi(id, e);
   });
 }
 
 function sendCouponToEditFromApi(id, e) {
   const formData = new FormData(e.target);
+  // for (var value of formData.values()) {
+  //    console.log(value);
+  // }
+
 
   const companyname = $('.input-edit-merchantName').val();
   var str = companyname;
@@ -502,11 +575,10 @@ function sendCouponToEditFromApi(id, e) {
   console.log(`merchant name inside edit function ${newStr}`);
   const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
   const companyUrl = `https://www.${newStr}.com`;
-  console.log(formData.get('couponImage'));
 
   let _couponId = id;
 
-  console.log(`If I got here then I should edit this id: ${id} on the DB`);
+  //console.log(`If I got here then I should edit this id: ${id} on the DB`);
     $.ajax({
       url: `/coupon/${id}`,
       type: 'PUT',
@@ -516,22 +588,21 @@ function sendCouponToEditFromApi(id, e) {
       data: formData,
       processData: false,
       contentType: false,
-      // data: {
-      //   merchantName: $('.input-edit-merchantName').val(),
-      //   code: $('.input-edit-code').val(),
-      //   expirationDate: $('.input-edit-expirationDate').val(),
-      //   description: $('.input-edit-description').val()
-      // },
-      // dataType: 'json',
-      success: function(res) {
-        console.log(`you successfully updated a coupon: ${_couponId}`);
+      success: (res) => {
+        //console.log(`you successfully updated a coupon: ${_couponId}`);
+        //console.log(res);
 
         var merchantName = $('.input-edit-merchantName').val();
         var inputCode = $('.input-edit-code').val();
         var expirationDate = $('.input-edit-expirationDate').val();
         var inputDescription = $('.input-edit-description').val();
 
-        console.log('upon success of edit ' + merchantName + ' ' + companyUrl);
+        //let responseClearbit = renderMerchantUsedLogo(res.coupon.merchantName).responseJSON;
+        //let company = renderCompanyAssets(responseClearbit);
+        //const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon, company);
+        //console.log(toggleCouponState);
+
+        //console.log('upon success of edit ' + merchantName + ' ' + companyUrl);
 
         $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', companyUrl);
         $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', companyLogoImage);
@@ -556,26 +627,39 @@ function setMinDateToTodaysDate(){
     if(dd<10){
         dd='0'+dd
     }
-
     if(mm<10){
         mm='0'+mm
     }
-
     today = yyyy+'-'+mm+'-'+dd;
     $('.js-date-field').attr("min", today);
 }
 
-function companyMaker(merchantName) {
-  var str = merchantName;
-  var newStr = str.replace(/\s+/g, '');
-
-  const companyInfo = {
-    url: `https://www.${newStr}.com`,
-    logoImage: `https://logo.clearbit.com/${newStr}.com?size=500`,
-    logoImageIsDisabled: `https://logo.clearbit.com/${newStr}.com?size=500&greyscale=true`
-  };
-
-  return companyInfo;
+function base64Encode(str) {
+  var CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  var out = "", i = 0, len = str.length, c1, c2, c3;
+  while (i < len) {
+      c1 = str.charCodeAt(i++) & 0xff;
+      if (i == len) {
+          out += CHARS.charAt(c1 >> 2);
+          out += CHARS.charAt((c1 & 0x3) << 4);
+          out += "==";
+          break;
+      }
+      c2 = str.charCodeAt(i++);
+      if (i == len) {
+          out += CHARS.charAt(c1 >> 2);
+          out += CHARS.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
+          out += CHARS.charAt((c2 & 0xF) << 2);
+          out += "=";
+          break;
+      }
+      c3 = str.charCodeAt(i++);
+      out += CHARS.charAt(c1 >> 2);
+      out += CHARS.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4));
+      out += CHARS.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >> 6));
+      out += CHARS.charAt(c3 & 0x3F);
+  }
+  return out;
 }
 
 function renderDropDownlist(merchant, index) {
@@ -623,11 +707,8 @@ function clickedOnMerchantFilter(res, merchants) {
 
   $('.dropdown').on('click','.dropdown-item', (e) => {
     e.preventDefault();
-
     let currentTarget = $(e.currentTarget);
-
     const clickedIndex = currentTarget.attr('data-index');
-
     currentMerchant = clickedIndex;
 
     if(currentMerchant >= 0) {
@@ -646,18 +727,43 @@ function clickedOnMerchantFilter(res, merchants) {
         success: (res) => {
 
           var html = "";
+          let useFallBackFlag;
           res.coupons.map((coupon) => {
             let responseClearbit = renderMerchantUsedLogo(coupon.merchantName).responseJSON;
             let company = renderCompanyAssets(responseClearbit);
             const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
             html += renderCoupons(coupon, company, toggleCouponState);
+            // console.log(responseClearbit);
+            //
+            // //run fallback
+            // if (responseClearbit.logo === null){
+            //   useFallBackFlag = 1;
+            //   let responseClearbitFallback = renderLogoImageFallback(coupon.merchantName).responseText;
+            //   const baseEncoded = base64Encode(responseClearbitFallback);
+            //   let logo =`data:image/png;base64,${baseEncoded}`;
+            //   let newMerchantName = coupon.merchantName.replace(/\s+/g, '');
+            //   let domain = `https://www.${newMerchantName}.com`;
+            //   let name = coupon.merchantName;
+            //   const fallbackCompanyInfo = {
+            //     name: name,
+            //     domain: domain,
+            //     logo: logo
+            //   }
+            //
+            //   let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
+            //   const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+            //   html += renderCoupons(coupon, company, toggleCouponState);
+            // }
+            // else {
+            //   useFallBackFlag = 0;
+            //   let company = renderCompanyAssets(responseClearbit, useFallBackFlag);
+            //   const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+            //   html += renderCoupons(coupon, company, toggleCouponState);
+            // }
           });
 
           $('#coupons').css('opacity', '0');
           $('#coupons').html(html);
-
-          //check to see if get request is Valid
-          //if not then replace with another image
 
           $('#coupons').animate({
             opacity: 1,
@@ -673,13 +779,41 @@ function clickedOnMerchantFilter(res, merchants) {
 }
 
 function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
-  var html = "";
-
+  let html = "";
+  let useFallBackFlag;
   filteredByMerchantCoupons.map(function(coupon){
     let responseClearbit = renderMerchantUsedLogo(coupon.merchantName).responseJSON;
-    let company = renderCompanyAssets(responseClearbit);
-    const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
-    html += renderCoupons(coupon, company, toggleCouponState);
+    // let company = renderCompanyAssets(responseClearbit);
+    // const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+    // html += renderCoupons(coupon, company, toggleCouponState);
+
+    //console.log(responseClearbit);
+
+    //run fallback
+    if (responseClearbit.logo === null){
+      useFallBackFlag = 1;
+      let responseClearbitFallback = renderLogoImageFallback(coupon.merchantName).responseText;
+      const baseEncoded = base64Encode(responseClearbitFallback);
+      let logo =`data:image/png;base64,${baseEncoded}`;
+      let newMerchantName = coupon.merchantName.replace(/\s+/g, '');
+      let domain = `https://www.${newMerchantName}.com`;
+      let name = coupon.merchantName;
+      const fallbackCompanyInfo = {
+        name: name,
+        domain: domain,
+        logo: logo
+      }
+
+      let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
+      const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+      html += renderCoupons(coupon, company, toggleCouponState);
+    }
+    else {
+      useFallBackFlag = 0;
+      let company = renderCompanyAssets(responseClearbit, useFallBackFlag);
+      const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+      html += renderCoupons(coupon, company, toggleCouponState);
+    }
   });
 
   $('#coupons').css('opacity', '0');
@@ -720,14 +854,14 @@ function clickedOnMarkUsed() {
 }
 
 function renderCouponAsUsed(res) {
+  //disable the edit btn
+
   currentCouponId = res._id;
   let couponUsedBoolVal = res.couponUsed;
   let couponImagePath = res.couponImage;
   let couponExpirationDate = res.expirationDate;
 
   const formData = new FormData();
-
-  const completeIconElement = entireCouponElement.find('section.coupon-actions-nav img.budicon.icon.complete-icon');
 
   // active coupon
   if (couponUsedBoolVal === false) {
@@ -761,78 +895,6 @@ function showCoupondetails(){
       $('#showCouponImageModal').modal('show');
   });
 }
-/*
-function markingCouponUsed() {
-  $('#coupons').on('click','.coupon-container', (e) => {
-    console.log('Do you want to mark this coupon as used');
-    //const couponId = $(e.currentTarget).data('id');
-    const couponContainerObject = $(e.currentTarget).children().children();
-    //console.log(couponContainerObject);
-    const merchantLogo = $(couponContainerObject).find('img.coupon-merchant-logo.js-logo-img').addClass('test');
-    //console.log(merchantLogo);
-
-    if($(e.currentTarget).hasClass('coupon-disabled')){
-      $(e.currentTarget).removeClass('coupon-disabled');
-      $(e.currentTarget).addClass('coupon-active');
-      console.log('toggle and turn to coupon active');
-    }
-    else if($(e.currentTarget).hasClass('coupon-active')){
-      $(e.currentTarget).removeClass('coupon-active');
-      $(e.currentTarget).addClass('coupon-disabled');
-      console.log('toggle and turn to coupon disabled');
-    }
-    else{
-      console.log("something went wrong with marking coupon!");
-    }
-  });
-}
-*/
-
-/* NOT USING BC OF COMPLEXITY THIS ASK MENTOR....
-function getCompanyLogoImageDataFromApi(searchTerm) {
-  var str = searchTerm;
-  var newStr = str.replace(/\s+/g, '');
-  //console.log(`This string should not have spaces ${newStr}`);
-  $.ajax({
-    url: `https://logo.clearbit.com/${newStr}.com?size=134`,
-    type: 'GET',
-    mimeType: 'text/plain; charset=x-user-defined',
-    success: function(res){
-      const baseEncoded = base64Encode(res);
-    },
-    error: function(res) {
-      console.log('There is an err at getCompanyLogoImageDataFromApi. Load a default image that is 134px wide.');
-    }
-  });
-}
-function base64Encode(str) {
-  var CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-  var out = "", i = 0, len = str.length, c1, c2, c3;
-  while (i < len) {
-      c1 = str.charCodeAt(i++) & 0xff;
-      if (i == len) {
-          out += CHARS.charAt(c1 >> 2);
-          out += CHARS.charAt((c1 & 0x3) << 4);
-          out += "==";
-          break;
-      }
-      c2 = str.charCodeAt(i++);
-      if (i == len) {
-          out += CHARS.charAt(c1 >> 2);
-          out += CHARS.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
-          out += CHARS.charAt((c2 & 0xF) << 2);
-          out += "=";
-          break;
-      }
-      c3 = str.charCodeAt(i++);
-      out += CHARS.charAt(c1 >> 2);
-      out += CHARS.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4));
-      out += CHARS.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >> 6));
-      out += CHARS.charAt(c3 & 0x3F);
-  }
-  return out;
-}
-*/
 
 function initalizeCouponApp() {
     getUserCoupons();
