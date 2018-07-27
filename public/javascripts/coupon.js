@@ -4,6 +4,8 @@ let currentCouponId = null;
 let currentEventListener = null;
 let entireCouponElement = null;
 
+
+
 function renderCoupons(res, company, classes) {
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
             <section role="region" class="coupon-container js-coupon-container ${classes.classes}">
@@ -126,6 +128,8 @@ function checkIfCouponShouldBeDisabled(res, company) {
   let companyUrl = '';
   let editIconState = '';
 
+  console.log(res.couponUsed);
+
   if(res.couponUsed !== null && res.couponUsed !== '') {
     if(res.couponUsed === false){
       classes = 'coupon-active';
@@ -187,7 +191,7 @@ function getUserCoupons() {
       res.coupons.map((coupon) => {
         //made renderMerchantUsedLogo sync instead of async
         let responseClearbit = renderMerchantUsedLogo(coupon.merchantName).responseJSON;
-        console.log(responseClearbit);
+        //console.log(responseClearbit);
         //console.log(responseClearbit.logo);
 
         //run fallback
@@ -836,6 +840,9 @@ function clickedOnMerchantFilter(res, merchants) {
 
   $('.dropdown').on('click','.dropdown-item', (e) => {
     e.preventDefault();
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();
+    });
     let currentTarget = $(e.currentTarget);
     const clickedIndex = currentTarget.attr('data-index');
     currentMerchant = clickedIndex;
@@ -854,6 +861,10 @@ function clickedOnMerchantFilter(res, merchants) {
         url: '/coupon/',
         type: 'GET',
         success: (res) => {
+
+          $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+          });
 
           var html = "";
           let useFallBackFlag;
@@ -922,7 +933,7 @@ function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
     // const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
     // html += renderCoupons(coupon, company, toggleCouponState);
 
-    //console.log(responseClearbit);
+    console.log(responseClearbit);
 
     //run fallback
     if (responseClearbit.logo === null){
@@ -942,15 +953,16 @@ function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
         logoDisabled: logoDisabled
       }
 
-
       //let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
       const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+      console.log(toggleCouponState);
       html += renderCoupons(coupon, company, toggleCouponState);
     }
     else {
       useFallBackFlag = 0;
       let company = renderCompanyAssets(responseClearbit, useFallBackFlag);
       const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+      console.log(toggleCouponState);
       html += renderCoupons(coupon, company, toggleCouponState);
     }
   });
@@ -973,6 +985,9 @@ function updateMerchantTofilter() {
     url: '/coupon/',
     type: 'GET',
     success: (res) => {
+      $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+      });
       const merchants = renderFilterByMerchants(res);
       displayDropDownList(merchants);
       clickedOnMerchantFilter(res, merchants);
