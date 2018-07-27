@@ -75,16 +75,20 @@ router.get('/:id', jwtAuth, (req, res) => {
 
 // CREATES A NEW COUPON
 router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
-  //console.log(req.file);
+  console.log(req.file);
   const _userId = getUserIdFromJwt(req);
-  //console.log('************* Merchant Name: ' + formatMerchantName(req.body.merchantName) + '*****************');
+
+  //console.log(`The current user is: ${_userId}`);
+  //console.log("This is the request from adding a coupon");
+
+  console.log('************* Merchant Name: ' + formatMerchantName(req.body.merchantName) + '*****************');
 
   const newCoupon = new CouponModel({
     merchantName: formatMerchantName(req.body.merchantName),
     code: req.body.code,
     expirationDate: req.body.expirationDate,
     description: req.body.description,
-    couponUsed: false,
+    couponUsed: req.body.couponUsed,
     companyLogo: req.body.companyLogo,
     couponImage: req.file.path,
     userId: _userId

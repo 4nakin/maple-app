@@ -64,11 +64,11 @@ function renderLogoImageFallback(merchantName) {
             mimeType: 'text/plain; charset=x-user-defined',
             async: false,
             success: (res) =>{
-
             },
             error: (err) =>{
+              console.log(err);
               console.log('something went wrong in the request. I need to work on returning a default image');
-              let fallbackImageUrl = `https://source.unsplash.com/500x500/?people`;
+              //let fallbackImageUrl = `https://source.unsplash.com/500x500/?people`;
             }
           });
 }
@@ -88,12 +88,15 @@ function renderMerchantUsedLogo(merchantName) {
             success: (res) =>{
             },
             error: function(err){
-              console.log('something went wrong in the request. I need to work on returning a default image');
+              console.log('something went wrong in the request. I need to work on returning a default image' + res);
             }
           });
 }
 
 function renderCompanyAssets(res, useFallBackFlag){
+  //console.log(useFallBackFlag);
+  //console.log(res);
+
   let company = {};
 
   if(useFallBackFlag = 1){
@@ -110,6 +113,7 @@ function renderCompanyAssets(res, useFallBackFlag){
       logoDisabled: res.logo+ '?size=500&greyscale=true'
     };
   }
+  //console.log(company);
 
   return company;
 }
@@ -183,24 +187,28 @@ function getUserCoupons() {
       res.coupons.map((coupon) => {
         //made renderMerchantUsedLogo sync instead of async
         let responseClearbit = renderMerchantUsedLogo(coupon.merchantName).responseJSON;
-        //console.log(responseClearbit);
+        console.log(responseClearbit);
+        //console.log(responseClearbit.logo);
 
         //run fallback
         if (responseClearbit.logo === null){
           useFallBackFlag = 1;
-          let responseClearbitFallback = renderLogoImageFallback(coupon.merchantName).responseText;
-          const baseEncoded = base64Encode(responseClearbitFallback);
-          let logo =`data:image/png;base64,${baseEncoded}`;
+          //let responseClearbitFallback = renderLogoImageFallback(coupon.merchantName).responseText;
+          //const baseEncoded = base64Encode(responseClearbitFallback);
+          //let logo =`data:image/png;base64,${baseEncoded}`;
           let newMerchantName = coupon.merchantName.replace(/\s+/g, '');
-          let domain = `https://www.${newMerchantName}.com`;
           let name = coupon.merchantName;
-          const fallbackCompanyInfo = {
+          let domain = `https://www.${newMerchantName}.com`;
+          let logo = `https://logo.clearbit.com/${newMerchantName}.com?size=500`;
+          let logoDisabled = `https://logo.clearbit.com/${newMerchantName}.com?size=500&greyscale=true`;
+          const company = {
             name: name,
             domain: domain,
-            logo: logo
+            logo: logo,
+            logoDisabled: logoDisabled
           }
 
-          let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
+          //let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
           const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
           html += renderCoupons(coupon, company, toggleCouponState);
         }
@@ -357,10 +365,44 @@ function sendUpdateDataToAPI(id, formData){
     processData: false,
     success: (res) => {
       console.log('updated field(s) is a success ');
+
+      let useFallBackFlag;
+
       let responseClearbit = renderMerchantUsedLogo(res.coupon.merchantName).responseJSON;
-      let company = renderCompanyAssets(responseClearbit);
-      const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon, company);
-      markCouponUsedonDOM(res.coupon, company, toggleCouponState);
+      // let company = renderCompanyAssets(responseClearbit);
+      // const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon, company);
+      // markCouponUsedonDOM(res.coupon, company, toggleCouponState);
+      //console.log(responseClearbit);
+
+      //run fallback
+      if (responseClearbit.logo === null){
+        useFallBackFlag = 1;
+        // let responseClearbitFallback = renderLogoImageFallback(res.coupon.merchantName).responseText;
+        // const baseEncoded = base64Encode(responseClearbitFallback);
+        // let logo =`data:image/png;base64,${baseEncoded}`;
+        let newMerchantName = res.coupon.merchantName.replace(/\s+/g, '');
+        let name = res.coupon.merchantName;
+        let domain = `https://www.${newMerchantName}.com`;
+        let logo = `https://logo.clearbit.com/${newMerchantName}.com?size=500`;
+        let logoDisabled = `https://logo.clearbit.com/${newMerchantName}.com?size=500&greyscale=true`;
+        const company = {
+          name: name,
+          domain: domain,
+          logo: logo,
+          logoDisabled: logoDisabled
+        }
+
+
+        //let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
+        const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon, company);
+        markCouponUsedonDOM(res.coupon, company, toggleCouponState);
+      }
+      else {
+        useFallBackFlag = 0;
+        let company = renderCompanyAssets(responseClearbit, useFallBackFlag);
+        const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon, company);
+        markCouponUsedonDOM(res.coupon, company, toggleCouponState);
+      }
     },
     error: function(err){
       console.log('something went wrong');
@@ -433,7 +475,7 @@ function sendAddCouponDataToAPI(e) {
   for (var value of formData.values()) {
      console.log(value);
   }
-  const companyname = $('.input-add-merchantName').val();
+  //const companyname = $('.input-add-merchantName').val();
   $.ajax({
     url: '/coupon',
     type: 'POST',
@@ -445,6 +487,8 @@ function sendAddCouponDataToAPI(e) {
     contentType: false,
     success: (res) => {
 
+      let useFallBackFlag;
+
       $('#addNewCouponModal').modal('hide');
       $('.input-add-merchantName').val('');
       $('.input-add-code').val('');
@@ -453,15 +497,50 @@ function sendAddCouponDataToAPI(e) {
 
       // console.log(res.merchantName);
 
+
       let responseClearbit = renderMerchantUsedLogo(res.merchantName).responseJSON;
       console.log(responseClearbit);
-      let company = renderCompanyAssets(responseClearbit);
-      console.log(company);
+      // let company = renderCompanyAssets(responseClearbit);
+      // console.log(company);
+      //
+      // const toggleCouponState = checkIfCouponShouldBeDisabled(res, company);
+      // console.log(toggleCouponState);
 
-      const toggleCouponState = checkIfCouponShouldBeDisabled(res, company);
-      console.log(toggleCouponState);
+      let couponHTML = '';
+      //run fallback
+      if (responseClearbit.logo === null){
+        useFallBackFlag = 1;
+        // let responseClearbitFallback = renderLogoImageFallback(res.merchantName).responseText;
+        // const baseEncoded = base64Encode(responseClearbitFallback);
+        // let logo =`data:image/png;base64,${baseEncoded}`;
+        let newMerchantName = res.merchantName.replace(/\s+/g, '');
+        let name = res.merchantName;
+        let domain = `https://www.${newMerchantName}.com`;
+        let logo = `https://logo.clearbit.com/${newMerchantName}.com?size=500`;
+        let logoDisabled = `https://logo.clearbit.com/${newMerchantName}.com?size=500&greyscale=true`;
+        const company = {
+          name: name,
+          domain: domain,
+          logo: logo,
+          logoDisabled: logoDisabled
+        }
 
-      const couponHTML = $(renderCoupons(res, company, toggleCouponState));
+
+        //let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
+        const toggleCouponState = checkIfCouponShouldBeDisabled(res, company);
+        // html += renderCoupons(coupon, company, toggleCouponState);
+        couponHTML = $(renderCoupons(res, company, toggleCouponState));
+      }
+      else {
+        useFallBackFlag = 0;
+        let company = renderCompanyAssets(responseClearbit, useFallBackFlag);
+        const toggleCouponState = checkIfCouponShouldBeDisabled(res, company);
+        // html += renderCoupons(coupon, company, toggleCouponState);
+        couponHTML = $(renderCoupons(res, company, toggleCouponState));
+      }
+
+      //const couponHTML = $(renderCoupons(res, company, toggleCouponState));
+
       couponHTML.css('opacity', '0');
       $('#coupons').append(couponHTML);
       //$('#coupons').prepend(couponHTML);
@@ -561,14 +640,12 @@ function watchSubmitEditCouponHandler(id) {
       sendCouponToEditFromApi(id, e);
   });
 }
-
+/*
 function sendCouponToEditFromApi(id, e) {
   const formData = new FormData(e.target);
-  // for (var value of formData.values()) {
-  //    console.log(value);
-  // }
-
-
+  for (var value of formData.values()) {
+     console.log(value);
+  }
   const companyname = $('.input-edit-merchantName').val();
   var str = companyname;
   var newStr = str.replace(/\s+/g, '');
@@ -577,6 +654,8 @@ function sendCouponToEditFromApi(id, e) {
   const companyUrl = `https://www.${newStr}.com`;
 
   let _couponId = id;
+
+  console.log(formData);
 
   //console.log(`If I got here then I should edit this id: ${id} on the DB`);
     $.ajax({
@@ -603,6 +682,56 @@ function sendCouponToEditFromApi(id, e) {
         //console.log(toggleCouponState);
 
         //console.log('upon success of edit ' + merchantName + ' ' + companyUrl);
+
+        $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', companyUrl);
+        $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', companyLogoImage);
+        $(`[data-id = ${_couponId}] .coupon-merchant-name`).html(merchantName);
+        $(`[data-id = ${_couponId}] .coupon-code`).html(inputCode);
+        $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(`Valid til ${expirationDate}`);
+        $(`[data-id = ${_couponId}] .coupon-description`).html(inputDescription);
+
+        updateMerchantTofilter();
+      },
+      error: function(err) {
+        console.log(`Something happened when trying to edit ${err}`);
+      }
+    });
+}
+*/
+function sendCouponToEditFromApi(id) {
+  const companyname = $('.input-edit-merchantName').val();
+  var str = companyname;
+  var newStr = str.replace(/\s+/g, '');
+  console.log(`merchant name inside edit function ${newStr}`);
+  const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
+  const companyUrl = `https://www.${newStr}.com`;
+  //console.log(formData.get('couponImage').name);
+
+  let _couponId = id;
+
+  console.log(`If I got here then I should edit this id: ${id} on the DB`);
+    $.ajax({
+      url: `/coupon/${id}`,
+      type: 'PUT',
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
+      },
+      data: {
+        merchantName: $('.input-edit-merchantName').val(),
+        code: $('.input-edit-code').val(),
+        expirationDate: $('.input-edit-expirationDate').val(),
+        description: $('.input-edit-description').val()
+      },
+      dataType: 'json',
+      success: function(res) {
+        console.log(`you successfully updated a coupon: ${_couponId}`);
+
+        var merchantName = $('.input-edit-merchantName').val();
+        var inputCode = $('.input-edit-code').val();
+        var expirationDate = $('.input-edit-expirationDate').val();
+        var inputDescription = $('.input-edit-description').val();
+
+        console.log('upon success of edit ' + merchantName + ' ' + companyUrl);
 
         $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', companyUrl);
         $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', companyLogoImage);
@@ -672,7 +801,7 @@ function renderDropDown(htmlCode) {
               Filter by Merchant
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#" data-index="-1">Show All Merchants</a>
+              <a class="dropdown-item" href="/" data-index="-1">Show All Merchants</a>
               ${htmlCode}
             </div>
           </div>`;
@@ -730,37 +859,43 @@ function clickedOnMerchantFilter(res, merchants) {
           let useFallBackFlag;
           res.coupons.map((coupon) => {
             let responseClearbit = renderMerchantUsedLogo(coupon.merchantName).responseJSON;
-            let company = renderCompanyAssets(responseClearbit);
-            const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
-            html += renderCoupons(coupon, company, toggleCouponState);
-            // console.log(responseClearbit);
-            //
-            // //run fallback
-            // if (responseClearbit.logo === null){
-            //   useFallBackFlag = 1;
-            //   let responseClearbitFallback = renderLogoImageFallback(coupon.merchantName).responseText;
-            //   const baseEncoded = base64Encode(responseClearbitFallback);
-            //   let logo =`data:image/png;base64,${baseEncoded}`;
-            //   let newMerchantName = coupon.merchantName.replace(/\s+/g, '');
-            //   let domain = `https://www.${newMerchantName}.com`;
-            //   let name = coupon.merchantName;
-            //   const fallbackCompanyInfo = {
-            //     name: name,
-            //     domain: domain,
-            //     logo: logo
-            //   }
-            //
-            //   let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
-            //   const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
-            //   html += renderCoupons(coupon, company, toggleCouponState);
-            // }
-            // else {
-            //   useFallBackFlag = 0;
-            //   let company = renderCompanyAssets(responseClearbit, useFallBackFlag);
-            //   const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
-            //   html += renderCoupons(coupon, company, toggleCouponState);
-            // }
+            // let company = renderCompanyAssets(responseClearbit);
+            // const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+            // html += renderCoupons(coupon, company, toggleCouponState);
+            console.log(responseClearbit);
+
+            //run fallback
+            if (responseClearbit.logo === null){
+              useFallBackFlag = 1;
+              // let responseClearbitFallback = renderLogoImageFallback(coupon.merchantName).responseText;
+              // const baseEncoded = base64Encode(responseClearbitFallback);
+              // let logo =`data:image/png;base64,${baseEncoded}`;
+              let newMerchantName = coupon.merchantName.replace(/\s+/g, '');
+              let name = coupon.merchantName;
+              let domain = `https://www.${newMerchantName}.com`;
+              let logo = `https://logo.clearbit.com/${newMerchantName}.com?size=500`;
+              let logoDisabled = `https://logo.clearbit.com/${newMerchantName}.com?size=500&greyscale=true`;
+              const company = {
+                name: name,
+                domain: domain,
+                logo: logo,
+                logoDisabled: logoDisabled
+              }
+
+
+              //let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
+              const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+              html += renderCoupons(coupon, company, toggleCouponState);
+            }
+            else {
+              useFallBackFlag = 0;
+              let company = renderCompanyAssets(responseClearbit, useFallBackFlag);
+              const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
+              html += renderCoupons(coupon, company, toggleCouponState);
+            }
+
           });
+
 
           $('#coupons').css('opacity', '0');
           $('#coupons').html(html);
@@ -792,19 +927,23 @@ function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
     //run fallback
     if (responseClearbit.logo === null){
       useFallBackFlag = 1;
-      let responseClearbitFallback = renderLogoImageFallback(coupon.merchantName).responseText;
-      const baseEncoded = base64Encode(responseClearbitFallback);
-      let logo =`data:image/png;base64,${baseEncoded}`;
+      // let responseClearbitFallback = renderLogoImageFallback(coupon.merchantName).responseText;
+      // const baseEncoded = base64Encode(responseClearbitFallback);
+      // let logo =`data:image/png;base64,${baseEncoded}`;
       let newMerchantName = coupon.merchantName.replace(/\s+/g, '');
-      let domain = `https://www.${newMerchantName}.com`;
       let name = coupon.merchantName;
-      const fallbackCompanyInfo = {
+      let domain = `https://www.${newMerchantName}.com`;
+      let logo = `https://logo.clearbit.com/${newMerchantName}.com?size=500`;
+      let logoDisabled = `https://logo.clearbit.com/${newMerchantName}.com?size=500&greyscale=true`;
+      const company = {
         name: name,
         domain: domain,
-        logo: logo
+        logo: logo,
+        logoDisabled: logoDisabled
       }
 
-      let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
+
+      //let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
       const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
       html += renderCoupons(coupon, company, toggleCouponState);
     }
