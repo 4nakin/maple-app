@@ -4,12 +4,11 @@ let currentCouponId = null;
 let currentEventListener = null;
 let entireCouponElement = null;
 
-
 function renderCoupons(res, company, classes) {
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
             <section role="region" class="coupon-container js-coupon-container ${classes.classes}">
               <div class="js-coupon-merchant-logo coupon-merchant-logo">
-                <a href="${company.domain}" target="_blank">
+                <a ${classes.companyUrl} target="_blank" class="js-domain-name">
                   <img src="${classes.companyLogoStates}" alt="This is an image of the ${res.merchantName} logo" class="js-logo-img" data-default-src="images/default-image.png">
                 </a>
               </div>
@@ -90,6 +89,7 @@ function checkIfCouponShouldBeDisabled(res, company) {
   let dashedStates = '';
   let dashedLineImage = '';
   let companyLogoStates = '';
+  let companyUrl = '';
 
   if(res.couponUsed !== null && res.couponUsed !== '') {
     if(res.couponUsed === false){
@@ -97,12 +97,14 @@ function checkIfCouponShouldBeDisabled(res, company) {
       dashedStates = 'dashed-line-active';
       dashedLineImage = 'images/dashed-line.png';
       companyLogoStates = company.logo;
+      companyUrl = `href="${company.domain}"`;
     }
     if(res.couponUsed === true) {
       classes = 'coupon-disabled';
       dashedStates = 'dashed-line-disabled';
       dashedLineImage = 'images/dashed-line-disable.png';
       companyLogoStates = company.logoDisabled;
+      companyUrl = '';
     }
   }
 
@@ -110,7 +112,8 @@ function checkIfCouponShouldBeDisabled(res, company) {
     classes: classes,
     dashedStates: dashedStates,
     dashedLineImage: dashedLineImage,
-    companyLogoStates: companyLogoStates
+    companyLogoStates: companyLogoStates,
+    companyUrl: companyUrl
   }
 
   return couponStates;
@@ -137,24 +140,15 @@ function getUserCoupons() {
       console.log(`The user made it to the Dashboard`);
       console.log(`The user id is: ${res._userId}`);
 
-      var html = "";
-
-      const couponContainerObject = $(entireCouponElement);
-      const couponContainer = $(couponContainerObject).find('.js-coupon-container');
-      const merchantLogoLink = couponContainerObject.find('div.js-coupon-merchant-logo').children();
-      const dashDisabled = couponContainerObject.find('img.dashed-line-disabled');
-      const dashed = couponContainerObject.find('img.dashed-line-active');
-
+      let html = "";
 
       res.coupons.map((coupon) => {
-        //console.log(coupon);
         //made renderMerchantUsedLogo sync instead of async
         let responseClearbit = renderMerchantUsedLogo(coupon.merchantName).responseJSON;
         let company = renderCompanyAssets(responseClearbit);
         const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
         //console.log(toggleCouponState);
         html += renderCoupons(coupon, company, toggleCouponState);
-
       });
 
       $('#coupons').css('opacity', '0');
@@ -319,17 +313,11 @@ function markCouponUsedonDOM(res, company, toggleCouponState) {
   const couponContainerObject = $(entireCouponElement);
   const couponContainer = $(couponContainerObject).find('.js-coupon-container');
   const merchantLogoLink = entireCouponElement.find('div.js-coupon-merchant-logo').children();
-  // const dashed = entireCouponElement.find('div.dashed').children();
   const dashed = entireCouponElement.find('div.dashed');
 
   console.log(res.couponUsed);
   console.log(toggleCouponState.dashedStates);
   console.log(toggleCouponState.dashedLineImage);
-
-  // classes: classes,
-  // dashedStates: dashedStates,
-  // dashedLineImage: dashedLineImage,
-  // companyLogoStates: companyLogoStates
 
   if (res.couponUsed === false){
     merchantLogoLink.attr('href', company.domain);
