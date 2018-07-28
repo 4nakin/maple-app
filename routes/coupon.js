@@ -88,7 +88,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
     code: req.body.code,
     expirationDate: req.body.expirationDate,
     description: req.body.description,
-    couponUsed: req.body.couponUsed,
+    couponUsed: false,
     companyLogo: req.body.companyLogo,
     couponImage: req.file.path,
     userId: _userId

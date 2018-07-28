@@ -17,6 +17,10 @@ body {
   text-overflow: ellipsis;
 }
 
+.limitsOnInputs {
+  color: red;
+}
+
 .container {
   max-width: 974px;
 }

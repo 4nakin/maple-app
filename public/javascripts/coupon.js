@@ -4,8 +4,6 @@ let currentCouponId = null;
 let currentEventListener = null;
 let entireCouponElement = null;
 
-
-
 function renderCoupons(res, company, classes) {
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
             <section role="region" class="coupon-container js-coupon-container ${classes.classes}">
@@ -96,8 +94,8 @@ function renderMerchantUsedLogo(merchantName) {
 }
 
 function renderCompanyAssets(res, useFallBackFlag){
-  //console.log(useFallBackFlag);
-  //console.log(res);
+  console.log(useFallBackFlag);
+  console.log(res);
 
   let company = {};
 
@@ -115,7 +113,7 @@ function renderCompanyAssets(res, useFallBackFlag){
       logoDisabled: res.logo+ '?size=500&greyscale=true'
     };
   }
-  //console.log(company);
+  console.log(company);
 
   return company;
 }
@@ -258,12 +256,12 @@ function renderAddModal() {
                   <form id="js-add-coupon-form">
                     <div class="form-group">
                       <label for="merchantName">Merchant Name</label>
-                      <input type="text" name="merchantName" class="form-control input-add-merchantName" required>
+                      <input type="text" name="merchantName" class="form-control input-add-merchantName" maxlength="13" required>
                     </div>
 
                     <div class="form-group">
                       <label for="code">Code</label>
-                      <input type="text" name="code" class="form-control input-add-code" maxlength="15" required>
+                      <input type="text" name="code" class="form-control input-add-code" maxlength="10" required>
                     </div>
 
                     <div class="form-group">
@@ -499,7 +497,7 @@ function sendAddCouponDataToAPI(e) {
       $('.input-add-expirationDate').val('');
       $('.input-add-description').val('');
 
-      // console.log(res.merchantName);
+      console.log(res);
 
 
       let responseClearbit = renderMerchantUsedLogo(res.merchantName).responseJSON;
@@ -511,6 +509,7 @@ function sendAddCouponDataToAPI(e) {
       // console.log(toggleCouponState);
 
       let couponHTML = '';
+      console.log(responseClearbit.logo);
       //run fallback
       if (responseClearbit.logo === null){
         useFallBackFlag = 1;
@@ -528,8 +527,6 @@ function sendAddCouponDataToAPI(e) {
           logo: logo,
           logoDisabled: logoDisabled
         }
-
-
         //let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
         const toggleCouponState = checkIfCouponShouldBeDisabled(res, company);
         // html += renderCoupons(coupon, company, toggleCouponState);
@@ -539,6 +536,7 @@ function sendAddCouponDataToAPI(e) {
         useFallBackFlag = 0;
         let company = renderCompanyAssets(responseClearbit, useFallBackFlag);
         const toggleCouponState = checkIfCouponShouldBeDisabled(res, company);
+        console.log(toggleCouponState);
         // html += renderCoupons(coupon, company, toggleCouponState);
         couponHTML = $(renderCoupons(res, company, toggleCouponState));
       }
