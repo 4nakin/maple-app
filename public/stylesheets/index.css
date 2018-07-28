@@ -18,7 +18,9 @@ body {
 }
 
 .limitsOnInputs {
-  color: red;
+  color: #999;
+  display: inline-block;
+
 }
 
 .container {
@@ -427,6 +429,7 @@ button:disabled {
   font-weight: 300;
   width: 163px;
   height: 40px;
+  overflow-wrap: break-word;
   line-height: 20px;
   margin: 0 auto 5px auto;
   text-align: center;

@@ -255,27 +255,27 @@ function renderAddModal() {
                   <h5 class="modal-title" id="addNewCouponModalLabel">Add Coupon</h5>
                   <form id="js-add-coupon-form">
                     <div class="form-group">
-                      <label for="merchantName">Merchant Name</label>
-                      <input type="text" name="merchantName" class="form-control input-add-merchantName" maxlength="13" required>
+                      <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(15 charater limit)</span></label>
+                      <input type="text" name="merchantName" class="form-control input-add-merchantName" maxlength="14" required>
                     </div>
 
                     <div class="form-group">
-                      <label for="code">Code</label>
-                      <input type="text" name="code" class="form-control input-add-code" maxlength="10" required>
+                      <label for="code">Code <span class ="limitsOnInputs">(15 charater limit)</span></label>
+                      <input type="text" name="code" class="form-control input-add-code" maxlength="15" required>
                     </div>
 
                     <div class="form-group">
-                      <label for="expirationDate">Expiration Date</label>
+                      <label for="expirationDate">Expiration Date <span class ="limitsOnInputs">(Date must be today or greater)</span></label>
                       <input type="date" name="expirationDate" class="form-control input-add-expirationDate js-date-field" min="2018-07max="2020-12-31" required>
                     </div>
 
                     <div class="form-group">
-                      <label for="description">Description</label>
+                      <label for="description">Description <span class ="limitsOnInputs">(40 charater limit)</span></label>
                       <input type="text" name="description" class="form-control input-add-description"  maxlength="40" required>
                     </div>
 
                     <div class="form-group">
-                      <label for="couponImage">Upload an image of your coupon</label>
+                      <label for="couponImage">Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></label>
                       <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
                       <label for="couponImage" class="custom-file-upload"></label>
                     </div>
@@ -321,27 +321,29 @@ function renderEditModal() {
                             <h5 class="modal-title" id="editCouponModalLabel">Edit Coupon</h5>
                             <form id="js-edit-coupon-form">
                                 <div class="form-group">
-                                    <label for="merchantName">Merchant Name</label>
-                                    <input type="text" name="merchantName" class="form-control input-edit-merchantName" required>
+                                    <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(15 charater limit)</span></label>
+                                    <input type="text" name="merchantName" class="form-control input-edit-merchantName" maxlength="14" required>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="code">Code</label>
-                                    <input type="text" name="code" class="form-control input-edit-code" required>
+                                    <label for="code">Code <span class ="limitsOnInputs">(15 charater limit)</span></label>
+                                    <input type="text" name="code" class="form-control input-edit-code" maxlength="15" required>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="expirationDate">Expiration Date</label>
+                                    <label for="expirationDate">Expiration Date <span class ="limitsOnInputs">(Date must be today or greater)</label>
                                     <input type="date" name="expirationDate" class="form-control input-edit-expirationDate js-date-field" required>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="description">Description</label>
+                                    <label for="description">Description <span class ="limitsOnInputs">(40 charater limit)</span></label>
                                     <input type="text" name="description" class="form-control input-edit-description" maxlength="40" required>
                                 </div>
 
                                 <div class="form-group">
-                                  <label for="couponImage">Upload an image of your coupon</label>
+                                  <label for="couponImage">Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></label>
+                                  <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
+                                  <label for="couponImage" class="custom-file-upload"></label>
                                   <img src="" alt="" class="couponImageContainer">
                                 </div>
 
