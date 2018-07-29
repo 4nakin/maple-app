@@ -94,8 +94,8 @@ function renderMerchantUsedLogo(merchantName) {
 }
 
 function renderCompanyAssets(res, useFallBackFlag){
-  console.log(useFallBackFlag);
-  console.log(res);
+  //console.log(useFallBackFlag);
+  //console.log(res);
 
   let company = {};
 
@@ -113,7 +113,7 @@ function renderCompanyAssets(res, useFallBackFlag){
       logoDisabled: res.logo+ '?size=500&greyscale=true'
     };
   }
-  console.log(company);
+  //console.log(company);
 
   return company;
 }
@@ -126,7 +126,7 @@ function checkIfCouponShouldBeDisabled(res, company) {
   let companyUrl = '';
   let editIconState = '';
 
-  console.log(res.couponUsed);
+  //console.log(res.couponUsed);
 
   if(res.couponUsed !== null && res.couponUsed !== '') {
     if(res.couponUsed === false){
@@ -167,9 +167,6 @@ function getUserCoupons() {
     url: '/coupon/',
     type: 'GET',
     success: (res) => {
-      $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
-      });
       const merchants = renderFilterByMerchants(res);
       displayDropDownList(merchants);
       clickedOnMerchantFilter(res, merchants);
@@ -341,12 +338,11 @@ function renderEditModal() {
                                 </div>
 
                                 <div class="form-group">
-                                  <label for="couponImage">Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></label>
+                                  <label for="couponImage">Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span>
+                                  </label>
                                   <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
                                   <label for="couponImage" class="custom-file-upload"></label>
-                                  <img src="" alt="" class="couponImageContainer">
                                 </div>
-
                                 <div class="">
                                   <button type="submit" class="button solid submit-edit-coupon-btn" id="js-submit-edit-coupon-btn">Save</button>
                                 </div>
@@ -416,7 +412,6 @@ function sendUpdateDataToAPI(id, formData){
 
 function markCouponUsedonDOM(res, company, toggleCouponState) {
   $('.js-complete-icon').tooltip('hide');
-
   const couponContainerObject = $(entireCouponElement);
   const couponContainer = $(couponContainerObject).find('.js-coupon-container');
   const merchantLogoLink = entireCouponElement.find('div.js-coupon-merchant-logo').children();
@@ -607,7 +602,6 @@ function sendCouponToDeleteFromApi(id, container) {
 function watchEditBtnHandler() {
   $('#coupons').on('click','.js-edit-icon', (e) => {
       e.preventDefault();
-
       $('.js-delete-icon').tooltip('hide');
       $('.js-complete-icon').tooltip('hide');
       $('.js-edit-icon').tooltip('hide');
@@ -625,6 +619,12 @@ function watchEditBtnHandler() {
       const expirationDateText = $(couponObject).find('p.coupon-expiration-date').text();
       const descriptionText = $(couponObject).find('p.coupon-description').text();
 
+      console.log(merchantNameText);
+      console.log(codeText);
+      console.log(expirationDateText);
+      console.log(descriptionText);
+
+      //this puts value in the fields
       $('.input-edit-merchantName').val(merchantNameText);
       $('.input-edit-code').val(codeText);
       document.querySelector('.input-edit-expirationDate').valueAsDate = new Date(expirationDateText);
@@ -640,7 +640,6 @@ function watchSubmitEditCouponHandler(id) {
       e.preventDefault();
       console.log('you want to update a coupon');
       $('#editCouponModal').modal('hide');
-      console.log(e);
       sendCouponToEditFromApi(id, e);
   });
 }
@@ -702,7 +701,13 @@ function sendCouponToEditFromApi(id, e) {
     });
 }
 */
-function sendCouponToEditFromApi(id) {
+function sendCouponToEditFromApi(id, e) {
+var formData = new FormData(event.target);
+  for (var [key, value] of formData.entries()) {
+      console.log(key, value);
+      //console.log(value);
+    }
+
   const companyname = $('.input-edit-merchantName').val();
   var str = companyname;
   var newStr = str.replace(/\s+/g, '');
@@ -720,22 +725,25 @@ function sendCouponToEditFromApi(id) {
       beforeSend: function(xhr) {
         xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
       },
-      data: {
-        merchantName: $('.input-edit-merchantName').val(),
-        code: $('.input-edit-code').val(),
-        expirationDate: $('.input-edit-expirationDate').val(),
-        description: $('.input-edit-description').val()
-      },
-      dataType: 'json',
+      data: formData,
+      processData: false,
+      contentType: false,
+
+      // data: {
+      //   merchantName: $('.input-edit-merchantName').val(),
+      //   code: $('.input-edit-code').val(),
+      //   expirationDate: $('.input-edit-expirationDate').val(),
+      //   description: $('.input-edit-description').val()
+      // },
+      //dataType: 'json',
       success: function(res) {
+        console.log(res);
         console.log(`you successfully updated a coupon: ${_couponId}`);
 
         var merchantName = $('.input-edit-merchantName').val();
         var inputCode = $('.input-edit-code').val();
         var expirationDate = $('.input-edit-expirationDate').val();
         var inputDescription = $('.input-edit-description').val();
-
-        console.log('upon success of edit ' + merchantName + ' ' + companyUrl);
 
         $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', companyUrl);
         $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', companyLogoImage);
@@ -840,9 +848,8 @@ function clickedOnMerchantFilter(res, merchants) {
 
   $('.dropdown').on('click','.dropdown-item', (e) => {
     e.preventDefault();
-    $(document).ready(function(){
-      $('[data-toggle="tooltip"]').tooltip();
-    });
+
+
     let currentTarget = $(e.currentTarget);
     const clickedIndex = currentTarget.attr('data-index');
     currentMerchant = clickedIndex;
@@ -861,10 +868,6 @@ function clickedOnMerchantFilter(res, merchants) {
         url: '/coupon/',
         type: 'GET',
         success: (res) => {
-
-          $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip();
-          });
 
           var html = "";
           let useFallBackFlag;
@@ -986,7 +989,7 @@ function updateMerchantTofilter() {
     type: 'GET',
     success: (res) => {
       $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
+
       });
       const merchants = renderFilterByMerchants(res);
       displayDropDownList(merchants);

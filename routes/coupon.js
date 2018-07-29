@@ -77,12 +77,6 @@ router.get('/:id', jwtAuth, (req, res) => {
 router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   console.log(req.file);
   const _userId = getUserIdFromJwt(req);
-
-  //console.log(`The current user is: ${_userId}`);
-  //console.log("This is the request from adding a coupon");
-
-  console.log('************* Merchant Name: ' + formatMerchantName(req.body.merchantName) + '*****************');
-
   const newCoupon = new CouponModel({
     merchantName: formatMerchantName(req.body.merchantName),
     code: req.body.code,
@@ -115,7 +109,7 @@ router.delete('/:id', jwtAuth, (req, res) => {
 });
 
 // EDITS A NEW COUPON
-router.put('/:id', jwtAuth, (req, res) => {
+router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   console.log(`req.params.id:  ${req.params.id}`);
   console.log(`req.body.id: ${req.body.id}`);
 
@@ -148,8 +142,12 @@ router.put('/:id', jwtAuth, (req, res) => {
   });
   console.log('************** End of Updated Fields **************\n');
 
-  CouponModel.findByIdAndUpdate(req.params.id, {$set: updated })
-  .then(updatedCoupon => res.status(204).end())
+  CouponModel.findByIdAndUpdate(req.params.id, {$set: updated }, { new: true })
+  .then(coupon => {
+    const updatedCoupon = coupon.toObject();
+    console.log(updatedCoupon);
+    res.status(200).json(updatedCoupon);
+  })
   .catch(err => res.status(500).json({ message: 'Something went wrong'}));
 });
 
