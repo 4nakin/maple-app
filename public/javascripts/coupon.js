@@ -335,11 +335,8 @@ function sendUpdateDataToAPI(id, formData){
     processData: false,
     success: (res) => {
       console.log('updated field(s) is a success ');
-        //console.log(res.coupon);
         const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon);
-        //console.log(toggleCouponState);
         markCouponUsedonDOM(res.coupon, toggleCouponState);
-      //}
     },
     error: function(err){
       console.log('something went wrong');
@@ -354,9 +351,6 @@ function markCouponUsedonDOM(res,toggleCouponState) {
   const merchantLogoLink = entireCouponElement.find('div.js-coupon-merchant-logo').children();
   const dashed = entireCouponElement.find('div.dashed');
   const editIcon = couponContainer.siblings().find('a.icon.edit-icon');
-  //console.log(editIcon);
-
-  //console.log(res);
 
   if (res.couponUsed === false){
     merchantLogoLink.attr('href', res.companyDomain);
@@ -366,7 +360,6 @@ function markCouponUsedonDOM(res,toggleCouponState) {
     dashed.children().attr('src', toggleCouponState.dashedLineImage);
     dashed.children().removeClass('dashed-line-disabled');
     dashed.children().addClass(toggleCouponState.dashedStates);
-    // editIcon.toggleClass('hide');
     editIcon.fadeIn('slow');
   }
   else if (res.couponUsed === true){
@@ -377,7 +370,6 @@ function markCouponUsedonDOM(res,toggleCouponState) {
     dashed.children().attr('src', toggleCouponState.dashedLineImage);
     dashed.children().removeClass('dashed-line-active');
     dashed.children().addClass(toggleCouponState.dashedStates);
-    // editIcon.toggleClass('hide');
     editIcon.fadeOut('slow');
   }
   else {

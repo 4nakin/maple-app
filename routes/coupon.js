@@ -73,33 +73,6 @@ router.get('/:id', jwtAuth, (req, res) => {
 });
 
 // CREATES A NEW COUPON
-/*
-router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
-  console.log(req.file);
-  const _userId = getUserIdFromJwt(req);
-  const newCoupon = new CouponModel({
-    merchantName: formatMerchantName(req.body.merchantName),
-    code: req.body.code,
-    expirationDate: req.body.expirationDate,
-    description: req.body.description,
-    couponUsed: false,
-    companyLogo: req.body.companyLogo,
-    couponImage: req.file.path,
-    userId: _userId
-  });
-
-  newCoupon.save()
-      .then(function(coupon) {
-        const savedCoupon = coupon.toObject();
-        console.log(savedCoupon);
-        res.status(201).json(savedCoupon);
-      })
-      .catch(function(err) {
-        console.error(err);
-        res.status(500).send(err);
-      });
-});
-*/
 router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   console.log(req.file);
   const _userId = getUserIdFromJwt(req);
