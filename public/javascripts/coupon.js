@@ -5,7 +5,7 @@ let currentEventListener = null;
 let entireCouponElement = null;
 
 function renderCoupons(res, toggleCouponState) {
-  console.log(res);
+  //console.log(res);
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
             <img src ="${res.couponImage}" alt="coupon image user uploaded for ${res.merchantName}" class="hide js-coupon-image">
             <section role="region" class="coupon-container js-coupon-container ${toggleCouponState.classes}">
@@ -54,26 +54,6 @@ function getCouponById(id, callback) {
       }
     }
   });
-}
-
-function renderMerchantUsedLogo(merchantName) {
-  return $.ajax({
-            url: `https://company.clearbit.com/v1/domains/find`,
-            type: 'GET',
-            beforeSend: function(xhr) {
-              xhr.setRequestHeader('Authorization', `Bearer sk_7e1d77b7b10477e9d101f3e756dac154`);
-            },
-            data: {
-              name: `${merchantName}`
-            },
-            dataType: 'json',
-            async: false,
-            success: (res) =>{
-            },
-            error: function(err){
-              console.log('something went wrong in the request. I need to work on returning a default image' + res);
-            }
-          });
 }
 
 function renderCompanyAssets(res, useFallBackFlag){
