@@ -406,6 +406,14 @@ button:disabled {
   margin: 25px auto 20px auto;
 }
 
+.domain-url {
+  display: inline-block;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+}
+
+
 .coupon-merchant-logo img {
   width: 92px;
   height: 92px;
@@ -507,6 +515,7 @@ input[type=file]{
   display: block;
   background: #000;
 }
+
 
 
 /* Extra small devices (portrait phones, less than 576px)
