@@ -5,7 +5,7 @@ let currentEventListener = null;
 let entireCouponElement = null;
 
 function renderCoupons(res, toggleCouponState) {
-  console.log(toggleCouponState);
+  //console.log(toggleCouponState);
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
             <section role="region" class="coupon-container js-coupon-container ${toggleCouponState.classes}">
               <div class="js-coupon-merchant-logo coupon-merchant-logo">
@@ -337,7 +337,7 @@ function sendUpdateDataToAPI(id, formData){
       console.log('updated field(s) is a success ');
         //console.log(res.coupon);
         const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon);
-        console.log(toggleCouponState);
+        //console.log(toggleCouponState);
         markCouponUsedonDOM(res.coupon, toggleCouponState);
       //}
     },
@@ -356,11 +356,7 @@ function markCouponUsedonDOM(res,toggleCouponState) {
   const editIcon = couponContainer.siblings().find('a.icon.edit-icon');
   //console.log(editIcon);
 
-  console.log(res);
-
-  console.log(res.couponUsed);
-  //console.log(toggleCouponState.dashedStates);
-  //console.log(toggleCouponState.dashedLineImage);
+  //console.log(res);
 
   if (res.couponUsed === false){
     merchantLogoLink.attr('href', res.companyDomain);
