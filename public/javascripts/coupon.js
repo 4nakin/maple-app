@@ -4,18 +4,18 @@ let currentCouponId = null;
 let currentEventListener = null;
 let entireCouponElement = null;
 
-function renderCoupons(res, company, classes) {
+function renderCoupons(res, toggleCouponState) {
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
-            <section role="region" class="coupon-container js-coupon-container ${classes.classes}">
+            <section role="region" class="coupon-container js-coupon-container ${toggleCouponState.classes}">
               <div class="js-coupon-merchant-logo coupon-merchant-logo">
-                <a ${classes.companyUrl} target="_blank" class="js-domain-name">
-                  <img src="${classes.companyLogoStates}" alt="This is an image of the ${res.merchantName} logo" class="js-logo-img">
+                <a ${toggleCouponState.companyDomain} target="_blank" class="js-domain-name">
+                  <img src="${toggleCouponState.companyLogoStates}" alt="This is an image of the ${res.merchantName} logo" class="js-logo-img">
                 </a>
               </div>
               <h2 class="coupon-merchant-name">${res.merchantName}</h2>
               <p class="coupon-description no-margin">${res.description}</p>
               <div class="dashed">
-                <img src="${classes.dashedLineImage}" alt="dashed line to seperate the sections" class="${classes.dashedStates}">
+                <img src="${toggleCouponState.dashedLineImage}" alt="dashed line to seperate the sections" class="${toggleCouponState.dashedStates}">
               </div>
               <p class="coupon-title no-margin">COUPON CODE</p>
               <p class="coupon-code js-coupon-code no-margin ellipse-text" data-toggle="modal" data-target="showCouponImageModal">${res.code}</p>
@@ -25,7 +25,7 @@ function renderCoupons(res, company, classes) {
 
               <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Mark used">
 
-              <a href="" data-toggle="tooltip" data-placement="top" title="Edit" class="icon edit-icon js-edit-icon ${classes.editIconState}">
+              <a href="" data-toggle="tooltip" data-placement="top" title="Edit" class="icon edit-icon js-edit-icon ${toggleCouponState.editIconState}">
                 <img src="images/ui-compose.svg" alt="edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4" class="budicon">
               </a>
 
@@ -118,7 +118,7 @@ function renderCompanyAssets(res, useFallBackFlag){
   return company;
 }
 
-function checkIfCouponShouldBeDisabled(res, company) {
+function checkIfCouponShouldBeDisabled(res) {
   let classes = '';
   let dashedStates = '';
   let dashedLineImage = '';
@@ -126,22 +126,22 @@ function checkIfCouponShouldBeDisabled(res, company) {
   let companyUrl = '';
   let editIconState = '';
 
-  //console.log(res.couponUsed);
+  console.log(res);
 
   if(res.couponUsed !== null && res.couponUsed !== '') {
     if(res.couponUsed === false){
       classes = 'coupon-active';
       dashedStates = 'dashed-line-active';
       dashedLineImage = 'images/dashed-line.png';
-      companyLogoStates = company.logo;
-      companyUrl = `href="${company.domain}"`;
+      companyLogoStates = res.companyLogo;
+      companyUrl = `href="${res.companyDomain}"`;
       editIconState = '';
     }
     if(res.couponUsed === true) {
       classes = 'coupon-disabled';
       dashedStates = 'dashed-line-disabled';
       dashedLineImage = 'images/dashed-line-disable.png';
-      companyLogoStates = company.logoDisabled;
+      companyLogoStates = company.companyLogoUsed;
       companyUrl = '';
       editIconState = 'hide';
     }
@@ -167,6 +167,7 @@ function getUserCoupons() {
     url: '/coupon/',
     type: 'GET',
     success: (res) => {
+      console.log(res);
       const merchants = renderFilterByMerchants(res);
       displayDropDownList(merchants);
       clickedOnMerchantFilter(res, merchants);
@@ -177,50 +178,18 @@ function getUserCoupons() {
       $('.js-signup').addClass('hide');
       $('.js-login').addClass('hide');
 
-      console.log(`The user made it to the Dashboard`);
-      console.log(`The user id is: ${res._userId}`);
-
-      let html = "";
-      let useFallBackFlag;
+      let couponHTML = "";
 
       res.coupons.map((coupon) => {
-        //made renderMerchantUsedLogo sync instead of async
-        let responseClearbit = renderMerchantUsedLogo(coupon.merchantName).responseJSON;
-        //console.log(responseClearbit);
-        //console.log(responseClearbit.logo);
-
-        //run fallback
-        if (responseClearbit.logo === null){
-          useFallBackFlag = 1;
-          //let responseClearbitFallback = renderLogoImageFallback(coupon.merchantName).responseText;
-          //const baseEncoded = base64Encode(responseClearbitFallback);
-          //let logo =`data:image/png;base64,${baseEncoded}`;
-          let newMerchantName = coupon.merchantName.replace(/\s+/g, '');
-          let name = coupon.merchantName;
-          let domain = `https://www.${newMerchantName}.com`;
-          let logo = `https://logo.clearbit.com/${newMerchantName}.com?size=500`;
-          let logoDisabled = `https://logo.clearbit.com/${newMerchantName}.com?size=500&greyscale=true`;
-          const company = {
-            name: name,
-            domain: domain,
-            logo: logo,
-            logoDisabled: logoDisabled
-          }
-
-          //let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
-          const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
-          html += renderCoupons(coupon, company, toggleCouponState);
-        }
-        else {
-          useFallBackFlag = 0;
-          let company = renderCompanyAssets(responseClearbit, useFallBackFlag);
-          const toggleCouponState = checkIfCouponShouldBeDisabled(coupon, company);
-          html += renderCoupons(coupon, company, toggleCouponState);
-        }
+        console.log(coupon);
+        const toggleCouponState = checkIfCouponShouldBeDisabled(coupon);
+        console.log(toggleCouponState);
+        couponHTML += renderCoupons(coupon, toggleCouponState);
       });
 
+
       $('#coupons').css('opacity', '0');
-      $('#coupons').html(html);
+      $('#coupons').html(couponHTML);
 
       $('#coupons').animate({
         opacity: 1,
@@ -471,10 +440,6 @@ function watchSubmitAddNewCouponHandler() {
 
 function sendAddCouponDataToAPI(e) {
   const formData = new FormData(e.target);
-  for (var value of formData.values()) {
-     console.log(value);
-  }
-  //const companyname = $('.input-add-merchantName').val();
   $.ajax({
     url: '/coupon',
     type: 'POST',
@@ -486,59 +451,14 @@ function sendAddCouponDataToAPI(e) {
     contentType: false,
     success: (res) => {
 
-      let useFallBackFlag;
-
       $('#addNewCouponModal').modal('hide');
       $('.input-add-merchantName').val('');
       $('.input-add-code').val('');
       $('.input-add-expirationDate').val('');
       $('.input-add-description').val('');
 
-      console.log(res);
-
-
-      let responseClearbit = renderMerchantUsedLogo(res.merchantName).responseJSON;
-      console.log(responseClearbit);
-      // let company = renderCompanyAssets(responseClearbit);
-      // console.log(company);
-      //
-      // const toggleCouponState = checkIfCouponShouldBeDisabled(res, company);
-      // console.log(toggleCouponState);
-
-      let couponHTML = '';
-      console.log(responseClearbit.logo);
-      //run fallback
-      if (responseClearbit.logo === null){
-        useFallBackFlag = 1;
-        // let responseClearbitFallback = renderLogoImageFallback(res.merchantName).responseText;
-        // const baseEncoded = base64Encode(responseClearbitFallback);
-        // let logo =`data:image/png;base64,${baseEncoded}`;
-        let newMerchantName = res.merchantName.replace(/\s+/g, '');
-        let name = res.merchantName;
-        let domain = `https://www.${newMerchantName}.com`;
-        let logo = `https://logo.clearbit.com/${newMerchantName}.com?size=500`;
-        let logoDisabled = `https://logo.clearbit.com/${newMerchantName}.com?size=500&greyscale=true`;
-        const company = {
-          name: name,
-          domain: domain,
-          logo: logo,
-          logoDisabled: logoDisabled
-        }
-        //let company = renderCompanyAssets(fallbackCompanyInfo, useFallBackFlag);
-        const toggleCouponState = checkIfCouponShouldBeDisabled(res, company);
-        // html += renderCoupons(coupon, company, toggleCouponState);
-        couponHTML = $(renderCoupons(res, company, toggleCouponState));
-      }
-      else {
-        useFallBackFlag = 0;
-        let company = renderCompanyAssets(responseClearbit, useFallBackFlag);
-        const toggleCouponState = checkIfCouponShouldBeDisabled(res, company);
-        console.log(toggleCouponState);
-        // html += renderCoupons(coupon, company, toggleCouponState);
-        couponHTML = $(renderCoupons(res, company, toggleCouponState));
-      }
-
-      //const couponHTML = $(renderCoupons(res, company, toggleCouponState));
+      const toggleCouponState = checkIfCouponShouldBeDisabled(res);
+      let couponHTML = $(renderCoupons(res, toggleCouponState));
 
       couponHTML.css('opacity', '0');
       $('#coupons').append(couponHTML);
@@ -643,70 +563,13 @@ function watchSubmitEditCouponHandler(id) {
       sendCouponToEditFromApi(id, e);
   });
 }
-/*
+
 function sendCouponToEditFromApi(id, e) {
-  const formData = new FormData(e.target);
-  for (var value of formData.values()) {
-     console.log(value);
-  }
-  const companyname = $('.input-edit-merchantName').val();
-  var str = companyname;
-  var newStr = str.replace(/\s+/g, '');
-  console.log(`merchant name inside edit function ${newStr}`);
-  const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
-  const companyUrl = `https://www.${newStr}.com`;
-
-  let _couponId = id;
-
-  console.log(formData);
-
-  //console.log(`If I got here then I should edit this id: ${id} on the DB`);
-    $.ajax({
-      url: `/coupon/${id}`,
-      type: 'PUT',
-      beforeSend: function(xhr) {
-        xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
-      },
-      data: formData,
-      processData: false,
-      contentType: false,
-      success: (res) => {
-        //console.log(`you successfully updated a coupon: ${_couponId}`);
-        //console.log(res);
-
-        var merchantName = $('.input-edit-merchantName').val();
-        var inputCode = $('.input-edit-code').val();
-        var expirationDate = $('.input-edit-expirationDate').val();
-        var inputDescription = $('.input-edit-description').val();
-
-        //let responseClearbit = renderMerchantUsedLogo(res.coupon.merchantName).responseJSON;
-        //let company = renderCompanyAssets(responseClearbit);
-        //const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon, company);
-        //console.log(toggleCouponState);
-
-        //console.log('upon success of edit ' + merchantName + ' ' + companyUrl);
-
-        $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', companyUrl);
-        $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', companyLogoImage);
-        $(`[data-id = ${_couponId}] .coupon-merchant-name`).html(merchantName);
-        $(`[data-id = ${_couponId}] .coupon-code`).html(inputCode);
-        $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(`Valid til ${expirationDate}`);
-        $(`[data-id = ${_couponId}] .coupon-description`).html(inputDescription);
-
-        updateMerchantTofilter();
-      },
-      error: function(err) {
-        console.log(`Something happened when trying to edit ${err}`);
-      }
-    });
-}
-*/
-function sendCouponToEditFromApi(id, e) {
-var formData = new FormData(event.target);
-  for (var [key, value] of formData.entries()) {
-      console.log(key, value);
-      //console.log(value);
-    }
+  var formData = new FormData(event.target);
+  //   for (var [key, value] of formData.entries()) {
+  //       console.log(key, value);
+  //       //console.log(value);
+  //     }
 
   const companyname = $('.input-edit-merchantName').val();
   var str = companyname;
@@ -728,14 +591,6 @@ var formData = new FormData(event.target);
       data: formData,
       processData: false,
       contentType: false,
-
-      // data: {
-      //   merchantName: $('.input-edit-merchantName').val(),
-      //   code: $('.input-edit-code').val(),
-      //   expirationDate: $('.input-edit-expirationDate').val(),
-      //   description: $('.input-edit-description').val()
-      // },
-      //dataType: 'json',
       success: function(res) {
         console.log(res);
         console.log(`you successfully updated a coupon: ${_couponId}`);

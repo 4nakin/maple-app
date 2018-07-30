@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const multer = require('multer');
-
+const axios = require('axios');
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, './uploads/');
@@ -12,7 +12,6 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   }
 });
-
 const upload = multer({storage: storage});
 const path = require('path');
 const {JWT_SECRET} = require('../config');
@@ -74,6 +73,7 @@ router.get('/:id', jwtAuth, (req, res) => {
 });
 
 // CREATES A NEW COUPON
+/*
 router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   console.log(req.file);
   const _userId = getUserIdFromJwt(req);
@@ -99,7 +99,71 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         res.status(500).send(err);
       });
 });
+*/
+router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
+  console.log(req.file);
+  const _userId = getUserIdFromJwt(req);
 
+  let newCoupon;
+
+  axios(
+  {
+    url: 'https://company.clearbit.com/v1/domains/find',
+    params: { name: req.body.merchantName },
+    headers: {
+      'Authorization': 'Bearer sk_7e1d77b7b10477e9d101f3e756dac154'
+    }
+  })
+  .then(function (response) {
+    // handle success
+    const apiData = response.data;
+    newCoupon = new CouponModel({
+      merchantName: apiData.name,
+      code: req.body.code,
+      expirationDate: req.body.expirationDate,
+      description: req.body.description,
+      couponUsed: false,
+      couponDisplayState: 'coupon-active',
+      companyLogo: apiData.logo + '?size=500',
+      companyLogoUsed: apiData.logo + '?size=500&greyscale=true',
+      companyDomain: 'https://www.' + apiData.domain,
+      couponImage: req.file.path,
+      userId: _userId
+    });
+  })
+  .catch(function (error) {
+    // handle error
+    console.log('There was an error ' + error.response.status);
+    if(error.response.status === 404) {
+      newCoupon = new CouponModel({
+        merchantName: req.body.merchantName,
+        code: req.body.code,
+        expirationDate: req.body.expirationDate,
+        description: req.body.description,
+        couponUsed: false,
+        couponDisplayState: 'coupon-active',
+        companyLogo: '/images/defaultImage.png',
+        companyLogoUsed: '/images/defaultImage.png',
+        companyDomain: null,
+        couponImage: req.file.path,
+        userId: _userId
+      });
+    }
+  })
+  .then(function() {
+    newCoupon.save()
+      .then(function(coupon) {
+        const savedCoupon = coupon.toObject();
+        console.log(savedCoupon);
+        res.status(201).json(savedCoupon);
+      })
+      .catch(function(err) {
+        console.error(err);
+        res.status(500).send(err);
+      });
+  })
+
+});
 // DELETES A NEW COUPON
 router.delete('/:id', jwtAuth, (req, res) => {
   //console.log(req);
