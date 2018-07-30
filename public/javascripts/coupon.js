@@ -56,31 +56,6 @@ function getCouponById(id, callback) {
   });
 }
 
-function renderCompanyAssets(res, useFallBackFlag){
-  //console.log(useFallBackFlag);
-  //console.log(res);
-
-  let company = {};
-
-  if(useFallBackFlag = 1){
-    company = {
-      domain: `https://www.${res.domain}`,
-      logo: res.logo,
-      logoDisabled: res.logo+ '?size=500&greyscale=true'
-    };
-  }
-  else {
-    company = {
-      domain: `https://www.${res.domain}`,
-      logo: res.logo+'?size=500',
-      logoDisabled: res.logo+ '?size=500&greyscale=true'
-    };
-  }
-  //console.log(company);
-
-  return company;
-}
-
 function checkIfCouponShouldBeDisabled(res) {
   let classes = '';
   let dashedStates = '';
@@ -293,8 +268,12 @@ function sendUpdateDataToAPI(id, formData){
     processData: false,
     success: (res) => {
       console.log('updated field(s) is a success ');
+      console.log(res);
         const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon);
         markCouponUsedonDOM(res.coupon, toggleCouponState);
+        const merchants = renderFilterByMerchants(res.coupon);
+        displayDropDownList(merchants);
+        clickedOnMerchantFilter(res, merchants);
     },
     error: function(err){
       console.log('something went wrong');
@@ -584,12 +563,12 @@ function displayDropDownList(merchants) {
 }
 
 function clickedOnMerchantFilter(res, merchants) {
-  const coupons = res.coupons;
-  let filteredCoupons = [];
-  let currentMerchant = 0;
-
+  //make sure you have the most recent states of everything.
   $('.dropdown').on('click','.dropdown-item', (e) => {
     e.preventDefault();
+    const coupons = res.coupons;
+    let filteredCoupons = [];
+    let currentMerchant = 0;
 
     let currentTarget = $(e.currentTarget);
     const clickedIndex = currentTarget.attr('data-index');
@@ -600,38 +579,18 @@ function clickedOnMerchantFilter(res, merchants) {
       filteredCoupons = coupons.filter(function(coupon, index) {
         return coupon.merchantName === merchants[currentMerchant];
       });
+      renderSpecificMerchantCouponsOnDOM(filteredCoupons);
     }
     else {
-      $.ajax({
-        beforeSend: function(xhr) {
-          xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
-        },
-        url: '/coupon/',
-        type: 'GET',
-        success: (res) => {
-          let couponHTML = "";
-          res.coupons.map((coupon) => {
-            const toggleCouponState = checkIfCouponShouldBeDisabled(coupon);
-            couponHTML += renderCoupons(coupon, toggleCouponState);
-          });
-
-          $('#coupons').css('opacity', '0');
-          $('#coupons').html(couponHTML);
-
-          $('#coupons').animate({
-            opacity: 1,
-          }, 150);
-        },
-        error: function(err) {
-        }
-      });
+      alert('user wants to reload all merchants. ');
+      getUserCoupons();
     }
 
-    renderSpecificMerchantCouponsOnDOM(filteredCoupons);
   });
 }
 
 function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
+  console.log(filteredByMerchantCoupons);
   let couponHTML = "";
 
   filteredByMerchantCoupons.map(function(coupon){
@@ -649,20 +608,21 @@ function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
 }
 
 function updateMerchantTofilter() {
-  $.ajax({
-    beforeSend: function(xhr) {
-      xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
-    },
-    url: '/coupon/',
-    type: 'GET',
-    success: (res) => {
-      const merchants = renderFilterByMerchants(res);
-      displayDropDownList(merchants);
-      clickedOnMerchantFilter(res, merchants);
-    },
-    error: function(err) {
-    }
-  });
+  // $.ajax({
+  //   beforeSend: function(xhr) {
+  //     xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
+  //   },
+  //   url: '/coupon/',
+  //   type: 'GET',
+  //   success: (res) => {
+  //     const merchants = renderFilterByMerchants(res);
+  //     displayDropDownList(merchants);
+  //     clickedOnMerchantFilter(res, merchants);
+  //   },
+  //   error: function(err) {
+  //   }
+  // });
+  getUserCoupons();
 }
 
 function clickedOnMarkUsed() {
@@ -700,14 +660,7 @@ function renderCouponAsUsed(res) {
   }
 
 }
-//STILL HAVE TO WORK ON!!!!!!
-function checkIfCouponIsPastDue() {
-  console.log('checking if coupon is past due based on date');//this should be done in the backend.
-  //check coupons get responseJSON
-  //from coupons array get expiration Date
-  //then compare if value of expirationDate and today's current date.
-}
-//STILL HAVE TO WORK ON!!!!!!
+
 function showCoupondetails(){
   $('#coupons').on('click', '.js-coupon-code', (e) => {
     e.preventDefault();
@@ -715,10 +668,17 @@ function showCoupondetails(){
     currentCouponId = $(couponContainer).attr('data-id');
     // I want to get the img element and pass it to renderShowCouponImageModal
     let currentCouponImage = $(couponContainer).find('img.hide.js-coupon-image').attr('src');
-    console.log(currentCouponImage);
     $('#showuploadedImageModelSection').html(renderShowCouponImageModal(currentCouponImage));
     $('#showCouponImageModal').modal('show');
   });
+}
+
+//STILL HAVE TO WORK ON!!!!!!
+function checkIfCouponIsPastDue() {
+  console.log('checking if coupon is past due based on date');//this should be done in the backend.
+  //check coupons get responseJSON
+  //from coupons array get expiration Date
+  //then compare if value of expirationDate and today's current date.
 }
 
 function initalizeCouponApp() {
