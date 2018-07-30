@@ -117,19 +117,39 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   .then(function (response) {
     // handle success
     const apiData = response.data;
-    newCoupon = new CouponModel({
-      merchantName: apiData.name,
-      code: req.body.code,
-      expirationDate: req.body.expirationDate,
-      description: req.body.description,
-      couponUsed: false,
-      couponDisplayState: 'coupon-active',
-      companyLogo: apiData.logo + '?size=500',
-      companyLogoUsed: apiData.logo + '?size=500&greyscale=true',
-      companyDomain: 'https://www.' + apiData.domain,
-      couponImage: req.file.path,
-      userId: _userId
-    });
+
+    if(apiData.logo === null){
+      console.log(`company logo is ${apiData.logo}`);
+      newCoupon = new CouponModel({
+        merchantName: apiData.name,
+        code: req.body.code,
+        expirationDate: req.body.expirationDate,
+        description: req.body.description,
+        couponUsed: false,
+        couponDisplayState: 'coupon-active',
+        companyLogo: '/images/defaultImage.png',
+        companyLogoUsed: '/images/defaultImage.png',
+        companyDomain: null,
+        couponImage: req.file.path,
+        userId: _userId
+      });
+    }
+    else{
+      newCoupon = new CouponModel({
+        merchantName: apiData.name,
+        code: req.body.code,
+        expirationDate: req.body.expirationDate,
+        description: req.body.description,
+        couponUsed: false,
+        couponDisplayState: 'coupon-active',
+        companyLogo: apiData.logo + '?size=500',
+        companyLogoUsed: apiData.logo + '?size=500&greyscale=true',
+        companyDomain: 'https://www.' + apiData.domain,
+        couponImage: req.file.path,
+        userId: _userId
+      });
+    }
+
   })
   .catch(function (error) {
     // handle error
