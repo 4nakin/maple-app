@@ -6,8 +6,8 @@ let entireCouponElement = null;
 
 function renderCoupons(res, toggleCouponState) {
   console.log(res);
-  console.log(toggleCouponState);
   return`<section role="role" class="all-coupon-container" data-id="${res._id}">
+            <img src ="${res.couponImage}" alt="coupon image user uploaded for ${res.merchantName}" class="hide js-coupon-image">
             <section role="region" class="coupon-container js-coupon-container ${toggleCouponState.classes}">
               <div class="js-coupon-merchant-logo coupon-merchant-logo">
                 <a ${toggleCouponState.companyDomain} target="_blank" class="js-domain-url domain-url">
@@ -235,7 +235,7 @@ function renderAddModal() {
         </div>`;
 }
 
-function renderShowCouponImageModal(){
+function renderShowCouponImageModal(imgPath){
   return `<div class="modal fade" id="showCouponImageModal" tabindex="-1" role="dialog" aria-labelledby="showCouponImageModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
@@ -244,9 +244,9 @@ function renderShowCouponImageModal(){
                       <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-                <div class="modal-body">
-                  <h5 class="modal-title" id="showCouponImageModalLabel">Coupon details</h5>
-                  <img src="" alt="" class="couponImageContainer coupon-Image-Big">
+                <div class="modal-body block-center">
+                  <h5 class="modal-title" id="showCouponImageModalLabel">Coupon Image</h5>
+                  <img src="${imgPath}" alt="" class="couponImageContainer coupon-Image-Big">
               </div>
             </div>
           </div>
@@ -417,7 +417,6 @@ function watchDeleteBtnHandler() {
   $('#js-list-coupons-section').on('click','.js-delete-icon', (e) => {
       e.preventDefault();
       currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
-      //console.log(`The coupon id: ${currentCouponId}`);
       const container = $(e.currentTarget).parent().parent();
       sendCouponToDeleteFromApi(currentCouponId, container);
     });
@@ -731,9 +730,14 @@ function checkIfCouponIsPastDue() {
 //STILL HAVE TO WORK ON!!!!!!
 function showCoupondetails(){
   $('#coupons').on('click', '.js-coupon-code', (e) => {
-      //alert('yes you made it');
-      $('#showuploadedImageModelSection').html(renderShowCouponImageModal());
-      $('#showCouponImageModal').modal('show');
+    e.preventDefault();
+    const couponContainer = $(e.target).parent().parent();
+    currentCouponId = $(couponContainer).attr('data-id');
+    // I want to get the img element and pass it to renderShowCouponImageModal
+    let currentCouponImage = $(couponContainer).find('img.hide.js-coupon-image').attr('src');
+    console.log(currentCouponImage);
+    $('#showuploadedImageModelSection').html(renderShowCouponImageModal(currentCouponImage));
+    $('#showCouponImageModal').modal('show');
   });
 }
 

@@ -115,8 +115,8 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         description: req.body.description,
         couponUsed: false,
         couponDisplayState: 'coupon-active',
-        companyLogo: apiData.logo + '?size=500',
-        companyLogoUsed: apiData.logo + '?size=500&greyscale=true',
+        companyLogo: apiData.logo + '?size=200',
+        companyLogoUsed: apiData.logo + '?size=200&greyscale=true',
         companyDomain: 'https://www.' + apiData.domain,
         couponImage: req.file.path,
         userId: _userId
