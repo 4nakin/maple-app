@@ -271,9 +271,6 @@ function sendUpdateDataToAPI(id, formData){
       console.log(res);
         const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon);
         markCouponUsedonDOM(res.coupon, toggleCouponState);
-        const merchants = renderFilterByMerchants(res.coupon);
-        displayDropDownList(merchants);
-        clickedOnMerchantFilter(res, merchants);
     },
     error: function(err){
       console.log('something went wrong');
@@ -363,7 +360,7 @@ function sendAddCouponDataToAPI(e) {
         opacity: 1,
       }, 500);
 
-      updateMerchantTofilter();
+       getUserCoupons();
     },
     error: function(err){
       console.log('something went wrong');
@@ -405,7 +402,7 @@ function sendCouponToDeleteFromApi(id, container) {
           container.remove();
         });
 
-        updateMerchantTofilter();
+         getUserCoupons();
       },
       error: function(err) {
         console.log(`Something happened when trying to delete ${err}`);
@@ -501,7 +498,7 @@ function sendCouponToEditFromApi(id, e) {
         $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(`Valid til ${expirationDate}`);
         $(`[data-id = ${_couponId}] .coupon-description`).html(inputDescription);
 
-        updateMerchantTofilter();
+         getUserCoupons();
       },
       error: function(err) {
         console.log(`Something happened when trying to edit ${err}`);
@@ -541,6 +538,7 @@ function renderDropDown(htmlCode) {
 }
 
 function renderFilterByMerchants(res) {
+  console.log(res);
   const coupons = res.coupons;
   let merchants = [];
   // Generate unique list of merchants
@@ -566,26 +564,45 @@ function clickedOnMerchantFilter(res, merchants) {
   //make sure you have the most recent states of everything.
   $('.dropdown').on('click','.dropdown-item', (e) => {
     e.preventDefault();
-    const coupons = res.coupons;
-    let filteredCoupons = [];
-    let currentMerchant = 0;
 
-    let currentTarget = $(e.currentTarget);
-    const clickedIndex = currentTarget.attr('data-index');
-    currentMerchant = clickedIndex;
+    $.ajax({
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
+      },
+      url: '/coupon/',
+      type: 'GET',
+      success: (res) => {
+        console.log(res);
+        const coupons = res.coupons;
+        let filteredCoupons = [];
+        let currentMerchant = 0;
 
-    if(currentMerchant >= 0) {
-      // Generate filtered coupons to then be rendered
-      filteredCoupons = coupons.filter(function(coupon, index) {
-        return coupon.merchantName === merchants[currentMerchant];
-      });
-      renderSpecificMerchantCouponsOnDOM(filteredCoupons);
-    }
-    else {
-      alert('user wants to reload all merchants. ');
-      getUserCoupons();
-    }
+        let currentTarget = $(e.currentTarget);
+        const clickedIndex = currentTarget.attr('data-index');
+        currentMerchant = clickedIndex;
 
+        if(currentMerchant >= 0) {
+          // Generate filtered coupons to then be rendered
+          filteredCoupons = coupons.filter(function(coupon, index) {
+            return coupon.merchantName === merchants[currentMerchant];
+          });
+          renderSpecificMerchantCouponsOnDOM(filteredCoupons);
+        }
+        else {
+          //alert('user wants to reload all merchants. ');
+          getUserCoupons();
+        }
+
+      },
+      error: function(err) {
+        if(token === null) {
+          console.log('Token is empty and you are not logged in. Please log in!!!');
+        }
+        else{
+          console.log('something went wrong when trying to get to the protected endpoint');
+        }
+      }
+    });
   });
 }
 
@@ -605,24 +622,6 @@ function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
     opacity: 1,
   }, 150);
 
-}
-
-function updateMerchantTofilter() {
-  // $.ajax({
-  //   beforeSend: function(xhr) {
-  //     xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
-  //   },
-  //   url: '/coupon/',
-  //   type: 'GET',
-  //   success: (res) => {
-  //     const merchants = renderFilterByMerchants(res);
-  //     displayDropDownList(merchants);
-  //     clickedOnMerchantFilter(res, merchants);
-  //   },
-  //   error: function(err) {
-  //   }
-  // });
-  getUserCoupons();
 }
 
 function clickedOnMarkUsed() {
