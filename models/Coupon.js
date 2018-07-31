@@ -21,6 +21,21 @@ const CouponSchema = mongoose.Schema({
     couponUsed: {
         type: Boolean
     },
+    couponDisplayState: {
+        type: String
+    },
+    companyDomain: {
+      type: String
+    },
+    companyLogo: {
+      type: String
+    },
+    companyLogoUsed: {
+      type: String
+    },
+    couponImage: {
+      type: String
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId
       //required: true
@@ -35,6 +50,11 @@ CouponSchema.methods.serialize = function () {
         expirationDate: this.expirationDate,
         description: this.description,
         couponUsed: this.couponUsed,
+        couponDisplayState: this.couponDisplayState,
+        companyDomain: this.companyDomain,
+        companyLogo: this.companyLogo,
+        companyLogoUsed: this.companyLogo,
+        couponImage: this.couponImage,
         userId: this.userId
     };
 }

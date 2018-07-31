@@ -1,0 +1,569 @@
+/*INDEX PAGE*/
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.tooltip { pointer-events: none; }
+
+.uploaded-coupon-image {
+  display: inline-block;
+  margin: 8px 0 8px 0;
+  width: 100px;
+  background: #000;
+}
+
+.ellipse-text {
+  overflow-y: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.limitsOnInputs {
+  color: #999;
+  display: inline-block;
+
+}
+
+.container {
+  max-width: 974px;
+}
+
+/* HELPER CLASSES */
+.margin-spacing {
+  margin: 0 10px;
+}
+
+.block-center {
+  margin: 0 auto;
+}
+
+.inlineBlock-center {
+  text-align: center;
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+/* BOOTSTRAP OVERRIDES */
+.navbar-brand {
+  font-weight: 600;
+}
+
+.nav-item li{
+  line-height: 24px;
+}
+
+.modal-content {
+  border-radius: 18px;
+  border: none;
+}
+
+.modal-header {
+  border-bottom: 0;
+}
+
+.modal-title {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.modal-body {
+  padding: 0 30px 20px 30px;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+.form-control {
+  border: 1px solid #C7C7C7;
+  border-radius: 8px;
+  padding: 8px 8px;
+  font-size: 12px;
+}
+
+#filter {
+  margin: 20px auto;
+}
+
+#my-drop-down {
+   padding: 20px;
+   margin-top: -6px;
+   border: 0;
+   border-radius: 0;
+   background: black;
+ }
+
+nav {
+  height: 50px;
+  padding: 24px 35px;
+  box-shadow: 0 5px 8px 0 rgba(0,0,0,.04);
+}
+
+nav ul {
+  list-style: none;
+  float: right;
+}
+
+nav li {
+  font-size: 14px;
+  font-weight: 400;
+  color: #999;
+  float: left;
+  line-height: 24px;
+  padding: 0 10px;
+}
+
+nav li a {
+  text-decoration: none;
+  color: #999;
+}
+
+.navbar-nav {
+ background: #FFFFFF;
+ margin-top: 5px;
+ margin-bottom: 10px;
+ text-align: right;
+}
+
+.no-margin {
+  margin-bottom: 0;
+}
+
+/* HEADER */
+
+header {
+  display: inline-block;
+  display: flex;
+  align-items: center;
+}
+
+header .wallet-logo {
+  width: 31px;
+  margin-right: 10px;
+}
+
+header .app-logo {
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #4A4A4A;
+  display: inline-block;
+  line-height: 25px;
+  margin-bottom: 0;
+}
+
+header .app-logo a {
+  text-decoration: none;
+  color: #4A4A4A;
+}
+
+main .app-title {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 48px;
+  color: #4A4A4A;
+  margin-top: 40px;
+}
+
+main .app-description {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 35px;
+  max-width: 478px;
+  min-width: 300px;
+  margin: 30px auto 43px auto;
+}
+
+main .coupon-main-img {
+  width: 300px;
+  display: block;
+  padding: 35px 0 0 0;
+}
+
+
+/* BUTTON STYLES */
+.button {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 7px 19px;
+  border: none;
+  border-radius: 25px;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+}
+
+button:disabled {
+  background-color: #d8d8d8;
+  cursor: no-drop;
+}
+
+.solid {
+  background: #4A4A4A;
+  color: #FFF;
+}
+
+.outline {
+  border: 1px solid #4A4A4A;
+  color: #4A4A4A;
+}
+
+
+.button.outline:hover {
+    background-color: #4A4A4A;
+    color: white;
+}
+
+.btn-secondary, .btn-secondary:hover, .btn-secondary:active, .btn-secondary:visited {
+    background-color: #4A4A4A;
+}
+
+.dropdown-toggle{
+  background-color: #4A4A4A;
+  border-color: #4A4A4A;
+}
+ .show>.btn-secondary.dropdown-toggle {
+    background-color: #4A4A4A;
+}
+
+#signup-section {
+  margin: 0 auto;
+  margin-top: 70px;
+}
+
+#signup-section h1 {
+  margin-top: 15px;
+  color: #4A4A4A;
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+#signup-section .signup-form {
+  width: 290px;
+  max-width: 410px;
+  margin: 0 auto;
+}
+
+#signup-section .form-group {
+  margin-bottom: 20px;
+}
+
+#signup-section label {
+  color: #6c757d;
+  display: block;
+  margin-bottom: 12px;
+}
+#signup-section input {
+  border: 1px solid #C7C7C7;
+  height: 45px;
+  border-radius: 10px;
+  display: block;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #4A4A4A;
+  padding-left: 8px;
+}
+
+#signup-section button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px 0;
+}
+
+#login-link-section {
+  text-align: center;
+  margin-top: 54px;
+}
+
+#login-section {
+  margin: 0 auto;
+  margin-top: 70px;
+}
+
+#login-section h1 {
+  margin-top: 15px;
+  color: #4A4A4A;
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+#login-section .login-form {
+  width: 290px;
+  max-width: 410px;
+  margin: 0 auto;
+}
+
+#login-section .form-group {
+  margin-bottom: 20px;
+}
+
+#login-section label {
+  color: #6c757d;
+  display: block;
+  margin-bottom: 12px;
+}
+
+#login-section input {
+  border: 1px solid #C7C7C7;
+  height: 45px;
+  border-radius: 10px;
+  display: block;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #4A4A4A;
+  padding-left: 8px;
+}
+
+#login-section button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px 0;
+}
+
+#signup-link-section {
+  text-align: center;
+  margin-top: 54px;
+}
+
+#js-list-coupons-section {
+  margin: 40px 0 0 0;
+}
+
+#js-list-coupons-section .wrapper {
+  margin: 0 auto 30px auto;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  width: 204px;
+}
+
+#js-list-coupons-section .add-new-coupon-btn {
+  margin: 10px auto;
+}
+
+#js-list-coupons-section h1{
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 600;
+  color: #4A4A4A;
+  text-align: center;
+  margin: 0 0 30px 0;
+}
+
+#coupons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.all-coupon-container {
+  margin: 0 5.75px;
+}
+
+.coupon-active {
+  border: 1px solid #d8d8d8;
+  background: linear-gradient(#6D5EF1, #C86DD7);
+  color: #FFF;
+}
+
+.coupon-disabled {
+  border: 2px dashed rgba(74,74,74,.50);
+  background: #E5E5E5;
+  color: #9B9B9B;
+}
+
+.coupon-container {
+  position: relative;
+  border-radius: 16px;
+  width: 204px;
+  height: 363px;
+  box-shadow: 0 5px 9px 0 rgba(0,0,0,.09);
+}
+
+.coupon-merchant-logo {
+  display: block;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  margin: 25px auto 20px auto;
+}
+
+.domain-url {
+  display: inline-block;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+}
+
+
+.coupon-merchant-logo img {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  box-shadow: 0 5px 13px 0 rgba(0,0,0,.09);
+}
+
+.coupon-container .coupon-merchant-name {
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 22px;
+  line-height: 24px;
+  width: 163px;
+  margin: 0 auto 5px auto;
+  text-transform: capitalize;
+}
+
+.coupon-container .coupon-description {
+  font-size: 10px;
+  font-weight: 300;
+  width: 163px;
+  height: 40px;
+  overflow-wrap: break-word;
+  line-height: 20px;
+  margin: 0 auto 5px auto;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.dashed {
+  margin-bottom: 13px;
+}
+
+.coupon-container .coupon-title {
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.coupon-container .coupon-code {
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.coupon-container .coupon-expiration-date {
+  font-size: 10px;
+  font-weight: 300;
+  text-align: center;
+}
+
+.coupon-actions-nav {
+  margin-top: 28px;
+  margin-bottom: 50px;
+  border: 1px solid #C0C0C0;
+  border-radius: 12px;
+  width: 204px;
+  padding: 12px 0;
+  text-align: center;
+}
+
+.budicon {
+  width: 20px;
+  height: 20px;
+}
+
+.icon {
+  margin: 0 10px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.icon:hover {
+  text-decoration: none;
+}
+
+/* ADD NEW COUPON MODAL */
+.submit-add-coupon-btn,
+.submit-edit-coupon-btn,
+.submit-upload-image-coupon-btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  width: 100%;
+}
+
+input[type=file]{
+  display: block;
+}
+
+.couponImageContainer{
+  width: 300px;
+  display: block;
+  background: #000;
+  margin: 20px 0;
+}
+
+
+/* Extra small devices (portrait phones, less than 576px)
+No media query for `xs` since this is the default in Bootstrap */
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) { ... }
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .modal-body {
+    padding: 0 50px 40px 50px;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+
+  .navbar {
+    padding: 24px 35px;
+  }
+
+  .navbar-nav {
+   background: #FFFFFF;
+   margin-top: 5px;
+   margin-bottom: 10px;
+   text-align: right;
+  }
+
+  #js-list-coupons-section .wrapper {
+    width: 100%;
+    position: relative;
+  }
+
+  #js-list-coupons-section .add-new-coupon-btn {
+    position: absolute;
+    right: 5%;
+    top: .5px;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) { ... }

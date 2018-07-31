@@ -1,10 +1,13 @@
 <% include ../partials/header %>
 <% include ../partials/navigation %>
-<% include ../partials/outputMessage %>
-    <main role="main" class="container">
-        <header role="banner">
-            <h1>Hello World - Home Page</h1>
-        </header>
-    </main>
-    <script src="/javascripts/index.js"></script>
+  <main role="main" class="container">
+    <h2 class="app-title inlineBlock-center">Digital Coupon Wallet</h2>
+    <p class="app-description inlineBlock-center">Never lose your coupon savings. Sign up and upload your coupon to be notified before they expire.</p>
+    <section role="region" class="inlineBlock-center">
+      <button class="button solid margin-spacing js-signup-btn">Signup</button>
+      <button class="button outline margin-spacing js-login-btn">Login</button>
+    </section>
+    <img src="/images/coupon-main@2x.png" alt="coupon-screen" class="coupon-main-img block-center">
+  </main>
+  <script src="/javascripts/index.js"></script>
 <% include ../partials/footer %>

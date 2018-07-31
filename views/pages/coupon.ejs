@@ -1,27 +1,40 @@
 <% include ../partials/header %>
     <% include ../partials/navigation %>
     <% include ../partials/outputMessage %>
-        <section role="region" class="container js-coupon-section">
-            <div class="coupon-add-nav">
-                <button type="button" class="btn btn-primary js-add-new-coupon-btn" data-toggle="modal" data-target="#addNewCouponModal">
-                    <span class="icon-budicon-classic-1" aria-hidden="true">Add a new coupon</span>
-                </button>
-            </div>
-
-            <header role="banner">
-                <h1 class="header-title">Your Coupons</h1>
-            </header>
-
+        <section role="region" class="js-coupon-section container">
             <section role="region" class="list-coupons-section" id="js-list-coupons-section">
-              <div id="coupons"></div>
+              <div class="wrapper">
+                <h1>Dashboard</h1>
+                <section role="region" class="add-new-coupon-btn">
+                  <button type="button" class="btn btn-secondary js-add-new-coupon-btn" data-toggle="modal" data-target="#addNewCouponModal">
+                    <img src="images/add-icon@3x.svg" alt="add-icon" class="budicon add-icon">
+                    Add Coupon
+                  </button>
+                </section>
+
+                <section role ="region" id="filter">
+                  <!--filtering code goes here -->
+                </section>
+              </div>
+
+              <div id="coupons" aria-live="polite">
+                  <!-- coupons will render here -->
+              </div>
+
             </section>
 
-            <section role="region" id="addNewCouponModelSection">
+            <section role="region" id="addNewCouponModelSection" aria-live="assertive">
                 <!-- Add modal will render here -->
             </section>
-            <section role="region" id="editCouponModelSection">
+
+            <section role="region" id="editCouponModelSection" aria-live="assertive">
                 <!-- Edit modal will render here -->
             </section>
+
+            <section role="region" id="showuploadedImageModelSection" aria-live="assertive">
+                <!-- show uploaded coupon Image modal will render here -->
+            </section>
+
         </section>
       <script src="/javascripts/index.js"></script>
       <script src="javascripts/coupon.js"></script>

@@ -13,5 +13,10 @@ router.get('/login', function(req, res) {
     res.render('pages/login', { title: 'Login' });
 });
 
+router.get('/dashboard', function(req, res) {
+    res.render('pages/coupon', { title: 'Dashboard' });
+});
+
+
 
 module.exports = router;

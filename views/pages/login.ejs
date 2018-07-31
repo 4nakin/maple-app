@@ -1,23 +1,27 @@
 <% include ../partials/header %>
   <% include ../partials/navigation %>
-    <main role="main"></main>
-      <% include ../partials/outputMessage %>
-        <section role="region" class="container" id="login-section">
+        <main role="main" class="container" id="login-section">
             <h1>Login</h1>
-            <form action="/auth" method="post" id="js-login-form">
+            <% include ../partials/outputMessage %>
+            <form action="/auth" method="post" id="js-login-form" class="login-form">
             <div class="form-group">
                 <label>Username:</label>
                 <input type="text" name="username" class="form-control" id="input-username" required/>
             </div>
             <div class="form-group">
                 <label>Password:</label>
-                <input type="password" name="password" class="form-control" id="input-password" required/>
+                <input type="password" name="password" class="form-control" id="input-password" aria-describedby="passwordHelpInline" required/>
+                <small id="passwordHelpInline" class="text-muted">
+                  Must be 10-20 characters long.
+                </small>
             </div>
-              <button type="submit" class="btn btn-primary " value="Login">Login</button>
+              <button type="submit" class="button solid" value="Login">Login</button>
             </form>
-        </section>
+        </main>
+
         <section role="region" id="signup-link-section">
             <p>Not yet a user? <a href="/signup">Sign up</a></p>
         </section>
+
         <script src="/javascripts/index.js"></script>
 <% include ../partials/footer %>
