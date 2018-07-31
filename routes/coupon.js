@@ -95,7 +95,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
       console.log(`company logo is ${apiData.logo}`);
       newCoupon = new CouponModel({
         merchantName: apiData.name,
-        code: req.body.code,
+        code: req.body.code.trim(),
         expirationDate: req.body.expirationDate,
         description: req.body.description,
         couponUsed: false,
@@ -110,7 +110,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
     else{
       newCoupon = new CouponModel({
         merchantName: apiData.name,
-        code: req.body.code,
+        code: req.body.code.trim(),
         expirationDate: req.body.expirationDate,
         description: req.body.description,
         couponUsed: false,
@@ -130,7 +130,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
     if(error.response.status === 404) {
       newCoupon = new CouponModel({
         merchantName: req.body.merchantName,
-        code: req.body.code,
+        code: req.body.code.trim(),
         expirationDate: req.body.expirationDate,
         description: req.body.description,
         couponUsed: false,
@@ -188,7 +188,7 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   // }
 
   const updated = {};
-  const updateableFields = ['merchantName', 'code', 'expirationDate', 'description'];
+  const updateableFields = ['merchantName', 'code', 'expirationDate', 'description', 'couponImage'];
 
   console.log('************** Updated Fields **************');
   updateableFields.forEach(field => {

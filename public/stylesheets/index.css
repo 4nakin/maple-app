@@ -13,6 +13,13 @@ body {
 
 .tooltip { pointer-events: none; }
 
+.uploaded-coupon-image {
+  display: inline-block;
+  margin: 8px 0 8px 0;
+  width: 100px;
+  background: #000;
+}
+
 .ellipse-text {
   overflow-y: hidden;
   white-space: nowrap;

@@ -245,9 +245,12 @@ function renderEditModal() {
                                 </div>
 
                                 <div class="form-group">
-                                  <label for="couponImage">Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span>
-                                  </label>
-                                  <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
+                                  <div>
+                                    <img src="" alt="coupon image that user uploaded" class="js-uploaded-coupon-image uploaded-coupon-image">
+                                    current image
+                                  </div>
+                                  <label for="couponImage">Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></label>
+                                  <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg"/>
                                   <label for="couponImage" class="custom-file-upload"></label>
                                 </div>
                                 <div class="">
@@ -335,6 +338,9 @@ function watchSubmitAddNewCouponHandler() {
 
 function sendAddCouponDataToAPI(e) {
   const formData = new FormData(e.target);
+  for (var [key, value] of formData.entries()) {
+      console.log(key, value);
+  }
   $.ajax({
     url: '/coupon',
     type: 'POST',
@@ -357,7 +363,7 @@ function sendAddCouponDataToAPI(e) {
 
       couponHTML.css('opacity', '0');
       $('#coupons').append(couponHTML);
-      console.log(couponHTML);
+      //console.log(couponHTML);
 
       couponHTML.animate({
         opacity: 1,
@@ -428,21 +434,25 @@ function watchEditBtnHandler() {
 
       //get the values currently in the input fields for that getCouponid
       const couponObject = $(e.currentTarget).parent().parent();
+      //console.log(couponObject);
       const merchantNameText = $(couponObject).find('h2.coupon-merchant-name').text();
       const codeText = $(couponObject).find('p.coupon-code').text();
       const expirationDateText = $(couponObject).find('p.coupon-expiration-date').text();
       const descriptionText = $(couponObject).find('p.coupon-description').text();
+      const couponImage = $(couponObject).find('img.hide.js-coupon-image').attr('src');
 
       console.log(merchantNameText);
       console.log(codeText);
       console.log(expirationDateText);
       console.log(descriptionText);
+      console.log(couponImage);
 
       //this puts value in the fields
       $('.input-edit-merchantName').val(merchantNameText);
       $('.input-edit-code').val(codeText);
       document.querySelector('.input-edit-expirationDate').valueAsDate = new Date(expirationDateText);
       $('.input-edit-description').val(descriptionText);
+      $('.js-uploaded-coupon-image').attr('src', couponImage);
 
       //pull the values that the user types in the inputs
       watchSubmitEditCouponHandler(currentCouponId);
@@ -459,23 +469,14 @@ function watchSubmitEditCouponHandler(id) {
 }
 
 function sendCouponToEditFromAPI(id, e) {
-  var formData = new FormData(event.target);
-  //   for (var [key, value] of formData.entries()) {
-  //       console.log(key, value);
-  //       //console.log(value);
-  //     }
-
-  const companyname = $('.input-edit-merchantName').val();
-  var str = companyname;
-  var newStr = str.replace(/\s+/g, '');
-  console.log(`merchant name inside edit function ${newStr}`);
-  const companyLogoImage = `https://logo.clearbit.com/${newStr}.com?size=500`;
-  const companyUrl = `https://www.${newStr}.com`;
-  //console.log(formData.get('couponImage').name);
+  var formData = new FormData(e.target);
+    for (var [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
 
   let _couponId = id;
 
-  console.log(`If I got here then I should edit this id: ${id} on the DB`);
+  //console.log(`If I got here then I should edit this id: ${id} on the DB`);
     $.ajax({
       url: `/coupon/${id}`,
       type: 'PUT',
@@ -487,21 +488,17 @@ function sendCouponToEditFromAPI(id, e) {
       contentType: false,
       success: function(res) {
         console.log(res);
+
+        $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', res.companyDomain);
+        $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', res.companyLogo);
+        $(`[data-id = ${_couponId}] .coupon-merchant-name`).html(res.merchantName);
+        $(`[data-id = ${_couponId}] .coupon-code`).html(res.code);
+        $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(`Valid til ${res.expirationDate}`);
+        $(`[data-id = ${_couponId}] .coupon-description`).html(res.description);
+
         console.log(`you successfully updated a coupon: ${_couponId}`);
 
-        var merchantName = $('.input-edit-merchantName').val();
-        var inputCode = $('.input-edit-code').val();
-        var expirationDate = $('.input-edit-expirationDate').val();
-        var inputDescription = $('.input-edit-description').val();
-
-        $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', companyUrl);
-        $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', companyLogoImage);
-        $(`[data-id = ${_couponId}] .coupon-merchant-name`).html(merchantName);
-        $(`[data-id = ${_couponId}] .coupon-code`).html(inputCode);
-        $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(`Valid til ${expirationDate}`);
-        $(`[data-id = ${_couponId}] .coupon-description`).html(inputDescription);
-
-         getUserCoupons();
+        getUserCoupons();
       },
       error: function(err) {
         console.log(`Something happened when trying to edit ${err}`);
