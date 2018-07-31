@@ -60,8 +60,6 @@ function checkIfCouponShouldBeDisabled(res) {
   let companyDomain = '';
   let editIconState = '';
 
-  //console.log(res);
-
   if(res.couponUsed !== null && res.couponUsed !== '') {
     if(res.couponUsed === false){
       classes = 'coupon-active';
@@ -343,7 +341,6 @@ function sendAddCouponDataToAPI(e) {
     processData: false,
     contentType: false,
     success: (res) => {
-
       $('#addNewCouponModal').modal('hide');
       $('.input-add-merchantName').val('');
       $('.input-add-code').val('');
@@ -357,7 +354,6 @@ function sendAddCouponDataToAPI(e) {
 
       couponHTML.css('opacity', '0');
       $('#coupons').append(couponHTML);
-      //console.log(couponHTML);
 
       couponHTML.animate({
         opacity: 1,
@@ -382,7 +378,6 @@ function watchDeleteBtnHandler() {
 }
 
 function sendCouponToDeleteFromAPI(id, container) {
-  //console.log(`if I got here then i should delete this id: ${id} from the DB`);
     $.ajax({
       url: `/coupon/${id}`,
       type: 'DELETE',
@@ -391,13 +386,10 @@ function sendCouponToDeleteFromAPI(id, container) {
       },
       dataType: 'json',
       success: (res) => {
-
         $('.js-delete-icon').tooltip('hide');
         $('.js-complete-icon').tooltip('hide');
         $('.js-upload-icon').tooltip('hide');
         $('.js-edit-icon').tooltip('hide');
-
-        //console.log(`you successfully deleted a coupon`);
 
         container.animate({
           opacity: 0,
@@ -457,14 +449,13 @@ function watchSubmitEditCouponHandler(id) {
 }
 
 function sendCouponToEditFromAPI(id, e) {
-  var formData = new FormData(e.target);
-    for (var [key, value] of formData.entries()) {
-        console.log(key, value);
-    }
+    let formData = new FormData(e.target);
+      for (var [key, value] of formData.entries()) {
+          console.log(key, value);
+        }
 
-  let _couponId = id;
+    let _couponId = id;
 
-  //console.log(`If I got here then I should edit this id: ${id} on the DB`);
     $.ajax({
       url: `/coupon/${id}`,
       type: 'PUT',
@@ -475,7 +466,6 @@ function sendCouponToEditFromAPI(id, e) {
       processData: false,
       contentType: false,
       success: function(res) {
-        console.log(res);
 
         $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', res.companyDomain);
         $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', res.companyLogo);
@@ -577,7 +567,6 @@ function clickedOnMerchantFilter(res, merchants) {
           renderSpecificMerchantCouponsOnDOM(filteredCoupons);
         }
         else {
-          //alert('user wants to reload all merchants. ');
           getUserCoupons();
         }
 

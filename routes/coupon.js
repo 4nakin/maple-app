@@ -168,7 +168,7 @@ router.delete('/:id', jwtAuth, (req, res) => {
 // EDITS A NEW COUPON
 router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   console.log(req.file);
-  console.log(req.file.path);
+  //console.log(req.file.path);
 
   console.log(`req.params.id:  ${req.params.id}`);
   console.log(`req.body.id: ${req.body.id}`);
@@ -181,6 +181,7 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
       console.log('** Formatted Merchant Name  ' + req.body[key] + '  **');
     }
   });
+  console.log('was the image file provided? ' + req.file);
 console.log('************** End of User Edited **************\n');
 
   // if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
@@ -196,16 +197,13 @@ console.log('************** End of User Edited **************\n');
   updateableFields.forEach(field => {
     if(field in req.body) {
       updated[field] = req.body[field];
-      console.log(field +' : ' + updated[field]);
+      //console.log(field +' : ' + updated[field]);
     }
   });
 
-
-  console.log(req.file[0]);
-
-  if(req.file.path !== '' || req.file.path !== undefined ){
+   if(req.file !== undefined ){
     updated.couponImage = req.file.path;
-  }
+   }
 
   console.log(updated);
 
