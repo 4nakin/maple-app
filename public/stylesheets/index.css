@@ -11,6 +11,8 @@ body {
   font-weight: 400;
 }
 
+.tooltip { pointer-events: none; }
+
 .ellipse-text {
   overflow-y: hidden;
   white-space: nowrap;

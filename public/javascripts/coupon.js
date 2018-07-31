@@ -20,7 +20,11 @@ function renderCoupons(res, toggleCouponState) {
                 <img src="${toggleCouponState.dashedLineImage}" alt="dashed line to seperate the sections" class="${toggleCouponState.dashedStates}">
               </div>
               <p class="coupon-title no-margin">COUPON CODE</p>
-              <p class="coupon-code js-coupon-code no-margin ellipse-text" data-toggle="modal" data-target="showCouponImageModal">${res.code}</p>
+
+              <p class="coupon-code js-coupon-code no-margin ellipse-text" data-toggle="modal" data-target="showCouponImageModal">
+                <a data-toggle="tooltip" data-placement="top" title="Click to see coupon Image uploaded" class="js-show-coupon-image show-coupon-image">${res.code}</a>
+              </p>
+
               <p class="coupon-expiration-date no-margin">Valid till ${res.expirationDate}</p>
             </section>
             <section role="region" class="coupon-actions-nav">
@@ -222,12 +226,12 @@ function renderEditModal() {
                             <form id="js-edit-coupon-form">
                                 <div class="form-group">
                                     <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(15 charater limit)</span></label>
-                                    <input type="text" name="merchantName" class="form-control input-edit-merchantName" maxlength="14" required>
+                                    <input type="text" name="merchantName" class="form-control input-edit-merchantName" maxlength="14" minlength="4" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="code">Code <span class ="limitsOnInputs">(15 charater limit)</span></label>
-                                    <input type="text" name="code" class="form-control input-edit-code" maxlength="15" required>
+                                    <input type="text" name="code" class="form-control input-edit-code" maxlength="15"  minlength="4" required>
                                 </div>
 
                                 <div class="form-group">
@@ -237,7 +241,7 @@ function renderEditModal() {
 
                                 <div class="form-group">
                                     <label for="description">Description <span class ="limitsOnInputs">(40 charater limit)</span></label>
-                                    <input type="text" name="description" class="form-control input-edit-description" maxlength="40" required>
+                                    <input type="text" name="description" class="form-control input-edit-description" maxlength="40" minlength="4" required>
                                 </div>
 
                                 <div class="form-group">
@@ -325,7 +329,6 @@ function watchSubmitAddNewCouponHandler() {
   $('#js-add-coupon-form').on('submit', (e) => {
     e.preventDefault();
     console.log('you added a coupon');
-    //console.log(e);
     sendAddCouponDataToAPI(e);
   });
 }
@@ -354,7 +357,7 @@ function sendAddCouponDataToAPI(e) {
 
       couponHTML.css('opacity', '0');
       $('#coupons').append(couponHTML);
-      //$('#coupons').prepend(couponHTML);
+      console.log(couponHTML);
 
       couponHTML.animate({
         opacity: 1,
@@ -374,11 +377,11 @@ function watchDeleteBtnHandler() {
       e.preventDefault();
       currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
       const container = $(e.currentTarget).parent().parent();
-      sendCouponToDeleteFromApi(currentCouponId, container);
+      sendCouponToDeleteFromAPI(currentCouponId, container);
     });
 }
 
-function sendCouponToDeleteFromApi(id, container) {
+function sendCouponToDeleteFromAPI(id, container) {
   //console.log(`if I got here then i should delete this id: ${id} from the DB`);
     $.ajax({
       url: `/coupon/${id}`,
@@ -451,11 +454,11 @@ function watchSubmitEditCouponHandler(id) {
       e.preventDefault();
       console.log('you want to update a coupon');
       $('#editCouponModal').modal('hide');
-      sendCouponToEditFromApi(id, e);
+      sendCouponToEditFromAPI(id, e);
   });
 }
 
-function sendCouponToEditFromApi(id, e) {
+function sendCouponToEditFromAPI(id, e) {
   var formData = new FormData(event.target);
   //   for (var [key, value] of formData.entries()) {
   //       console.log(key, value);
@@ -663,7 +666,7 @@ function renderCouponAsUsed(res) {
 function showCoupondetails(){
   $('#coupons').on('click', '.js-coupon-code', (e) => {
     e.preventDefault();
-    const couponContainer = $(e.target).parent().parent();
+    const couponContainer = $(e.target).parent().parent().parent();
     currentCouponId = $(couponContainer).attr('data-id');
     // I want to get the img element and pass it to renderShowCouponImageModal
     let currentCouponImage = $(couponContainer).find('img.hide.js-coupon-image').attr('src');

@@ -3,10 +3,8 @@
     <% include ../partials/outputMessage %>
         <section role="region" class="js-coupon-section container">
             <section role="region" class="list-coupons-section" id="js-list-coupons-section">
-
               <div class="wrapper">
                 <h1>Dashboard</h1>
-
                 <section role="region" class="add-new-coupon-btn">
                   <button type="button" class="btn btn-secondary js-add-new-coupon-btn" data-toggle="modal" data-target="#addNewCouponModal">
                     <img src="images/add-icon@3x.svg" alt="add-icon" class="budicon add-icon">
@@ -19,26 +17,21 @@
                 </section>
               </div>
 
-              <% typeof msg != 'undefined' ? msg: '' %>
-              <div id="coupons">
+              <div id="coupons" aria-live="polite">
                   <!-- coupons will render here -->
               </div>
 
             </section>
 
-            <section role="region" id="addNewCouponModelSection">
+            <section role="region" id="addNewCouponModelSection" aria-live="assertive">
                 <!-- Add modal will render here -->
             </section>
 
-            <section role="region" id="editCouponModelSection">
+            <section role="region" id="editCouponModelSection" aria-live="assertive">
                 <!-- Edit modal will render here -->
             </section>
 
-            <section role="region" id="uploadImageModelSection">
-                <!-- upload Image modal will render here -->
-            </section>
-
-            <section role="region" id="showuploadedImageModelSection">
+            <section role="region" id="showuploadedImageModelSection" aria-live="assertive">
                 <!-- show uploaded coupon Image modal will render here -->
             </section>
 
