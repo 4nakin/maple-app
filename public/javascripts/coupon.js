@@ -5,8 +5,7 @@ let currentEventListener = null;
 let entireCouponElement = null;
 
 function renderCoupons(res, toggleCouponState) {
-  //console.log(res);
-  return`<section role="role" class="all-coupon-container" data-id="${res._id}">
+  return `<section role="role" class="all-coupon-container" data-id="${res._id}">
             <img src ="${res.couponImage}" alt="coupon image user uploaded for ${res.merchantName}" class="hide js-coupon-image">
             <section role="region" class="coupon-container js-coupon-container ${toggleCouponState.classes}">
               <div class="js-coupon-merchant-logo coupon-merchant-logo">
@@ -20,23 +19,16 @@ function renderCoupons(res, toggleCouponState) {
                 <img src="${toggleCouponState.dashedLineImage}" alt="dashed line to seperate the sections" class="${toggleCouponState.dashedStates}">
               </div>
               <p class="coupon-title no-margin">COUPON CODE</p>
-
-              <p class="coupon-code js-coupon-code no-margin ellipse-text" data-toggle="modal" data-target="showCouponImageModal">
-                <a data-toggle="tooltip" data-placement="top" title="Click to see coupon Image uploaded" class="js-show-coupon-image show-coupon-image">${res.code}</a>
+              <p class="coupon-code js-coupon-code no-margin ellipse-text" data-toggle="modal" data-target="showCouponImageModal"><a data-toggle="tooltip" data-placement="top" title="Click to see coupon Image uploaded" class="js-show-coupon-image show-coupon-image">${res.code}</a>
               </p>
-
               <p class="coupon-expiration-date no-margin">Valid till ${res.expirationDate}</p>
             </section>
             <section role="region" class="coupon-actions-nav">
-
               <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Mark used">
-
               <a href="" data-toggle="tooltip" data-placement="top" title="Edit" class="icon edit-icon js-edit-icon ${toggleCouponState.editIconState}">
                 <img src="images/ui-compose.svg" alt="edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4" class="budicon">
               </a>
-
               <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="budicon icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete">
-
             </section>
           </section>`;
 }
@@ -361,6 +353,8 @@ function sendAddCouponDataToAPI(e) {
       const toggleCouponState = checkIfCouponShouldBeDisabled(res);
       let couponHTML = $(renderCoupons(res, toggleCouponState));
 
+      console.log(couponHTML)
+
       couponHTML.css('opacity', '0');
       $('#coupons').append(couponHTML);
       //console.log(couponHTML);
@@ -419,9 +413,25 @@ function sendCouponToDeleteFromAPI(id, container) {
     });
 }
 
+function getValues(res) {
+  const merchantNameText = res.merchantName;
+  const codeText = res.code;
+  const expirationDateText = res.expirationDate;
+  const descriptionText = res.description;
+  const couponImage = res.couponImage;
+
+  $('.input-edit-merchantName').val(merchantNameText);
+  $('.input-edit-code').val(codeText);
+  document.querySelector('.input-edit-expirationDate').valueAsDate = new Date(expirationDateText);
+  $('.input-edit-description').val(descriptionText);
+  $('.js-uploaded-coupon-image').attr('src', couponImage);
+
+}
+
 function watchEditBtnHandler() {
   $('#coupons').on('click','.js-edit-icon', (e) => {
       e.preventDefault();
+
       $('.js-delete-icon').tooltip('hide');
       $('.js-complete-icon').tooltip('hide');
       $('.js-edit-icon').tooltip('hide');
@@ -432,29 +442,7 @@ function watchEditBtnHandler() {
       currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
       console.log(`The coupon id: ${currentCouponId}`);
 
-      //get the values currently in the input fields for that getCouponid
-      const couponObject = $(e.currentTarget).parent().parent();
-      //console.log(couponObject);
-      const merchantNameText = $(couponObject).find('h2.coupon-merchant-name').text();
-      const codeText = $(couponObject).find('p.coupon-code').text();
-      const expirationDateText = $(couponObject).find('p.coupon-expiration-date').text();
-      const descriptionText = $(couponObject).find('p.coupon-description').text();
-      const couponImage = $(couponObject).find('img.hide.js-coupon-image').attr('src');
-
-      console.log(merchantNameText);
-      console.log(codeText);
-      console.log(expirationDateText);
-      console.log(descriptionText);
-      console.log(couponImage);
-
-      //this puts value in the fields
-      $('.input-edit-merchantName').val(merchantNameText);
-      $('.input-edit-code').val(codeText);
-      document.querySelector('.input-edit-expirationDate').valueAsDate = new Date(expirationDateText);
-      $('.input-edit-description').val(descriptionText);
-      $('.js-uploaded-coupon-image').attr('src', couponImage);
-
-      //pull the values that the user types in the inputs
+      getCouponById(currentCouponId, getValues);
       watchSubmitEditCouponHandler(currentCouponId);
   });
 }
