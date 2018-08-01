@@ -533,6 +533,20 @@ input[type="date"] {
 	height: 2.375rem;
 }
 
+.show-coupon-image a {
+  color: #FFF;
+}
+
+.coupon-code a {
+  /* background: yellow; */
+  color: #FFF;
+}
+.show-coupon-image:hover,
+.show-coupon-image:active,
+.show-coupon-image:focus {
+  color: #FFF;
+}
+
 /* Extra small devices (portrait phones, less than 576px)
 No media query for `xs` since this is the default in Bootstrap */
 
