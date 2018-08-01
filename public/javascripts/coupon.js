@@ -5,7 +5,7 @@ let currentEventListener = null;
 let entireCouponElement = null;
 
 function renderCoupons(res, toggleCouponState) {
-  return `<section role="role" class="all-coupon-container" data-id="${res._id}">
+  return `<section role="region" class="all-coupon-container" data-id="${res._id}">
             <img src ="${res.couponImage}" alt="coupon image user uploaded for ${res.merchantName}" class="hide js-coupon-image">
             <section role="region" class="coupon-container js-coupon-container ${toggleCouponState.classes}">
               <div class="js-coupon-merchant-logo coupon-merchant-logo">
@@ -24,11 +24,16 @@ function renderCoupons(res, toggleCouponState) {
               <p class="coupon-expiration-date no-margin">Valid till ${res.expirationDate}</p>
             </section>
             <section role="region" class="coupon-actions-nav">
-              <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon icon complete-icon js-complete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Mark used">
-              <a href="" data-toggle="tooltip" data-placement="top" title="Edit" class="icon edit-icon js-edit-icon ${toggleCouponState.editIconState}">
-                <img src="images/ui-compose.svg" alt="edit-icon" data-toggle="modal" data-target="#editCouponModal" tabindex="4" class="budicon">
+
+              <a href="" data-toggle="tooltip" data-placement="top" title="Mark used" class="icon complete-icon js-complete-icon">
+                <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon">
               </a>
-              <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="budicon icon trash-icon js-delete-icon" tabindex="4" data-toggle="tooltip" data-placement="top" title="Delete">
+
+              <a href="" data-toggle="tooltip" data-placement="top" title="Edit" class="icon edit-icon js-edit-icon ${toggleCouponState.editIconState}">
+                <img src="images/ui-compose.svg" alt="edit-icon" data-toggle="modal" data-target="#editCouponModal" class="budicon">
+              </a>
+
+              <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="budicon icon trash-icon js-delete-icon" data-toggle="tooltip" data-placement="top" title="Delete">
             </section>
           </section>`;
 }
@@ -157,28 +162,29 @@ function renderAddModal() {
                   </button>
                 </div>
                 <div class="modal-body">
-                  <h5 class="modal-title" id="addNewCouponModalLabel">Add Coupon</h5>
+                  <h2 class="modal-title" id="addNewCouponModalLabel">Add Coupon</h2>
                   <form id="js-add-coupon-form">
                     <div class="form-group">
                       <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(15 charater limit)</span></label>
-                      <input type="text" name="merchantName" class="form-control input-add-merchantName" maxlength="14" required>
+                      <input type="text" name="merchantName" class="form-control input-add-merchantName" maxlength="14" id="merchantName" required>
                     </div>
                     <div class="form-group">
                       <label for="code">Code <span class ="limitsOnInputs">(15 charater limit)</span></label>
-                      <input type="text" name="code" class="form-control input-add-code" maxlength="15" required>
+                      <input type="text" name="code" class="form-control input-add-code" maxlength="15" id="code" required>
                     </div>
                     <div class="form-group">
                       <label for="expirationDate">Expiration Date <span class ="limitsOnInputs">(Date must be today or greater)</span></label>
-                      <input type="date" name="expirationDate" class="form-control input-add-expirationDate js-date-field" min="2018-07max="2020-12-31" required>
+                      <input type="date" name="expirationDate" class="form-control input-add-expirationDate js-date-field" min="2018-07max="2020-12-31" id="expirationDate" required>
                     </div>
                     <div class="form-group">
                       <label for="description">Description <span class ="limitsOnInputs">(40 charater limit)</span></label>
-                      <input type="text" name="description" class="form-control input-add-description"  maxlength="40" required>
+                      <input type="text" name="description" class="form-control input-add-description"  maxlength="40" id="description" required>
                     </div>
                     <div class="form-group">
-                      <label for="couponImage">Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></label>
+
+                      <label for="couponImage" class="custom-file-upload"><p>Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></p></label>
                       <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
-                      <label for="couponImage" class="custom-file-upload"></label>
+
                     </div>
                     <div class="">
                       <button type="submit" class="button solid submit-add-coupon-btn" id="js-submit-add-coupon-btn">Add</button>
@@ -283,12 +289,14 @@ function sendUpdateDataToAPI(id, formData){
 }
 
 function markCouponUsedonDOM(res,toggleCouponState) {
+  console.log(toggleCouponState);
   $('.js-complete-icon').tooltip('hide');
 
   const couponContainerObject = $(entireCouponElement);
+  console.log(couponContainerObject);
   const couponContainer = $(couponContainerObject).find('.js-coupon-container');
-  const merchantLogoLink = entireCouponElement.find('div.js-coupon-merchant-logo').children();
-  const dashed = entireCouponElement.find('div.dashed');
+  const merchantLogoLink = couponContainerObject.find('div.js-coupon-merchant-logo').children();
+  const dashed = couponContainerObject.find('div.dashed');
   const editIcon = couponContainer.siblings().find('a.icon.edit-icon');
 
   if (res.couponUsed === false){
@@ -624,6 +632,7 @@ function clickedOnMarkUsed() {
   $('#coupons').on('click','.js-complete-icon', (e) => {
     e.preventDefault();
     currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
+    console.log(currentCouponId);
     getCouponById(currentCouponId, renderCouponAsUsed);
     currentEventListener = e;
     entireCouponElement = $(e.currentTarget).parent().parent();
@@ -631,6 +640,7 @@ function clickedOnMarkUsed() {
 }
 
 function renderCouponAsUsed(res) {
+  console.log(res);
   currentCouponId = res._id;
   let couponUsedBoolVal = res.couponUsed;
   let couponImagePath = res.couponImage;

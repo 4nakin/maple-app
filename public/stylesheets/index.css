@@ -20,7 +20,7 @@ body {
 }
 
 .limitsOnInputs {
-  color: #999;
+  color: #505050;
   display: inline-block;
 }
 
@@ -508,16 +508,7 @@ button:disabled {
 
 /* input[type=file]{
   display: block;
-} */
-
-/* input[type='file'] {
-display: block;
-margin-bottom: 20px;
-width: 210px;
-vertical-align: top;
-font-family: 'Open Sans', sans-serif;
-font-size: 12px;
--webkit-appearence: none;
+  -webkit-appearence: none;
 } */
 
 .couponImageContainer{
@@ -531,26 +522,6 @@ font-size: 12px;
   margin: 8px 0 8px 0;
   width: 100px;
   background: #000;
-}
-
-#customFile .custom-file-control:lang(en)::after {
-  content: "Select file...";
-}
-
-#customFile .custom-file-control:lang(en)::before {
-  content: "Click me";
-}
-
-/*when a value is selected, this class removes the content */
-.custom-file-control.selected:lang(en)::after {
-  content: "" !important;
-}
-
-.custom-file {
-  overflow: hidden;
-}
-.custom-file-control {
-  white-space: nowrap;
 }
 
 input[type="text"],

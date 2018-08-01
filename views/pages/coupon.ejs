@@ -1,7 +1,7 @@
 <% include ../partials/header %>
     <% include ../partials/navigation %>
     <% include ../partials/outputMessage %>
-        <section role="region" class="js-coupon-section container">
+        <main role="region" class="js-coupon-section container">
             <section role="region" class="list-coupons-section" id="js-list-coupons-section">
               <div class="wrapper">
                 <h1>Dashboard</h1>
@@ -17,9 +17,9 @@
                 </section>
               </div>
 
-              <div id="coupons" aria-live="polite">
+              <sectiom role="region" id="coupons" aria-live="polite">
                   <!-- coupons will render here -->
-              </div>
+              </section>
 
             </section>
 
@@ -35,7 +35,7 @@
                 <!-- show uploaded coupon Image modal will render here -->
             </section>
 
-        </section>
+        </main>
       <script src="/javascripts/index.js"></script>
       <script src="javascripts/coupon.js"></script>
 <% include ../partials/footer %>
