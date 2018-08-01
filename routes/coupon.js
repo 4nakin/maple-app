@@ -102,7 +102,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         couponDisplayState: 'coupon-active',
         companyLogo: '/images/defaultImage.png',
         companyLogoUsed: '/images/defaultImage.png',
-        companyDomain: null,
+        companyDomain: '',
         couponImage: req.file.path,
         userId: _userId
       });
@@ -137,7 +137,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         couponDisplayState: 'coupon-active',
         companyLogo: '/images/defaultImage.png',
         companyLogoUsed: '/images/defaultImage.png',
-        companyDomain: null,
+        companyDomain: '',
         couponImage: req.file.path,
         userId: _userId
       });
@@ -266,7 +266,7 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
       updated.couponDisplayState = 'coupon-active';
     }
     else {
-      updated.companyDomain = response.data.domain;
+      updated.companyDomain = 'https://www.' + response.data.domain;
       updated.companyLogo = response.data.logo + '?size=300';
       updated.companyLogoUsed = response.data.logo + '?size=300&greyscale=true' ;
       updated.couponDisplayState = 'coupon-active';

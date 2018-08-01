@@ -60,14 +60,26 @@ function checkIfCouponShouldBeDisabled(res) {
   let companyDomain = '';
   let editIconState = '';
 
+  console.log(res);
+
   if(res.couponUsed !== null && res.couponUsed !== '') {
     if(res.couponUsed === false){
-      classes = 'coupon-active';
-      dashedStates = 'dashed-line-active';
-      dashedLineImage = 'images/dashed-line.png';
-      companyLogoStates = res.companyLogo;
-      companyDomain = `href="${res.companyDomain}"`;
-      editIconState = '';
+      if(res.companyDomain === ''){
+        classes = 'coupon-active';
+        dashedStates = 'dashed-line-active';
+        dashedLineImage = 'images/dashed-line.png';
+        companyLogoStates = res.companyLogo;
+        companyDomain = '';
+        editIconState = '';
+      }
+      else {
+        classes = 'coupon-active';
+        dashedStates = 'dashed-line-active';
+        dashedLineImage = 'images/dashed-line.png';
+        companyLogoStates = res.companyLogo;
+        companyDomain = `href="${res.companyDomain}"`;
+        editIconState = '';
+      }
     }
     if(res.couponUsed === true) {
       classes = 'coupon-disabled';
@@ -466,8 +478,15 @@ function sendCouponToEditFromAPI(id, e) {
       success: function(res) {
 
         console.log(res);
+        console.log(res.companyDomain);
 
-        $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', res.companyDomain);
+        if(res.companyDomain !== '' || res.companyDomain !== null){
+          $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', res.companyDomain);
+        }
+        else {
+          $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).removeAttr("href");
+        }
+
         $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', res.companyLogo);
         $(`[data-id = ${_couponId}] .coupon-merchant-name`).html(res.merchantName);
         $(`[data-id = ${_couponId}] .coupon-code`).html(res.code);
