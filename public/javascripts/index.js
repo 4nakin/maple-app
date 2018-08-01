@@ -25,11 +25,13 @@ function signupHandler() {
         password: $('#input-password').val()
       },
       success: (res) => {
+        console.log(res);
         $('#input-firstName').val('');
         $('#input-lastName').val('');
         $('#input-username').val('');
         $('#input-password').val('');
-        window.location.href = '/login';
+        renderSuccessMessage(res);
+        //window.location.href = '/login';
       },
       error: (res) => {
         renderErrorMessage(res);
@@ -100,7 +102,7 @@ function renderNavigationLinksListener() {
 
 function renderSuccessMessage(res){
   let successfulMsg = `<div class="alert alert-success fade show text-center" role="alert">
-                        ${res}
+                        You've been successfully registered ${res.username}. You can now <a href="/login">login</a>.
                        </div>`;
   return $('#js-msg-output').html(successfulMsg);
 }
