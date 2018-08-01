@@ -144,7 +144,6 @@ function renderAddModal() {
                       <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-
                 <div class="modal-body">
                   <h5 class="modal-title" id="addNewCouponModalLabel">Add Coupon</h5>
                   <form id="js-add-coupon-form">
@@ -152,28 +151,23 @@ function renderAddModal() {
                       <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(15 charater limit)</span></label>
                       <input type="text" name="merchantName" class="form-control input-add-merchantName" maxlength="14" required>
                     </div>
-
                     <div class="form-group">
                       <label for="code">Code <span class ="limitsOnInputs">(15 charater limit)</span></label>
                       <input type="text" name="code" class="form-control input-add-code" maxlength="15" required>
                     </div>
-
                     <div class="form-group">
                       <label for="expirationDate">Expiration Date <span class ="limitsOnInputs">(Date must be today or greater)</span></label>
                       <input type="date" name="expirationDate" class="form-control input-add-expirationDate js-date-field" min="2018-07max="2020-12-31" required>
                     </div>
-
                     <div class="form-group">
                       <label for="description">Description <span class ="limitsOnInputs">(40 charater limit)</span></label>
                       <input type="text" name="description" class="form-control input-add-description"  maxlength="40" required>
                     </div>
-
                     <div class="form-group">
                       <label for="couponImage">Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></label>
                       <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
                       <label for="couponImage" class="custom-file-upload"></label>
                     </div>
-
                     <div class="">
                       <button type="submit" class="button solid submit-add-coupon-btn" id="js-submit-add-coupon-btn">Add</button>
                     </div>
@@ -341,6 +335,8 @@ function sendAddCouponDataToAPI(e) {
     processData: false,
     contentType: false,
     success: (res) => {
+      console.log(res);
+
       $('#addNewCouponModal').modal('hide');
       $('.input-add-merchantName').val('');
       $('.input-add-code').val('');
@@ -449,10 +445,10 @@ function watchSubmitEditCouponHandler(id) {
 }
 
 function sendCouponToEditFromAPI(id, e) {
-    let formData = new FormData(e.target);
-      for (var [key, value] of formData.entries()) {
-          console.log(key, value);
-        }
+  let formData = new FormData(e.target);
+    for (var [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
 
     let _couponId = id;
 
@@ -466,6 +462,8 @@ function sendCouponToEditFromAPI(id, e) {
       processData: false,
       contentType: false,
       success: function(res) {
+
+        console.log(res);
 
         $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', res.companyDomain);
         $(`[data-id = ${_couponId}] .js-logo-img`).attr('src', res.companyLogo);
