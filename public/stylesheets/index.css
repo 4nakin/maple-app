@@ -225,6 +225,7 @@ button:disabled {
 
 .btn-secondary, .btn-secondary:hover, .btn-secondary:active, .btn-secondary:visited {
     background-color: #4A4A4A;
+    border: none;
 }
 
 .dropdown-toggle{
@@ -593,10 +594,16 @@ No media query for `xs` since this is the default in Bootstrap */
     position: relative;
   }
 
+  #js-list-coupons-section .wrapper h1 {
+    font-size: 36px;
+    font-weight: 600;
+    line-height: 39px;
+  }
+
   #js-list-coupons-section .add-new-coupon-btn {
     position: absolute;
     right: 5%;
-    top: .5px;
+    top: -10px;
   }
 
   /* .couponImageContainer{

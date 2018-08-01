@@ -45,10 +45,6 @@ function logoutHandler() {
       localStorage.removeItem('Token');
       console.log('you are logged out!');
       window.location.href = '/';
-
-      // setTimeout(() => {
-      //   $('#js-msg-output').hide();
-      // }, 1000);
     }
     else {
       console.log('there is no token. you you are not signed in');
@@ -115,7 +111,7 @@ function renderErrorMessage(res){
   if(res.statusText === 'Unauthorized') {
     console.log(res.statusText);
     errorMsg = `<div class="alert alert-danger fade show text-center" role="alert">
-                  ${res.statusText}
+                  ${res.statusText}. Please Login.
                 </div>`;
   } else {
       errorMsg = `<div class="alert alert-danger fade show text-center" role="alert">

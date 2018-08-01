@@ -36,9 +36,11 @@ const CouponSchema = mongoose.Schema({
     couponImage: {
       type: String
     },
+    couponImageLink: {
+      type: String
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId
-      //required: true
     }
 });
 
@@ -55,6 +57,7 @@ CouponSchema.methods.serialize = function () {
         companyLogo: this.companyLogo,
         companyLogoUsed: this.companyLogo,
         couponImage: this.couponImage,
+        couponImageLink: this.couponImageLink,
         userId: this.userId
     };
 }

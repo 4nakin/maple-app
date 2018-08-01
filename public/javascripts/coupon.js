@@ -143,13 +143,9 @@ function getUserCoupons() {
       }, 150);
 
     },
-    error: function(err) {
-      if(token === null) {
-        console.log('Token is empty and you are not logged in. Please log in!!!');
-      }
-      else{
-        console.log('something went wrong when trying to get to the protected endpoint');
-      }
+    error: function(res) {
+      //console.log(res);
+      renderErrorMessage(res);
     }
   });
 }
