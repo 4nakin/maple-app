@@ -553,6 +553,12 @@ font-size: 12px;
   white-space: nowrap;
 }
 
+input[type="text"],
+input[type="email"],
+input[type="date"] {
+	height: 2.375rem;
+}
+
 
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   select,
