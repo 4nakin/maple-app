@@ -179,10 +179,8 @@ function renderAddModal() {
                       <input type="text" name="description" class="form-control input-add-description"  maxlength="40" id="description" required>
                     </div>
                     <div class="form-group">
-
                       <label for="couponImage" class="custom-file-upload"><p>Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></p></label>
                       <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
-
                     </div>
                     <div class="">
                       <button type="submit" class="button solid submit-add-coupon-btn" id="js-submit-add-coupon-btn">Add</button>
@@ -438,6 +436,7 @@ function getValues(res) {
 
 function watchEditBtnHandler() {
   $('#coupons').on('click','.js-edit-icon', (e) => {
+    console.log(e.eventTarget);
       e.preventDefault();
 
       $('.js-delete-icon').tooltip('hide');
@@ -445,7 +444,9 @@ function watchEditBtnHandler() {
       $('.js-edit-icon').tooltip('hide');
 
       $('#editCouponModelSection').html(renderEditModal());
+
       setMinDateToTodaysDate();
+      $('#editCouponModal').modal('show');
 
       currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
       console.log(`The coupon id: ${currentCouponId}`);
