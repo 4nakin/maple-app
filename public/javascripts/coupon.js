@@ -33,7 +33,9 @@ function renderCoupons(res, toggleCouponState) {
                 <img src="images/ui-compose.svg" alt="edit-icon" data-toggle="modal" data-target="#editCouponModal" class="budicon">
               </a>
 
-              <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="budicon icon trash-icon js-delete-icon" data-toggle="tooltip" data-placement="top" title="Delete">
+              <a href="" data-toggle="tooltip" data-placement="top" title="Delete" class="icon trash-icon js-delete-icon">
+                <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="budicon" class="budicon">
+              </a>
             </section>
           </section>`;
 }
@@ -65,7 +67,7 @@ function checkIfCouponShouldBeDisabled(res) {
   let companyDomain = '';
   let editIconState = '';
 
-  console.log(res);
+  //console.log(res);
 
   if(res.couponUsed !== null && res.couponUsed !== '') {
     if(res.couponUsed === false){
@@ -224,26 +226,26 @@ function renderEditModal() {
                             </button>
                         </div>
                         <div class="modal-body">
-                            <h5 class="modal-title" id="editCouponModalLabel">Edit Coupon</h5>
+                            <h2 class="modal-title" id="editCouponModalLabel">Edit Coupon</h2>
                             <form id="js-edit-coupon-form">
                                 <div class="form-group">
                                     <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(15 charater limit)</span></label>
-                                    <input type="text" name="merchantName" class="form-control input-edit-merchantName" maxlength="14" minlength="4" required>
+                                    <input type="text" name="merchantName" class="form-control input-edit-merchantName" maxlength="14" minlength="4"  id="merchantName" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="code">Code <span class ="limitsOnInputs">(15 charater limit)</span></label>
-                                    <input type="text" name="code" class="form-control input-edit-code" maxlength="15"  minlength="4" required>
+                                    <input type="text" name="code" class="form-control input-edit-code" maxlength="15"  minlength="4"  id="code" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="expirationDate">Expiration Date <span class ="limitsOnInputs">(Date must be today or greater)</label>
-                                    <input type="date" name="expirationDate" class="form-control input-edit-expirationDate js-date-field" required>
+                                    <input type="date" name="expirationDate" class="form-control input-edit-expirationDate js-date-field"  id="expirationDate" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="description">Description <span class ="limitsOnInputs">(40 charater limit)</span></label>
-                                    <input type="text" name="description" class="form-control input-edit-description" maxlength="40" minlength="4" required>
+                                    <input type="text" name="description" class="form-control input-edit-description" maxlength="40" minlength="4"  id="description" required>
                                 </div>
 
                                 <div class="form-group">
@@ -251,9 +253,8 @@ function renderEditModal() {
                                     <img src="" alt="coupon image that user uploaded" class="js-uploaded-coupon-image uploaded-coupon-image">
                                     current image
                                   </div>
-                                  <label for="couponImage">Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></label>
-                                  <input id="couponImage" type="file" name="couponImage"/>
-                                  <label for="couponImage" class="custom-file-upload"></label>
+                                  <label for="couponImage" class="custom-file-upload"><p>Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></p></label>
+                                  <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
                                 </div>
 
                                 <div class="">
@@ -344,9 +345,9 @@ function watchSubmitAddNewCouponHandler() {
 
 function sendAddCouponDataToAPI(e) {
   const formData = new FormData(e.target);
-  for (var [key, value] of formData.entries()) {
-      console.log(key, value);
-  }
+  // for (var [key, value] of formData.entries()) {
+  //     //console.log(key, value);
+  // }
   $.ajax({
     url: '/coupon',
     type: 'POST',
@@ -357,7 +358,7 @@ function sendAddCouponDataToAPI(e) {
     processData: false,
     contentType: false,
     success: (res) => {
-      console.log(res);
+      //console.log(res);
 
       $('#addNewCouponModal').modal('hide');
       $('.input-add-merchantName').val('');
@@ -368,7 +369,7 @@ function sendAddCouponDataToAPI(e) {
       const toggleCouponState = checkIfCouponShouldBeDisabled(res);
       let couponHTML = $(renderCoupons(res, toggleCouponState));
 
-      console.log(couponHTML)
+      //console.log(couponHTML)
 
       couponHTML.css('opacity', '0');
       $('#coupons').append(couponHTML);
@@ -390,6 +391,7 @@ function watchDeleteBtnHandler() {
   $('#js-list-coupons-section').on('click','.js-delete-icon', (e) => {
       e.preventDefault();
       currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
+      //console.log(currentCouponId);
       const container = $(e.currentTarget).parent().parent();
       sendCouponToDeleteFromAPI(currentCouponId, container);
     });
@@ -543,7 +545,7 @@ function renderDropDown(htmlCode) {
 }
 
 function renderFilterByMerchants(res) {
-  console.log(res);
+  //console.log(res);
   const coupons = res.coupons;
   let merchants = [];
   // Generate unique list of merchants
