@@ -13,13 +13,6 @@ body {
 
 .tooltip { pointer-events: none; }
 
-.uploaded-coupon-image {
-  display: inline-block;
-  margin: 8px 0 8px 0;
-  width: 100px;
-  background: #000;
-}
-
 .ellipse-text {
   overflow-y: hidden;
   white-space: nowrap;
@@ -513,15 +506,51 @@ button:disabled {
   width: 100%;
 }
 
-input[type=file]{
+/* input[type=file]{
   display: block;
-}
+} */
+
+/* input[type='file'] {
+display: block;
+margin-bottom: 20px;
+width: 210px;
+vertical-align: top;
+font-family: 'Open Sans', sans-serif;
+font-size: 12px;
+-webkit-appearence: none;
+} */
 
 .couponImageContainer{
-  width: 300px;
+  width: 200px;
   display: block;
   background: #000;
   margin: 20px 0;
+}
+.uploaded-coupon-image {
+  display: inline-block;
+  margin: 8px 0 8px 0;
+  width: 100px;
+  background: #000;
+}
+
+#customFile .custom-file-control:lang(en)::after {
+  content: "Select file...";
+}
+
+#customFile .custom-file-control:lang(en)::before {
+  content: "Click me";
+}
+
+/*when a value is selected, this class removes the content */
+.custom-file-control.selected:lang(en)::after {
+  content: "" !important;
+}
+
+.custom-file {
+  overflow: hidden;
+}
+.custom-file-control {
+  white-space: nowrap;
 }
 
 
@@ -535,6 +564,20 @@ No media query for `xs` since this is the default in Bootstrap */
 @media (min-width: 768px) {
   .modal-body {
     padding: 0 50px 40px 50px;
+  }
+
+  .couponImageContainer{
+    width: 400px;
+    display: block;
+    background: #000;
+    margin: 20px 0;
+  }
+
+  .uploaded-coupon-image {
+    display: inline-block;
+    margin: 8px 0 8px 0;
+    width: 100px;
+    background: #000;
   }
 }
 
@@ -562,6 +605,21 @@ No media query for `xs` since this is the default in Bootstrap */
     right: 5%;
     top: .5px;
   }
+
+  /* .couponImageContainer{
+    width: 400px;
+    display: block;
+    background: #000;
+    margin: 20px 0;
+  }
+
+  .uploaded-coupon-image {
+    display: inline-block;
+    margin: 8px 0 8px 0;
+    width: 100px;
+    background: #000;
+  } */
+
 }
 
 /* Extra large devices (large desktops, 1200px and up) */

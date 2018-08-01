@@ -234,9 +234,10 @@ function renderEditModal() {
                                     current image
                                   </div>
                                   <label for="couponImage">Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></label>
-                                  <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg"/>
+                                  <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" capture/>
                                   <label for="couponImage" class="custom-file-upload"></label>
                                 </div>
+
                                 <div class="">
                                   <button type="submit" class="button solid submit-edit-coupon-btn" id="js-submit-edit-coupon-btn">Save</button>
                                 </div>
