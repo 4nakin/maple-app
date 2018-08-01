@@ -19,7 +19,7 @@ function renderCoupons(res, toggleCouponState) {
                 <img src="${toggleCouponState.dashedLineImage}" alt="dashed line to seperate the sections" class="${toggleCouponState.dashedStates}">
               </div>
               <p class="coupon-title no-margin">COUPON CODE</p>
-              <p class="coupon-code js-coupon-code no-margin ellipse-text" data-toggle="modal" data-target="showCouponImageModal"><a data-toggle="tooltip" data-placement="top" title="Click to see coupon Image uploaded" class="js-show-coupon-image show-coupon-image">${res.code}</a>
+              <p class="coupon-code js-coupon-code no-margin" data-toggle="modal" data-target="showCouponImageModal"><a data-toggle="tooltip" data-placement="left" title="Click to see coupon Image uploaded" class="js-show-coupon-image show-coupon-image">${res.code}</a>
               </p>
               <p class="coupon-expiration-date no-margin">Valid till ${res.expirationDate}</p>
             </section>
