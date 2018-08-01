@@ -272,6 +272,7 @@ function sendUpdateDataToAPI(id, formData){
 
 function markCouponUsedonDOM(res,toggleCouponState) {
   $('.js-complete-icon').tooltip('hide');
+
   const couponContainerObject = $(entireCouponElement);
   const couponContainer = $(couponContainerObject).find('.js-coupon-container');
   const merchantLogoLink = entireCouponElement.find('div.js-coupon-merchant-logo').children();
@@ -644,6 +645,7 @@ function showCoupondetails(){
     // I want to get the img element and pass it to renderShowCouponImageModal
     let currentCouponImage = $(couponContainer).find('img.hide.js-coupon-image').attr('src');
     $('#showuploadedImageModelSection').html(renderShowCouponImageModal(currentCouponImage));
+    $('.js-show-coupon-image').tooltip('hide');
     $('#showCouponImageModal').modal('show');
   });
 }
