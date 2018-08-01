@@ -554,6 +554,15 @@ font-size: 12px;
 }
 
 
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  select,
+  textarea,
+  input {
+    font-size: 16px;
+  }
+}
+
+
 /* Extra small devices (portrait phones, less than 576px)
 No media query for `xs` since this is the default in Bootstrap */
 
