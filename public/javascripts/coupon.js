@@ -274,7 +274,7 @@ function renderEditModal() {
                                     current image
                                   </div>
                                   <label for="couponImage" class="custom-file-upload"><p>Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></p></label>
-                                  <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
+                                  <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg"/>
                                 </div>
 
                                 <div class="">
