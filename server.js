@@ -7,6 +7,7 @@ const passport = require('passport');
 const bodyParser = require('body-parser');
 const path = require('path');
 const multer = require('multer');
+const session = require('client-sessions');
 const {localStrategy, jwtStrategy } = require('./strategies');
 const { PORT, DATABASE_URL } = require('./config');
 const indexRouter = require('./routes/index');
@@ -17,6 +18,12 @@ const couponRouter = require('./routes/coupon');
 mongoose.Promise = global.Promise;
 
 const app = express();
+
+app.use(session({
+  cookieName: 'session',
+  secret: 'jessicaisthesecret',
+  duration: 30000 * 60 * 1000,
+}));
 
 app.use(morgan('common'));
 app.use(bodyParser.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
@@ -39,7 +46,6 @@ app.use(function (req, res, next) {
 
 passport.use(localStrategy);
 passport.use(jwtStrategy);
-
 
 app.use('/', indexRouter);
 app.use('/api/users/', userRouter);

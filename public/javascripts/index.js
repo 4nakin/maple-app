@@ -125,8 +125,25 @@ function renderErrorMessage(res){
   return $('#js-msg-output').html(errorMsg);
 }
 
+function clickonMapleLogo() {
+  //if signed on then redirect to dashboard if not redirect to /
+  $('navbar-brand').on('click', (e) => {
+    var token = localStorage.getItem('Token');
+
+    if(!token) {
+      console.log('oh no, There\'s no token. Please sign in or register!');
+        window.location.href = '/login';
+    }
+    else{
+      console.log('you are still signed in');
+      //redirect to dashboard
+      window.location.href = '/dashboard';
+    }
+  })
+}
 
 function initApp() {
+  clickonMapleLogo();
   renderNavigationLinksListener();
   signupBtnHandler();
   loginBtnHandler();
