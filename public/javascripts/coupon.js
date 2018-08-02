@@ -26,7 +26,7 @@ function renderCoupons(res, toggleCouponState) {
             <section role="region" class="coupon-actions-nav">
 
               <a href="" data-toggle="tooltip" data-placement="top" title="Mark used" class="icon complete-icon js-complete-icon">
-                <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon" data-toggle="modal" data-target="#deleteConfirmModal">
+                <img src="images/tick-sign.svg" alt="mark coupon used" data-toggle="modal" data-target="#showConfirmDeleteModal" class="budicon">
               </a>
 
               <a href="" data-toggle="tooltip" data-placement="top" title="Edit" class="icon edit-icon js-edit-icon ${toggleCouponState.editIconState}">
@@ -218,7 +218,7 @@ function renderShowCouponImageModal(imgPath){
 }
 
 function renderDeleteConfirmationModal(){
-  return `<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+  return `<div class="modal fade" id="showConfirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="showConfirmDeleteModalModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
@@ -226,10 +226,10 @@ function renderDeleteConfirmationModal(){
                       <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-                <div class="modal-body block-center">
-                  <h5 class="modal-title" id="deleteConfirmModalLabel">Would you like to delete this coupon</h5>
-                  <button>Yes</button>
-                  <button>No</button>
+                <div class="modal-body inlineBlock-center">
+                  <h5 class="modal-title" id="showConfirmDeleteModalLabel">Are you sure you want to delete?</h5>
+                  <button type="submit" class="btn btn-danger" id="js-submit-delete-coupon-yes">Yes</button>
+                  <button type="submit" class="btn btn-secondary" id="js-submit-delete-coupon-no">No</button>
               </div>
             </div>
           </div>
@@ -421,12 +421,32 @@ function watchDeleteBtnHandler() {
       //bring up modal to confirm the message
       currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
       //console.log(currentCouponId);
-      $('#confirmDeleteSection').html(renderDeleteConfirmationModal());
-
+      $('#showConfirmDeleteModalSection').html(renderDeleteConfirmationModal());
+      $('#showConfirmDeleteModal').modal('show');
       const container = $(e.currentTarget).parent().parent();
+      watchSubmitDeleteCouponHandler(currentCouponId,container);
+      watchSubmitDeletePressedNoHandler();
       //sendCouponToDeleteFromAPI(currentCouponId, container);
     });
 }
+
+function watchSubmitDeleteCouponHandler(currentCouponId,container){
+  $('#js-submit-delete-coupon-yes').on('click', (e) => {
+      e.preventDefault();
+      console.log('you want to delete a coupon');
+      $('#showConfirmDeleteModal').modal('hide');
+      sendCouponToDeleteFromAPI(currentCouponId, container);
+  });
+}
+
+function watchSubmitDeletePressedNoHandler() {
+  $('#js-submit-delete-coupon-no').on('click', (e) => {
+      e.preventDefault();
+      console.log('You pressed NO!You do no want to delete This coupon');
+      $('#showConfirmDeleteModal').modal('hide');
+  });
+}
+
 
 function sendCouponToDeleteFromAPI(id, container) {
     $.ajax({
