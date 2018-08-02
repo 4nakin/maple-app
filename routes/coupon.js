@@ -104,6 +104,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         companyLogoUsed: '/images/defaultImage.png',
         companyDomain: '',
         couponImage: req.file.path,
+        couponImageLinkDisplayState:'show-coupon-image-link-styling',
         userId: _userId
       });
     }
@@ -119,6 +120,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         companyLogoUsed: apiData.logo + '?size=300&greyscale=true',
         companyDomain: 'https://www.' + apiData.domain,
         couponImage: req.file.path,
+        couponImageLinkDisplayState:'show-coupon-image-link-styling',
         userId: _userId
       });
     }
@@ -139,6 +141,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         companyLogoUsed: '/images/defaultImage.png',
         companyDomain: '',
         couponImage: req.file.path,
+        couponImageLinkDisplayState:'show-coupon-image-link-styling',
         userId: _userId
       });
     }
@@ -157,57 +160,6 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   })
 });
 
-// EDITS A NEW COUPON
-/*
-router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
-  console.log(req.file);
-  console.log(`req.params.id:  ${req.params.id}`);
-  console.log(`req.body.id: ${req.body.id}`);
-
-  console.log('************** User Edited **************');
-  Object.keys(req.body).forEach(function eachKey(key) {
-  console.log(key + ' : ' + req.body[key]); // alerts key and value
-    if(key === 'merchantName'){
-      req.body[key] = formatMerchantName(req.body[key]);
-      console.log('** Formatted Merchant Name  ' + req.body[key] + '  **');
-    }
-  });
-  console.log('was the image file provided? ' + req.file);
-  console.log('************** End of User Edited **************\n');
-
-  // if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
-  //   res.status(400).json({
-  //     error: 'Request path id and request body id values must match'
-  //   });
-  // }
-
-  const updated = {};
-  const updateableFields = ['merchantName', 'code', 'expirationDate', 'description', 'couponImage'];
-
-  console.log('************** Updated Fields **************');
-  updateableFields.forEach(field => {
-    if(field in req.body) {
-      updated[field] = req.body[field];
-    }
-  });
-
-   if(req.file !== undefined ){
-    updated.couponImage = req.file.path;
-   }
-
-  console.log(updated);
-
-  console.log('************** End of Updated Fields **************\n');
-
-  CouponModel.findByIdAndUpdate(req.params.id, {$set: updated }, { new: true })
-  .then(coupon => {
-    const updatedCoupon = coupon.toObject();
-    console.log(updatedCoupon);
-    res.status(200).json(updatedCoupon);
-  })
-  .catch(err => res.status(500).json({ message: 'Something went wrong'}));
-});
-*/
 // EDITS A NEW COUPON
 router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   console.log(`req.params.id:  ${req.params.id}`);
@@ -305,13 +257,16 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
 // UPDATES ONLY ITEMS PROVIDED OF AN IMAGE OF COUPON
 router.patch('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   const updateOps = {};
-  const updateableFields = ['merchantName', 'code', 'expirationDate', 'description','couponImage', 'couponUsed'];
+  const updateableFields = ['merchantName', 'code', 'expirationDate', 'description','couponImage', 'couponUsed','couponDisplayState', 'couponImageLinkDisplayState'];
 
   updateableFields.forEach(field => {
     if(field in req.body) {
       updateOps[field] = req.body[field];
+      console.log(updateOps[field]);
     }
   });
+
+  console.log(updateOps);
 
   CouponModel.findByIdAndUpdate(req.params.id, {$set: updateOps },{ new: true })
   .then(coupon => {

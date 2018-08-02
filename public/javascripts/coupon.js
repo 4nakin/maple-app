@@ -19,14 +19,14 @@ function renderCoupons(res, toggleCouponState) {
                 <img src="${toggleCouponState.dashedLineImage}" alt="dashed line to seperate the sections" class="${toggleCouponState.dashedStates}">
               </div>
               <p class="coupon-title no-margin">COUPON CODE</p>
-              <p class="coupon-code js-coupon-code no-margin" data-toggle="modal" data-target="showCouponImageModal"><a href="" data-toggle="tooltip" data-placement="left" title="Click to see coupon Image uploaded" class="js-show-coupon-image show-coupon-image">${res.code}</a>
+              <p class="coupon-code js-coupon-code no-margin ${res.couponImageLinkDisplayState}" data-toggle="modal" data-target="showCouponImageModal"><a href="" data-toggle="tooltip" data-placement="left" title="Click to see coupon Image uploaded" class="js-show-coupon-image show-coupon-image">${res.code}</a>
               </p>
               <p class="coupon-expiration-date no-margin">Valid till ${res.expirationDate}</p>
             </section>
             <section role="region" class="coupon-actions-nav">
 
               <a href="" data-toggle="tooltip" data-placement="top" title="Mark used" class="icon complete-icon js-complete-icon">
-                <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon">
+                <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon" data-toggle="modal" data-target="#deleteConfirmModal">
               </a>
 
               <a href="" data-toggle="tooltip" data-placement="top" title="Edit" class="icon edit-icon js-edit-icon ${toggleCouponState.editIconState}">
@@ -65,6 +65,7 @@ function checkIfCouponShouldBeDisabled(res) {
   let dashedLineImage = '';
   let companyLogoStates = '';
   let companyDomain = '';
+  let couponImageLinkDisplayState = '';
   let editIconState = '';
 
   //console.log(res);
@@ -77,6 +78,7 @@ function checkIfCouponShouldBeDisabled(res) {
         dashedLineImage = 'images/dashed-line.png';
         companyLogoStates = res.companyLogo;
         companyDomain = '';
+        couponImageLinkDisplayState = res.couponImageLinkDisplayState;
         editIconState = '';
       }
       else {
@@ -85,6 +87,7 @@ function checkIfCouponShouldBeDisabled(res) {
         dashedLineImage = 'images/dashed-line.png';
         companyLogoStates = res.companyLogo;
         companyDomain = `href="${res.companyDomain}"`;
+        couponImageLinkDisplayState = res.couponImageLinkDisplayState;
         editIconState = '';
       }
     }
@@ -94,6 +97,7 @@ function checkIfCouponShouldBeDisabled(res) {
       dashedLineImage = 'images/dashed-line-disable.png';
       companyLogoStates = res.companyLogoUsed;
       companyDomain = '';
+      couponImageLinkDisplayState = 'show-coupon-image-link-styling-disabled';
       editIconState = 'hide';
     }
   }
@@ -104,6 +108,7 @@ function checkIfCouponShouldBeDisabled(res) {
     dashedLineImage: dashedLineImage,
     companyLogoStates: companyLogoStates,
     companyDomain: companyDomain,
+    couponImageLinkDisplayState: couponImageLinkDisplayState,
     editIconState: editIconState
   }
 
@@ -132,6 +137,8 @@ function getUserCoupons() {
 
       res.coupons.map((coupon) => {
         const toggleCouponState = checkIfCouponShouldBeDisabled(coupon);
+        console.log(coupon);
+        console.log(toggleCouponState);
         couponHTML += renderCoupons(coupon, toggleCouponState);
       });
 
@@ -210,6 +217,25 @@ function renderShowCouponImageModal(imgPath){
         </div>`;
 }
 
+function renderDeleteConfirmationModal(){
+  return `<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body block-center">
+                  <h5 class="modal-title" id="deleteConfirmModalLabel">Would you like to delete this coupon</h5>
+                  <button>Yes</button>
+                  <button>No</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+}
+
 function renderEditModal() {
   return `<div class="modal fade" id="editCouponModal" tabindex="-1" role="dialog" aria-labelledby="editCouponModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -273,7 +299,6 @@ function sendUpdateDataToAPI(id, formData){
     processData: false,
     success: (res) => {
       console.log('updated field(s) is a success ');
-      console.log(res);
         const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon);
         markCouponUsedonDOM(res.coupon, toggleCouponState);
     },
@@ -284,15 +309,18 @@ function sendUpdateDataToAPI(id, formData){
 }
 
 function markCouponUsedonDOM(res,toggleCouponState) {
-  console.log(toggleCouponState);
+  //console.log(toggleCouponState);
   $('.js-complete-icon').tooltip('hide');
 
   const couponContainerObject = $(entireCouponElement);
-  console.log(couponContainerObject);
+  //console.log(couponContainerObject);
   const couponContainer = $(couponContainerObject).find('.js-coupon-container');
   const merchantLogoLink = couponContainerObject.find('div.js-coupon-merchant-logo').children();
   const dashed = couponContainerObject.find('div.dashed');
   const editIcon = couponContainer.siblings().find('a.icon.edit-icon');
+  const couponImageDisplayLink = couponContainerObject.find('p.coupon-code');
+  const uploadedCouponImageLink = couponContainerObject.find('p.coupon-code a');
+
 
   if (res.couponUsed === false){
     merchantLogoLink.attr('href', res.companyDomain);
@@ -302,6 +330,8 @@ function markCouponUsedonDOM(res,toggleCouponState) {
     dashed.children().attr('src', toggleCouponState.dashedLineImage);
     dashed.children().removeClass('dashed-line-disabled');
     dashed.children().addClass(toggleCouponState.dashedStates);
+    couponImageDisplayLink.removeClass('show-coupon-image-link-styling-disabled');
+    couponImageDisplayLink.addClass(toggleCouponState.couponImageLinkDisplayState);
     editIcon.fadeIn('slow');
   }
   else if (res.couponUsed === true){
@@ -312,6 +342,10 @@ function markCouponUsedonDOM(res,toggleCouponState) {
     dashed.children().attr('src', toggleCouponState.dashedLineImage);
     dashed.children().removeClass('dashed-line-active');
     dashed.children().addClass(toggleCouponState.dashedStates);
+    couponImageDisplayLink.removeClass('show-coupon-image-link-styling');
+    couponImageDisplayLink.addClass(toggleCouponState.couponImageLinkDisplayState);
+    uploadedCouponImageLink.removeAttr('href');
+    uploadedCouponImageLink.tooltip('disable');
     editIcon.fadeOut('slow');
   }
   else {
@@ -384,10 +418,13 @@ function sendAddCouponDataToAPI(e) {
 function watchDeleteBtnHandler() {
   $('#js-list-coupons-section').on('click','.js-delete-icon', (e) => {
       e.preventDefault();
+      //bring up modal to confirm the message
       currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
       //console.log(currentCouponId);
+      $('#confirmDeleteSection').html(renderDeleteConfirmationModal());
+
       const container = $(e.currentTarget).parent().parent();
-      sendCouponToDeleteFromAPI(currentCouponId, container);
+      //sendCouponToDeleteFromAPI(currentCouponId, container);
     });
 }
 
@@ -647,15 +684,19 @@ function renderCouponAsUsed(res) {
 
   const formData = new FormData();
 
-  // active coupon
+  // changing styles to used coupon
   if (couponUsedBoolVal === false) {
       formData.append('couponUsed', Boolean(1));
+      formData.append('couponDisplayState', 'coupon-disabled');
+      formData.append('couponImageLinkDisplayState', 'show-coupon-image-link-styling-disabled');
       sendUpdateDataToAPI(currentCouponId, formData);
 
   }
-  // disable coupon
+  // changing styles to active coupon
   else if (couponUsedBoolVal === true) {
     formData.append('couponUsed', Boolean(0));
+    formData.append('couponDisplayState', 'coupon-active');
+    formData.append('couponImageLinkDisplayState', 'show-coupon-image-link-styling');
     sendUpdateDataToAPI(currentCouponId, formData);
 
   }
@@ -678,7 +719,7 @@ function showCoupondetails(){
   });
 }
 
-//STILL HAVE TO WORK ON!!!!!!
+//TODO: STILL HAVE TO WORK ON!!!!!!
 function checkIfCouponIsPastDue() {
   console.log('checking if coupon is past due based on date');//this should be done in the backend.
   //check coupons get responseJSON

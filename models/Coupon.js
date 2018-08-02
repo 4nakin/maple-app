@@ -4,25 +4,25 @@ const User = require('./User');
 
 const CouponSchema = mongoose.Schema({
     merchantName: {
-        type: String,
-        required: true
+      type: String,
+      required: true
     },
     code: {
-        type: String,
-        required: true
+      type: String,
+      required: true
     },
     expirationDate: {
-        type: String,
-        required: true
+      type: String,
+      required: true
     },
     description: {
-        type: String
+      type: String
     },
     couponUsed: {
-        type: Boolean
+      type: Boolean
     },
     couponDisplayState: {
-        type: String
+      type: String
     },
     companyDomain: {
       type: String
@@ -36,7 +36,7 @@ const CouponSchema = mongoose.Schema({
     couponImage: {
       type: String
     },
-    couponImageLink: {
+    couponImageLinkDisplayState: {
       type: String
     },
     userId: {
@@ -57,7 +57,7 @@ CouponSchema.methods.serialize = function () {
         companyLogo: this.companyLogo,
         companyLogoUsed: this.companyLogo,
         couponImage: this.couponImage,
-        couponImageLink: this.couponImageLink,
+        couponImageLinkDisplayState: this.couponImageLinkDisplayState,
         userId: this.userId
     };
 }
