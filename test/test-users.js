@@ -4,7 +4,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 
 const { app, runServer, closeServer } = require('../server');
-const { User } = require('../users');
+const { User } = require('../routes/user');
 const { TEST_DATABASE_URL } = require('../config');
 
 const expect = chai.expect;
@@ -14,7 +14,7 @@ const expect = chai.expect;
 // see: https://github.com/chaijs/chai-http
 chai.use(chaiHttp);
 
-describe('/api/user', function () {
+describe('/api/users', function () {
   const username = 'exampleUser';
   const password = 'examplePass';
   const firstName = 'Example';
@@ -40,7 +40,7 @@ describe('/api/user', function () {
 
   describe('/api/users', function () {
     describe('POST', function () {
-      it('Should reject users with missing username', function () {
+      it('Should reject user with missing username', function () {
         return chai
           .request(app)
           .post('/api/users')

@@ -89,6 +89,7 @@ function renderNavigationLinksListener() {
     //hide coupon link
     $('.js-signup').removeClass('hide');
     $('.js-login').removeClass('hide');
+
   }
   else{
     console.log('you are still signed in');
@@ -124,12 +125,13 @@ function renderErrorMessage(res){
   return $('#js-msg-output').html(errorMsg);
 }
 
+
 function initApp() {
+  renderNavigationLinksListener();
   signupBtnHandler();
   loginBtnHandler();
   signupHandler();
   loginHandler();
-  renderNavigationLinksListener();
   logoutHandler();
 }
 
