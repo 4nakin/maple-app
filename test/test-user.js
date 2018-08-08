@@ -68,14 +68,6 @@ describe('/api/users', function () {
     //return seedUserData();
   });
 
-  // afterEach(function () {
-  //   // tear down database so we ensure no state from this test
-  //   // effects any coming after.
-  //   return tearDownDb();
-  // });
-
-  //beforeEach(function () { });
-
   afterEach(function () {
     return User.remove({});
   });
@@ -482,7 +474,7 @@ describe('/api/users', function () {
           });
       });
     });
-    /*
+
     describe('GET', function () {
       it('Should return an empty array initially', function () {
         return chai.request(app).get('/api/users').then(res => {
@@ -514,16 +506,18 @@ describe('/api/users', function () {
             expect(res.body[0]).to.deep.equal({
               username,
               firstName,
-              lastName
+              lastName,
+              userId: res.body[0].userId
             });
             expect(res.body[1]).to.deep.equal({
               username: usernameB,
               firstName: firstNameB,
-              lastName: lastNameB
+              lastName: lastNameB,
+              userId: res.body[1].userId
             });
           });
       });
     });
-    */
+
   });
 });
