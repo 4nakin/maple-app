@@ -137,8 +137,6 @@ function getUserCoupons() {
 
       res.coupons.map((coupon) => {
         const toggleCouponState = checkIfCouponShouldBeDisabled(coupon);
-        console.log(coupon);
-        console.log(toggleCouponState);
         couponHTML += renderCoupons(coupon, toggleCouponState);
       });
 
@@ -309,18 +307,14 @@ function sendUpdateDataToAPI(id, formData){
 }
 
 function markCouponUsedonDOM(res,toggleCouponState) {
-  //console.log(toggleCouponState);
   $('.js-complete-icon').tooltip('hide');
-
   const couponContainerObject = $(entireCouponElement);
-  //console.log(couponContainerObject);
   const couponContainer = $(couponContainerObject).find('.js-coupon-container');
   const merchantLogoLink = couponContainerObject.find('div.js-coupon-merchant-logo').children();
   const dashed = couponContainerObject.find('div.dashed');
   const editIcon = couponContainer.siblings().find('a.icon.edit-icon');
   const couponImageDisplayLink = couponContainerObject.find('p.coupon-code');
   const uploadedCouponImageLink = couponContainerObject.find('p.coupon-code a');
-
 
   if (res.couponUsed === false){
     merchantLogoLink.attr('href', res.companyDomain);
@@ -332,6 +326,7 @@ function markCouponUsedonDOM(res,toggleCouponState) {
     dashed.children().addClass(toggleCouponState.dashedStates);
     couponImageDisplayLink.removeClass('show-coupon-image-link-styling-disabled');
     couponImageDisplayLink.addClass(toggleCouponState.couponImageLinkDisplayState);
+    couponContainerObject.find('p.coupon-code a').tooltip('enable');
     editIcon.fadeIn('slow');
   }
   else if (res.couponUsed === true){
@@ -345,7 +340,7 @@ function markCouponUsedonDOM(res,toggleCouponState) {
     couponImageDisplayLink.removeClass('show-coupon-image-link-styling');
     couponImageDisplayLink.addClass(toggleCouponState.couponImageLinkDisplayState);
     uploadedCouponImageLink.removeAttr('href');
-    uploadedCouponImageLink.tooltip('disable');
+    couponContainerObject.find('p.coupon-code a').tooltip('disable');
     editIcon.fadeOut('slow');
   }
   else {
@@ -420,13 +415,11 @@ function watchDeleteBtnHandler() {
       e.preventDefault();
       //bring up modal to confirm the message
       currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
-      //console.log(currentCouponId);
       $('#showConfirmDeleteModalSection').html(renderDeleteConfirmationModal());
       $('#showConfirmDeleteModal').modal('show');
       const container = $(e.currentTarget).parent().parent();
       watchSubmitDeleteCouponHandler(currentCouponId,container);
       watchSubmitDeletePressedNoHandler();
-      //sendCouponToDeleteFromAPI(currentCouponId, container);
     });
 }
 
@@ -446,7 +439,6 @@ function watchSubmitDeletePressedNoHandler() {
       $('#showConfirmDeleteModal').modal('hide');
   });
 }
-
 
 function sendCouponToDeleteFromAPI(id, container) {
     $.ajax({
