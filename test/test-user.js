@@ -2,17 +2,53 @@
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const faker = require('faker');
+const mongoose = require('mongoose');
 
-const { app, runServer, closeServer } = require('../server');
-const { User } = require('../routes/user');
+const { User } = require('../models/User');
+const { closeServer, runServer, app } = require('../server');
 const { TEST_DATABASE_URL } = require('../config');
 
 const expect = chai.expect;
 
-// This let's us make HTTP requests
-// in our tests.
-// see: https://github.com/chaijs/chai-http
 chai.use(chaiHttp);
+
+// this function deletes the entire database.
+// we'll call it in an `afterEach` block below
+// to ensure  ata from one test does not stick
+// around for next one
+function tearDownDb() {
+  return new Promise((resolve, reject) => {
+    console.warn('Deleting database');
+    mongoose.connection.dropDatabase()
+      .then(result => resolve(result))
+      .catch(err => reject(err));
+  });
+}
+
+// used to put randomish documents in db
+// so we have data to work with and assert about.
+// we use the Faker library to automatically
+// generate placeholder values for author, title, content
+// and then we insert that data into mongo
+
+// function seedUserData() {
+//   console.info('seeding user data');
+//   const seedData = [];
+//   for (let i = 1; i <= 10; i++) {
+//     seedData.push({
+//       firstName: faker.name.firstName(),
+//       lastName: faker.name.lastName(),
+//       username: faker.internet.userName(),
+//       password: faker.internet.password()
+//     });
+//   }
+//   //console.log(seedData);
+//   // this will return a promise
+//   return User.insertMany(seedData);
+// }
+
+
 
 describe('/api/users', function () {
   const username = 'exampleUser';
@@ -28,17 +64,29 @@ describe('/api/users', function () {
     return runServer(TEST_DATABASE_URL);
   });
 
-  after(function () {
-    return closeServer();
+  beforeEach(function () {
+    //return seedUserData();
   });
 
-  beforeEach(function () { });
+  // afterEach(function () {
+  //   // tear down database so we ensure no state from this test
+  //   // effects any coming after.
+  //   return tearDownDb();
+  // });
+
+  //beforeEach(function () { });
 
   afterEach(function () {
     return User.remove({});
   });
 
+  after(function () {
+    return closeServer();
+  });
+
+
   describe('/api/users', function () {
+
     describe('POST', function () {
       it('Should reject user with missing username', function () {
         return chai
@@ -381,7 +429,8 @@ describe('/api/users', function () {
             expect(res.body).to.have.keys(
               'username',
               'firstName',
-              'lastName'
+              'lastName',
+              'userId'
             );
             expect(res.body.username).to.equal(username);
             expect(res.body.firstName).to.equal(firstName);
@@ -416,7 +465,8 @@ describe('/api/users', function () {
             expect(res.body).to.have.keys(
               'username',
               'firstName',
-              'lastName'
+              'lastName',
+              'userId'
             );
             expect(res.body.username).to.equal(username);
             expect(res.body.firstName).to.equal(firstName);
@@ -432,7 +482,7 @@ describe('/api/users', function () {
           });
       });
     });
-
+    /*
     describe('GET', function () {
       it('Should return an empty array initially', function () {
         return chai.request(app).get('/api/users').then(res => {
@@ -474,5 +524,6 @@ describe('/api/users', function () {
           });
       });
     });
+    */
   });
 });
