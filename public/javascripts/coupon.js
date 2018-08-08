@@ -26,7 +26,7 @@ function renderCoupons(res, toggleCouponState) {
             <section role="region" class="coupon-actions-nav">
 
               <a href="" data-toggle="tooltip" data-placement="top" title="Mark used" class="icon complete-icon js-complete-icon">
-                <img src="images/tick-sign.svg" alt="mark coupon used" data-toggle="modal" data-target="#showConfirmDeleteModal" class="budicon">
+                <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon">
               </a>
 
               <a href="" data-toggle="tooltip" data-placement="top" title="Edit" class="icon edit-icon js-edit-icon ${toggleCouponState.editIconState}">
@@ -34,7 +34,7 @@ function renderCoupons(res, toggleCouponState) {
               </a>
 
               <a href="" data-toggle="tooltip" data-placement="top" title="Delete" class="icon trash-icon js-delete-icon">
-                <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" class="budicon" class="budicon">
+                <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" data-toggle="modal" data-target="#showConfirmDeleteModal" class="budicon">
               </a>
             </section>
           </section>`;
@@ -680,7 +680,7 @@ function clickedOnMarkUsed() {
   $('#coupons').on('click','.js-complete-icon', (e) => {
     e.preventDefault();
     currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
-    console.log(currentCouponId);
+    console.log(`I want to mark this coupon(${currentCouponId}) complete`);
     getCouponById(currentCouponId, renderCouponAsUsed);
     currentEventListener = e;
     entireCouponElement = $(e.currentTarget).parent().parent();
@@ -688,7 +688,7 @@ function clickedOnMarkUsed() {
 }
 
 function renderCouponAsUsed(res) {
-  console.log(res);
+  //console.log(res);
   currentCouponId = res._id;
   let couponUsedBoolVal = res.couponUsed;
   let couponImagePath = res.couponImage;
@@ -702,7 +702,6 @@ function renderCouponAsUsed(res) {
       formData.append('couponDisplayState', 'coupon-disabled');
       formData.append('couponImageLinkDisplayState', 'show-coupon-image-link-styling-disabled');
       sendUpdateDataToAPI(currentCouponId, formData);
-
   }
   // changing styles to active coupon
   else if (couponUsedBoolVal === true) {
@@ -710,7 +709,6 @@ function renderCouponAsUsed(res) {
     formData.append('couponDisplayState', 'coupon-active');
     formData.append('couponImageLinkDisplayState', 'show-coupon-image-link-styling');
     sendUpdateDataToAPI(currentCouponId, formData);
-
   }
   else {
     console.log("something went wrong with marking coupon!");
