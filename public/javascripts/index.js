@@ -67,7 +67,7 @@ function loginHandler() {
       success: (res) => {
         //this saves the authToken that comes from response to the Token variable
         localStorage.setItem('Token', res.authToken);
-        console.log('What is res.authToken Value?' + res.authToken);
+        //console.log('What is res.authToken Value?' + res.authToken);
 
         $('.js-logout').removeClass('hide');
         $('.js-coupon').removeClass('hide');
