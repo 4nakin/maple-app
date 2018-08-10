@@ -2,21 +2,36 @@
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const jwt = require('jsonwebtoken');
+const faker = require('faker');
+const mongoose = require('mongoose');
 
-const { app, runServer, closeServer } = require('../server');
 const { User } = require('../models/User');
+const { Coupon } = require('../models/Coupon');
+const { closeServer, runServer, app } = require('../server');
 const { JWT_SECRET, TEST_DATABASE_URL } = require('../config');
 
 const expect = chai.expect;
 
 chai.use(chaiHttp);
 
-describe('Protected endpoint', function () {
+
+describe('Protected endpoint Coupon', function () {
   const username = 'exampleUser';
   const password = 'examplePass';
   const firstName = 'Example';
   const lastName = 'User';
+  const merchantName = faker.company.companyName();
+  const code = 'exampleCode';
+  const expirationDate = faker.date.future();
+  const description = 'This is fake coupon description';
+  const couponUsed = false;
+  const couponDisplayState = '';
+  const couponDomain = 'example.com';
+  const companyLogo = '';
+  const companyLogoUsed = '';
+  const couponImage = '';
+  const couponImageLinkDisplayState = '';
+  //const userId = '';
 
   before(function () {
     return runServer(TEST_DATABASE_URL);
@@ -41,12 +56,21 @@ describe('Protected endpoint', function () {
     return User.remove({});
   });
 
-  describe('/api/protected', function () {
+  describe('/coupon', function () {
+    /*
     it('Should reject requests with no credentials', function () {
       return chai
         .request(app)
         .get('/api/protected')
-        .then(res =>{
+        .then(() =>
+          expect.fail(null, null, 'Request should not succeed')
+        )
+        .catch(err => {
+          if (err instanceof chai.AssertionError) {
+            throw err;
+          }
+
+          const res = err.response;
           expect(res).to.have.status(401);
         });
     });
@@ -68,7 +92,15 @@ describe('Protected endpoint', function () {
         .request(app)
         .get('/api/protected')
         .set('Authorization', `Bearer ${token}`)
-        .then(res =>{
+        .then(() =>
+          expect.fail(null, null, 'Request should not succeed')
+        )
+        .catch(err => {
+          if (err instanceof chai.AssertionError) {
+            throw err;
+          }
+
+          const res = err.response;
           expect(res).to.have.status(401);
         });
     });
@@ -93,11 +125,21 @@ describe('Protected endpoint', function () {
         .request(app)
         .get('/api/protected')
         .set('authorization', `Bearer ${token}`)
-        .then(res => {
+        .then(() =>
+          expect.fail(null, null, 'Request should not succeed')
+        )
+        .catch(err => {
+          if (err instanceof chai.AssertionError) {
+            throw err;
+          }
+
+          const res = err.response;
           expect(res).to.have.status(401);
         });
     });
-    it('Should send protected data', function () {
+    */
+
+    it('Should send protected data for GET coupon', function () {
       const token = jwt.sign(
         {
           user: {
@@ -114,16 +156,19 @@ describe('Protected endpoint', function () {
         }
       );
 
+      console.log(token);
+
       return chai
         .request(app)
-        .get('/api/protected')
+        .get('/coupon')
         .set('authorization', `Bearer ${token}`)
         .then(res => {
-          //console.log(res.body.data);
+          console.log(res);
           expect(res).to.have.status(200);
           expect(res.body).to.be.an('object');
-          expect(res.body.data).to.equal('rosebud');
+          //expect(res.body.data).to.equal('rosebud');
         });
     });
+
   });
 });

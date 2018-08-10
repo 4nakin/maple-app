@@ -46,6 +46,7 @@ function getUserIdFromJwt(req){
   return userId;
 }
 
+
 // GETS ALL COUPONS
 router.get('/', jwtAuth, (req, res) => {
   const _userId = getUserIdFromJwt(req);
