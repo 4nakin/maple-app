@@ -2,6 +2,7 @@
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const jwt = require('jsonwebtoken');
 const faker = require('faker');
 const mongoose = require('mongoose');
 
@@ -9,6 +10,8 @@ const { User } = require('../models/User');
 const { Coupon } = require('../models/Coupon');
 const { closeServer, runServer, app } = require('../server');
 const { JWT_SECRET, TEST_DATABASE_URL } = require('../config');
+// const seedUsers = require("/seed/users");
+// const seedCoupons = require("/seed/coupons");
 
 const expect = chai.expect;
 
@@ -20,18 +23,22 @@ describe('Protected endpoint Coupon', function () {
   const password = 'examplePass';
   const firstName = 'Example';
   const lastName = 'User';
-  const merchantName = faker.company.companyName();
-  const code = 'exampleCode';
-  const expirationDate = faker.date.future();
-  const description = 'This is fake coupon description';
+  const id = '1';
   const couponUsed = false;
-  const couponDisplayState = '';
-  const couponDomain = 'example.com';
-  const companyLogo = '';
-  const companyLogoUsed = '';
-  const couponImage = '';
-  const couponImageLinkDisplayState = '';
-  //const userId = '';
+  const couponDisplayState = 'coupon-active';
+  const companyLogo = '/images/defaultImage.png';
+  const companyLogoUsed = '/images/defaultImage.png';
+  const companyDomain = 'www.exampledomain.com';
+  const couponImage = 'exampleImage.png';
+  const couponImageLinkDisplayState ='show-coupon-image-link-styling';
+
+
+  const merchantName = 'Target';
+  const code = 'exampleCode';
+  //const expirationDate = faker.date.future();
+  const expirationDate = '08-30-2019';
+  const description = 'This is fake coupon description';
+  const userId = '1';
 
   before(function () {
     return runServer(TEST_DATABASE_URL);
@@ -47,7 +54,8 @@ describe('Protected endpoint Coupon', function () {
         username,
         password,
         firstName,
-        lastName
+        lastName,
+        userId
       })
     );
   });
@@ -57,118 +65,224 @@ describe('Protected endpoint Coupon', function () {
   });
 
   describe('/coupon', function () {
-    /*
-    it('Should reject requests with no credentials', function () {
-      return chai
-        .request(app)
-        .get('/api/protected')
-        .then(() =>
-          expect.fail(null, null, 'Request should not succeed')
-        )
-        .catch(err => {
-          if (err instanceof chai.AssertionError) {
-            throw err;
-          }
-
-          const res = err.response;
-          expect(res).to.have.status(401);
-        });
-    });
-    it('Should reject requests with an invalid token', function () {
-      const token = jwt.sign(
-        {
-          username,
-          firstName,
-          lastName
-        },
-        'wrongSecret',
-        {
-          algorithm: 'HS256',
-          expiresIn: '7d'
-        }
-      );
-
-      return chai
-        .request(app)
-        .get('/api/protected')
-        .set('Authorization', `Bearer ${token}`)
-        .then(() =>
-          expect.fail(null, null, 'Request should not succeed')
-        )
-        .catch(err => {
-          if (err instanceof chai.AssertionError) {
-            throw err;
-          }
-
-          const res = err.response;
-          expect(res).to.have.status(401);
-        });
-    });
-    it('Should reject requests with an expired token', function () {
-      const token = jwt.sign(
-        {
-          user: {
-            username,
-            firstName,
-            lastName
+    describe('POST', function () {
+      it('Should add a coupon ', function () {
+        const token = jwt.sign(
+          {
+            user: {
+              userId,
+              username,
+              firstName,
+              lastName
+            }
           },
-          exp: Math.floor(Date.now() / 1000) - 10 // Expired ten seconds ago
-        },
-        JWT_SECRET,
-        {
-          algorithm: 'HS256',
-          subject: username
-        }
-      );
-
-      return chai
-        .request(app)
-        .get('/api/protected')
-        .set('authorization', `Bearer ${token}`)
-        .then(() =>
-          expect.fail(null, null, 'Request should not succeed')
-        )
-        .catch(err => {
-          if (err instanceof chai.AssertionError) {
-            throw err;
+          JWT_SECRET,
+          {
+            algorithm: 'HS256',
+            subject: username,
+            expiresIn: '7d'
           }
+        );
 
-          const res = err.response;
-          expect(res).to.have.status(401);
-        });
-    });
-    */
+        console.log(token);
+        console.log(merchantName);
+        console.log(code);
+        console.log(expirationDate);
+        console.log(description);
 
-    it('Should send protected data for GET coupon', function () {
-      const token = jwt.sign(
-        {
-          user: {
-            username,
-            firstName,
-            lastName
+        return chai
+          .request(app)
+          .post('/coupon')
+          .set('Authorization', `Bearer ${token}`)
+          .send('merchantname=Target')
+          .send('code=TestCode123')
+          .send('expirationDate=08-19-2019')
+          .send('description=this is a test')
+          .set('Content-Type', 'multipart/form-data; boundary=----WebKitFormBoundaryeLQ6lAu4UV1xBMsV')
+          .then(res => {
+            console.log(res);
+            //expect(res).to.have.status(201);
+            //expect(res.body).to.be.an('object');
+            //expect(res.body.data).to.equal('rosebud');
+          })
+      });
+
+      /*
+      it('Should reject a coupon with missing data', function () {
+        const token = jwt.sign(
+          {
+            user: {
+              username,
+              firstName,
+              lastName
+            }
+          },
+          JWT_SECRET,
+          {
+            algorithm: 'HS256',
+            subject: username,
+            expiresIn: '7d'
           }
-        },
-        JWT_SECRET,
-        {
-          algorithm: 'HS256',
-          subject: username,
-          expiresIn: '7d'
-        }
-      );
+        );
 
-      console.log(token);
+        // console.log(token);
+        // console.log(merchantName);
+        // console.log(code);
+        // console.log(expirationDate);
+        // console.log(description);
 
-      return chai
-        .request(app)
-        .get('/coupon')
-        .set('authorization', `Bearer ${token}`)
-        .then(res => {
-          console.log(res);
-          expect(res).to.have.status(200);
-          expect(res.body).to.be.an('object');
-          //expect(res.body.data).to.equal('rosebud');
-        });
+        return chai
+          .request(app)
+          .post('/coupon')
+          .set('authorization', `Bearer ${token}`)
+          // .send({
+          //   merchantName,
+          //   code,
+          //   expirationDate,
+          //   description,
+          //   userId
+          // })
+          .then(res => {
+            //console.log(res);
+            expect(res).to.have.status(500);
+            //expect(res.body).to.be.an('object');
+            //expect(res.body.data).to.equal('rosebud');
+          })
+      });
+      */
+
+      // it('Should add a coupon ', function () {
+      //   const token = jwt.sign(
+      //     {
+      //       user: {
+      //         username,
+      //         firstName,
+      //         lastName
+      //       }
+      //     },
+      //     JWT_SECRET,
+      //     {
+      //       algorithm: 'HS256',
+      //       subject: username,
+      //       expiresIn: '7d'
+      //     }
+      //   );
+      //
+      //   console.log(token);
+      //   console.log(merchantName);
+      //   console.log(code);
+      //   console.log(expirationDate);
+      //   console.log(description);
+      //
+      //   return chai
+      //     .request(app)
+      //     .post('/coupon')
+      //     .set('authorization', `Bearer ${token}`)
+      //     .send({
+      //       merchantName,
+      //       code,
+      //       expirationDate,
+      //       description
+      //     })
+      //     .then(res => {
+      //       console.log(res);
+      //       //expect(res).to.have.status(201);
+      //       //expect(res.body).to.be.an('object');
+      //       //expect(res.body.data).to.equal('rosebud');
+      //     })
+      // });
+
+      /*
+      it('Should return an empty array initially', function () {
+        const token = jwt.sign(
+          {
+            user: {
+              username,
+              firstName,
+              lastName
+            }
+          },
+          JWT_SECRET,
+          {
+            algorithm: 'HS256',
+            subject: username,
+            expiresIn: '7d'
+          }
+        );
+
+        // console.log(token);
+
+        return chai.request(app)
+          .get('/coupon')
+          .set('authorization', `Bearer ${token}`)
+          .then(res => {
+            expect(res).to.have.status(200);
+            expect(res.body).to.be.an('object');
+          });
+      });
+      */
     });
+
+    // describe('GET', function () {
+    //   it('Should get to protected endpoint GET coupon', function () {
+    //     const token = jwt.sign(
+    //       {
+    //         user: {
+    //           username,
+    //           firstName,
+    //           lastName
+    //         }
+    //       },
+    //       JWT_SECRET,
+    //       {
+    //         algorithm: 'HS256',
+    //         subject: username,
+    //         expiresIn: '7d'
+    //       }
+    //     );
+    //
+    //     // console.log(token);
+    //
+    //     return chai
+    //       .request(app)
+    //       .get('/coupon')
+    //       .set('authorization', `Bearer ${token}`)
+    //       .then(res => {
+    //         //console.log(res);
+    //         expect(res).to.have.status(200);
+    //         //expect(res.body).to.be.an('object');
+    //         //expect(res.body.data).to.equal('rosebud');
+    //       })
+    //   });
+    //   it('Should return an empty array initially', function () {
+    //     const token = jwt.sign(
+    //       {
+    //         user: {
+    //           username,
+    //           firstName,
+    //           lastName
+    //         }
+    //       },
+    //       JWT_SECRET,
+    //       {
+    //         algorithm: 'HS256',
+    //         subject: username,
+    //         expiresIn: '7d'
+    //       }
+    //     );
+    //
+    //     // console.log(token);
+    //
+    //     return chai.request(app)
+    //       .get('/coupon')
+    //       .set('authorization', `Bearer ${token}`)
+    //       .then(res => {
+    //         expect(res).to.have.status(200);
+    //         expect(res.body).to.be.an('object');
+    //       });
+    //   });
+    // });
+
 
   });
 });

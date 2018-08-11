@@ -266,6 +266,7 @@ describe('/api/users', function () {
             lastName
           })
           .then(res => {
+            //console.log(res);
             expect(res).to.have.status(201);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.keys(

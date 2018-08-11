@@ -40,9 +40,12 @@ function formatMerchantName(string){
 
 //GETS THE USERID FROM JWT - returns the userid from a request 'authorization' header
 function getUserIdFromJwt(req){
+  //console.log(req.headers.authorization);
   const token = req.headers.authorization.split(' ')[1];
 	const tokenPayload = jwt.verify(token, JWT_SECRET);
+  //console.log(tokenPayload);
 	const userId = tokenPayload.user.userId;
+  //console.log(userId);
   return userId;
 }
 
@@ -75,8 +78,11 @@ router.get('/:id', jwtAuth, (req, res) => {
 
 // CREATES A NEW COUPON
 router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
-  console.log(req.file);
+  console.log('jessica is in post');
+  //console.log(req.file);
   const _userId = getUserIdFromJwt(req);
+  console.log('_userId ' + _userId);
+  //console.log(req);
 
   let newCoupon;
 
@@ -93,7 +99,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
     const apiData = response.data;
 
     if(apiData.logo === null){
-      console.log(`company logo is ${apiData.logo}`);
+      //console.log(`company logo is ${apiData.logo}`);
       newCoupon = new CouponModel({
         merchantName: apiData.name,
         code: req.body.code.trim(),
@@ -146,18 +152,26 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         userId: _userId
       });
     }
+    if(error.response.status === 422) {
+      console.log('clearbit api 422 err:	Company name is invalid.');
+    }
   })
-  .then(function() {
+  .then(function(response) {
+    console.log(response);
     newCoupon.save()
       .then(function(coupon) {
         const savedCoupon = coupon.toObject();
-        console.log(savedCoupon);
+        //console.log(savedCoupon);
         res.status(201).json(savedCoupon);
       })
       .catch(function(err) {
-        console.error(err);
+        //console.error(err);
         res.status(500).send(err);
       });
+  })
+  .catch(function(err){
+    //console.error(err);
+    res.status(500).send(err);
   })
 });
 
