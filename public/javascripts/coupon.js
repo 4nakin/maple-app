@@ -168,7 +168,7 @@ function renderAddModal() {
                   <h2 class="modal-title" id="addNewCouponModalLabel">Add Coupon</h2>
                   <form id="js-add-coupon-form">
                     <div class="form-group">
-                      <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(15 charater limit)</span></label>
+                      <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(14 charater limit)</span></label>
                       <input type="text" name="merchantName" class="form-control input-add-merchantName" maxlength="14" id="merchantName" required>
                     </div>
                     <div class="form-group">
@@ -177,7 +177,7 @@ function renderAddModal() {
                     </div>
                     <div class="form-group">
                       <label for="expirationDate">Expiration Date <span class ="limitsOnInputs">(Date must be today or greater)</span></label>
-                      <input type="date" name="expirationDate" class="form-control input-add-expirationDate js-date-field" min="2018-07max="2020-12-31" id="expirationDate" required>
+                      <input type="date" name="expirationDate" class="form-control input-add-expirationDate js-date-field" min="2018-08" max="2028-12-31" id="expirationDate" required>
                     </div>
                     <div class="form-group">
                       <label for="description">Description <span class ="limitsOnInputs">(40 charater limit)</span></label>
@@ -185,7 +185,7 @@ function renderAddModal() {
                     </div>
                     <div class="form-group">
                       <label for="couponImage" class="custom-file-upload"><p>Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></p></label>
-                      <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" required/>
+                      <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" />
                     </div>
                     <div class="">
                       <button type="submit" class="button solid submit-add-coupon-btn" id="js-submit-add-coupon-btn">Add</button>
