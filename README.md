@@ -1,16 +1,16 @@
-#Maple
+# Maple
   Never lose your coupon savings. Sign up and upload your coupon to be notified before they expire.
   [Demo Maple Here](https://maple-coupons.herokuapp.com/)
 
-#Summary
+# Summary
   Maple is a responsive full stack application that allows users to manage their online coupon codes. Users are able to enter the specific details of the coupon manually and upload an image associated with the coupon. The intent of application is to make management of online savings readily available everywhere without having to remember to bring the stack of paper associated with paper coupons.
 
-#Coming Soon
+# Coming Soon
   - [ ] Notifications before coupons expire.
   - [ ] Extracting of information from uploaded coupon image(OCR).
 
 
-#ScreenShots
+# ScreenShots
 
 LandingPage:
 ![Landing](public/images/maple-app-landing-page.png)
@@ -31,28 +31,28 @@ Filter Coupons Page:
 ![Filter](public/images/maple-app-filter-page.png)
 
 
-#Technologies
+# Technologies
 
-##Frontend
+## Frontend
   *HTML
   *CSS3
   *Javascript
   *jquery
 
-##Backend
-  *Node.js
-  *Express.js
-  *Passport
-  *Mongoose
-  *bcryptjs
+## Backend
+  * Node.js
+  * Express.js
+  * Passport
+  * Mongoose
+  * bcryptjs
 
-##Testing
-  Mocha
-  Chai
-  Travis CI
+## Testing
+  * Mocha
+  * Chai
+  * Travis CI
 
-#Hosted on
+# Hosted on
   Heroku
 
-Design/Wireframes
+# Design/Wireframes
   Sketch
