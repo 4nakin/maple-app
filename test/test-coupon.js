@@ -108,7 +108,6 @@ describe('Protected endpoint Coupon', function () {
   });
 
 
-
   describe('/coupon', function () {
     describe('GET', function () {
       it('Should return an empty array initially', function () {
