@@ -1,2 +1,11 @@
 language: node_js
 node_js: node
+services:
+- mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: krOTsRXYXQ2pGbkTosjdbBpaiqugx0JV9L0O79mGpTSKQmj29FaUBVfT37E/+EF+5xMqsIY1q5XjWl08Hw/0pBIHDscbGfBkDwberjXMWHWXZ9wFh6siiB5B9M5uTZzkW637yQLqdXkREbhsnpSmLcYNw5+Amn+IQ/H4z2zkBkMdHMEDbypqwOLr/lu7iTtliS8lMjMnjcpyG6+vnR591X2bIvjylo5JOZpOKRnDIOtZ8ZdRsvhy2SLE1SlCppdWZ6yAGLTAGVm6AO44bjufXK7X8mNzufVyLThuqajIIGFys+1ZV+usZccZOKblNQCTwA2vBEAGSimywC+wDMtEmdDaSXBY0si8nCuulufbSmScoExRjd8azGY2jL1hjTW0uADc1kZOIhN4O1IWBCxdMJz27PF8BIdzrZPKsPvREVT2ojTV9vEg1H57ieF3tkGQxGtpXlvH+4JeZxwKy8K25CAcelDmKXyBtXwXmLqNm5Ccy+ZlvdWQHVjvdRbo9/GzZqgghWpnAAXxKGAWllonoYeFdh3EWo4GHOCBzx1cd0QywNoK8NKxUhpGnyWhZbLgZQoMpbyuvSaN4VZAW+JcFZJPBkwz31w7NJXFVSMI6iLC5EiDyyxaL3lkDtP8NMm+IX9v1D3gNDVebhF+dy2ClncFFF4PDVFGZn1bbQ5gAEU=
+  app: maple-coupons
+  on:
+    repo: jessicaerazo/maple-app

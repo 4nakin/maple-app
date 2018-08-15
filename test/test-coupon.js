@@ -145,7 +145,7 @@ describe('Protected endpoint Coupon', function () {
             expect(res.body.coupons).to.have.length(0);
         });
       });
-
+      /*
       it('Should return an coupons', function () {
         return Coupon.create(
           {
@@ -189,7 +189,7 @@ describe('Protected endpoint Coupon', function () {
             //expect(res).to.have.status(201);
           });
       });
-
+      */
     });
     describe('POST', function () {
       it('Should reject a coupon with missing Merchant Name', function () {
