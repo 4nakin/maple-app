@@ -2,3 +2,10 @@ language: node_js
 node_js: node
 services:
 - mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: sAIxURbgj+Agkjlth9rgMhrzkUb+rDZ77wUNMe7dEN/qtBUfL4VKEFRjoLzGWOQdA7YyM5MsAKSmsUFTcwovfxoWdRp9F9stfV+4aTT5TImY/Hfs5C92LtYWFwtmgbiYdHQCT7s+35izj4XKgxucIO2E6taDV/MoIiS+FgLacUG1bmtAhjq/VEwLgaPbbHD4adcMKkDPXPYwn5Hvwnny3bdp1R0vgq8r5MNInRhHWKxkPMncrlWuiimc/HmLSy8OFiEfq9h3CCZdS0n+iH+DfVxmS8BQEoUFZsnKpdgmKGRTEAjTaCCQrM13jyHDyQBduQOPAxBoltLNm7I6Da4OHO6GJoIB/Gt2aW97aJ6ub1EqAbEWPfVjVqitOhGPKaw4fy3xMEZmFrkVBZWreuRx5l75HppARKY/PQfTRVMgTIKSgp7mhkeQm8n05KU7lcd64F2l5vZ+LkF0+hL5i7SohzBEZqKdBbbfa40ELEmexm9613nLt038NEKfGMXZA8+T6OdB2n9ejx6gZJ+YwREzO6QU1qmx5QuDwj/8A8iUuzESQSTOSvraK21LtDHQl+dgwJyjItCuz+9Jk4RiGOPbvwL7eHEBU+pK8S/XW0tIwxaY0bUrdZOjQv8z5jXxFElcrHkH4FGzJEPXfLg89R60oWbRHmU4gIgcEDuyGmaEuvo=
+  app: obscure-everglades-48796
+  on:
+    repo: jessicaerazo/maple-app
