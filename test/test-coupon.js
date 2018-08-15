@@ -58,30 +58,7 @@ function tearDownDb() {
             .catch(err => reject(err));
     });
 }
-/*
-function seedCouponData() {
-    console.info('Seeding coupon data');
-    const seedData = [];
 
-    for(let i = 1; i <= 10; i++){
-      seedData.push({
-        merchantName: faker.company.companyName(),
-        code: 'TESTCODE123',
-        expirationDate: '2018-08-14',
-        description: faker.lorem.sentence,
-        couponUsed: true,
-        couponDisplayState: 'coupon-disabled',
-        companyLogo: `https://logo.clearbit.com/${faker.company.companyName()}.com?size=300`,
-        companyLogoUsed: `https://logo.clearbit.com/${faker.company.companyName()}?size=300&greyscale=true`,
-        companyDomain: `https://www.${faker.company.companyName()}.com`,
-        couponImageLinkDisplayState: 'show-coupon-image-link-styling-disabled',
-        userId: '5b43e4526930dc1c7ea780b8',
-      });
-    }
-    // this will return a promise
-    return Coupon.insertMany(seedCoupon);
-}
-*/
 function createUserProfile() {
     return User.hashPassword(password).then(password =>
         User.create({
@@ -119,7 +96,6 @@ describe('Protected endpoint Coupon', function () {
                         subject: username,
                         expiresIn: '7d'
                     });
-              //return seedCouponData();
             });
   });
 
