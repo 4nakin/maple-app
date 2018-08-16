@@ -75,17 +75,18 @@ describe('Protected endpoint Coupon', function () {
 
   before(function () {
     let res;
+    let password= 'password123';
+
     return chai
         .request(app)
         .post('/api/users')
         .send({
           username: 'testUser',
-          password: 'password123',
+          password: password,
           firstName: 'user',
           lastName: 'user'
         })
         .then(function(_res) {
-
           res = _res;
 
           let userId = res.body.userId;
@@ -93,57 +94,33 @@ describe('Protected endpoint Coupon', function () {
           let firstName = res.body.firstName;
           let lastName = res.body.lastName;
 
-          token = jwt.sign({
-            user: {
-              userId,
-              username,
-              firstName,
-              lastName
-            }
-          },
-          JWT_SECRET,
-          {
-            algorithm: 'HS256',
-            subject: username,
-            expiresIn: '7d'
-          });
-
-          //return an object with token and userId
           userObject = {
-            token: token,
-            userId: userId
-          }
-          return userObject;
+             userId: userId
+           }
 
+          return chai
+              .request(app)
+              .post('/api/auth/login')
+              .send({
+                username: username,
+                password: password,
+              })
+        })
+        .then(function(_res) {
+          res = _res;
+          userObject.token = res.body.authToken;
+          return userObject;
         })
         .catch(function(err) {
           console.log('there is an error ' + err);
         })
-
    });
 
   beforeEach(function () {
-    // return createUserProfile()
-    //         .then(function () {
-    //             token = jwt.sign(
-    //                 {
-    //                   user: {
-    //                     username,
-    //                     firstName,
-    //                     lastName
-    //                   }
-    //                 },
-    //                 JWT_SECRET,
-    //                 {
-    //                   algorithm: 'HS256',
-    //                   subject: username,
-    //                   expiresIn: '7d'
-    //                 });
-    //         });
   });
 
   afterEach(function () {
-    //return tearDownDb();
+    return tearDownDb();
   });
 
   after(function () {
@@ -165,7 +142,6 @@ describe('Protected endpoint Coupon', function () {
             expect(res.body.coupons).to.be.an('array');
         });
       });
-
       it('Should return an coupons', function () {
         return Coupon.create(
           {
@@ -203,38 +179,40 @@ describe('Protected endpoint Coupon', function () {
           .set('Authorization', `Bearer ${userObject.token}`)
         })
         .then(res => {
-          console.log(res.body);
           expect(res).to.have.status(200);
+          expect(res.body).to.be.an('object');
           expect(res.body.coupons).to.be.an('array');
           expect(res.body.coupons).to.have.length(2);
-          expect(res.body.coupons[0]).to.deep.equal({
-             userId: res.body.coupons[0].userId,
-             merchantName,
-             code,
-             expirationDate,
-             description,
-             couponUsed,
-             couponDisplayState,
-             companyDomain,
-             companyLogo,
-             companyLogoUsed,
-             couponImage,
-             couponImageLinkDisplayState,
-          });
-          //  expect(res.body.coupons[1]).to.deep.equal({
-          //    merchantName: merchantNameB,
-          //    code: codeB,
-          //    expirationDate: expirationDateB,
-          //    description: descriptionB,
-          //    userId: res.body.coupons[1].userId
-          // });
+          expect(res.body.coupons[0].merchantName).to.equal(merchantName);
+          expect(res.body.coupons[0].code).to.equal(code);
+          expect(res.body.coupons[0].expirationDate).to.equal(expirationDate);
+          expect(res.body.coupons[0].description).to.equal(description);
+          expect(res.body.coupons[0].couponUsed).to.equal(couponUsed);
+          expect(res.body.coupons[0].couponDisplayState).to.equal(couponDisplayState);
+          expect(res.body.coupons[0].companyLogo).to.equal(companyLogo);
+          expect(res.body.coupons[0].companyLogoUsed).to.equal(companyLogoUsed);
+          expect(res.body.coupons[0].couponImage).to.equal(couponImage);
+          expect(res.body.coupons[0].couponImageLinkDisplayState).to.equal(couponImageLinkDisplayState);
+          expect(res.body.coupons[0].userid).to.equal(res.body.coupons[0].userid);
+          expect(res.body.coupons[1].merchantName).to.equal(merchantNameB);
+          expect(res.body.coupons[1].code).to.equal(codeB);
+          expect(res.body.coupons[1].expirationDate).to.equal(expirationDateB);
+          expect(res.body.coupons[1].description).to.equal(descriptionB);
+          expect(res.body.coupons[1].couponUsed).to.equal(couponUsedB);
+          expect(res.body.coupons[1].couponDisplayState).to.equal(couponDisplayStateB);
+          expect(res.body.coupons[1].companyLogo).to.equal(companyLogoB);
+          expect(res.body.coupons[1].companyLogoUsed).to.equal(companyLogoUsedB);
+          expect(res.body.coupons[1].couponImage).to.equal(couponImageB);
+          expect(res.body.coupons[1].couponImageLinkDisplayState).to.equal(couponImageLinkDisplayStateB);
+          expect(res.body.coupons[1].userid).to.equal(res.body.coupons[1].userid);
         })
         .catch(function(err) {
           console.log('Could not pull the latest coupons in the db ' + err);
         })
       });
+
     });
-/*
+
     describe('POST', function () {
       it('Should reject a coupon with missing merchant name', function () {
           return chai
@@ -432,7 +410,7 @@ describe('Protected endpoint Coupon', function () {
           })
       });
     });
-*/
+
 
   });
 });
