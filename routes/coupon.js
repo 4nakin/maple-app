@@ -50,11 +50,9 @@ function getUserIdFromJwt(req){
 // GETS ALL COUPONS
 router.get('/', jwtAuth, (req, res) => {
   const _userId = getUserIdFromJwt(req);
-  console.log(_userId);
   CouponModel.find({userId: _userId})
     .then(coupons => res.status(200).json({coupons, _userId}))
     .catch(err => {
-        console.error(err);
         res.status(500).json({
           message: 'Internal server error'
         });

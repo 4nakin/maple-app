@@ -145,26 +145,26 @@ router.get('/', (req, res) => {
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
-const jwtAuth = passport.authenticate('jwt', {session: false});
+//const jwtAuth = passport.authenticate('jwt', {session: false});
 
 // checks to see if user is already logged in
-router.get('/logged', jwtAuth, (req, res) => {
-	const token = req.headers.authorization.split(' ')[1];
-  console.log("token in user route: " + token);
-	const tokenPayload = jwt.verify(token, JWT_SECRET);
-	const _username = tokenPayload.user.username;
-
-
-	User.findOne({username: _username})
-		.then(user => {
-      console.log(user);
-			return res.send(user.accountProfile());
-		})
-		.catch(err => {
-			console.log(err);
-			return res.status(500).json({message: 'Internal Server Error'});
-		});
-});
+// router.get('/logged', jwtAuth, (req, res) => {
+// 	const token = req.headers.authorization.split(' ')[1];
+//   console.log("token in user route: " + token);
+// 	const tokenPayload = jwt.verify(token, JWT_SECRET);
+// 	const _username = tokenPayload.user.username;
+//
+//
+// 	User.findOne({username: _username})
+// 		.then(user => {
+//       console.log(user);
+// 			return res.send(user.accountProfile());
+// 		})
+// 		.catch(err => {
+// 			console.log(err);
+// 			return res.status(500).json({message: 'Internal Server Error'});
+// 		});
+// });
 
 
 

@@ -95,6 +95,7 @@ describe('Protected endpoint Coupon', function () {
 
           token = jwt.sign({
             user: {
+              userId,
               username,
               firstName,
               lastName
@@ -112,7 +113,6 @@ describe('Protected endpoint Coupon', function () {
             token: token,
             userId: userId
           }
-          //console.log(userObject);
           return userObject;
 
         })
@@ -143,7 +143,7 @@ describe('Protected endpoint Coupon', function () {
   });
 
   afterEach(function () {
-    //return tearDownDb();
+    return tearDownDb();
   });
 
   after(function () {
@@ -152,7 +152,7 @@ describe('Protected endpoint Coupon', function () {
 
   describe('testing routes for CRUD on /coupon', function () {
     describe('GET', function () {
-      /*
+
       it('Should return an empty coupon array', function () {
         return chai.request(app)
           .get('/coupon')
@@ -165,7 +165,7 @@ describe('Protected endpoint Coupon', function () {
             expect(res.body.coupons).to.be.an('array');
         });
       });
-      */
+
       it('Should return an coupons', function () {
         return Coupon.create(
           {
@@ -205,21 +205,28 @@ describe('Protected endpoint Coupon', function () {
         .then(res => {
           console.log(res.body);
           expect(res).to.have.status(200);
-          //expect(res.body.coupon).to.be.an('array');
-          //expect(res.body.coupon).to.have.length(2);
-          // expect(res.body[0]).to.deep.equal({
-          //   merchantName,
-          //   code,
-          //   expirationDate,
-          //   description,
-          //   userId: res.body[0].userId
-          // });
-          // expect(res.body[1]).to.deep.equal({
-          //   merchantName,
-          //   code,
-          //   expirationDate,
-          //   description,
-          //   userId: res.body[1].userId
+          expect(res.body.coupons).to.be.an('array');
+          expect(res.body.coupons).to.have.length(2);
+          expect(res.body.coupons[0]).to.deep.equal({
+             merchantName,
+             code,
+             expirationDate,
+             description,
+             couponUsed,
+             couponDisplayState,
+             companyDomain,
+             companyLogo,
+             companyLogoUsed,
+             couponImage,
+             couponImageLinkDisplayState,
+             userId: res.body.coupons[0].userId
+          });
+          //  expect(res.body.coupons[1]).to.deep.equal({
+          //    merchantName: merchantNameB,
+          //    code: codeB,
+          //    expirationDate: expirationDateB,
+          //    description: descriptionB,
+          //    userId: res.body.coupons[1].userId
           // });
         })
         .catch(function(err) {

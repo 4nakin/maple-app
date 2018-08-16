@@ -33,12 +33,12 @@ UserSchema.methods.serialize = function() {
   };
 };
 
-UserSchema.methods.accountProfile = function(){
-	return {
-		id: this._id,
-		username: this.username
-	}
-}
+// UserSchema.methods.accountProfile = function(){
+// 	return {
+// 		id: this._id,
+// 		username: this.username
+// 	}
+// }
 
 UserSchema.methods.validatePassword = function(password) {
   return bcrypt.compare(password, this.password);
