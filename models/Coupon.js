@@ -45,6 +45,12 @@ const CouponSchema = mongoose.Schema({
     }
 });
 
+CouponSchema.methods.formatMerchantName = function(merchantName){
+  merchantName.toLowerCase();
+  const newMerchantName = merchantName.toLowerCase();
+  return newMerchantName;
+}
+
 CouponSchema.methods.serialize = function () {
     return {
         id: this._id,

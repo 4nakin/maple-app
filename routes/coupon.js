@@ -34,7 +34,6 @@ function capitalizeFirstLetterOfEveryWord(str){
 
 function formatMerchantName(string){
   string.toLowerCase();
-  console.log(string.toLowerCase());
   const newstring = string.toLowerCase();
   return capitalizeFirstLetterOfEveryWord(newstring);
 }
@@ -51,6 +50,7 @@ function getUserIdFromJwt(req){
 // GETS ALL COUPONS
 router.get('/', jwtAuth, (req, res) => {
   const _userId = getUserIdFromJwt(req);
+  console.log(_userId);
   CouponModel.find({userId: _userId})
     .then(coupons => res.status(200).json({coupons, _userId}))
     .catch(err => {
@@ -76,11 +76,7 @@ router.get('/:id', jwtAuth, (req, res) => {
 
 // CREATES A NEW COUPON
 router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
-  //console.log('jessica is in post');
-  //console.log(req.file);
   const _userId = getUserIdFromJwt(req);
-  //console.log('_userId ' + _userId);
-
   const requiredFields = ['merchantName', 'code','expirationDate','description'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
@@ -179,15 +175,12 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   description = description.trim();
 
   let now = (moment(new Date()).format()).slice(0,10);
-  //console.log('today date: ' + now);
-  //console.log('expirationDate: ' + expirationDate);
   if(expirationDate < now) {
-      //console.log('expiration date is less than today\'s date');
       return res.status(422).json({
         code: 422,
         reason: 'ValidationError',
         message: 'Cannot add a date in the past',
-        location: expirationDate
+        location: 'expirationDate'
       });
   }
 
@@ -206,7 +199,6 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
     const apiData = response.data;
 
     if(apiData.logo === null){
-      //console.log(`company logo is ${apiData.logo}`);
       newCoupon = new CouponModel({
         merchantName: apiData.name,
         code: req.body.code.trim(),
@@ -242,8 +234,6 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   })
   .catch(function (error) {
     // handle error
-    console.log(error);
-    console.log('There was an error ' + error.response.status);
     if(error.response.status === 404 || error.response.status === 422) {
       newCoupon = new CouponModel({
         merchantName: req.body.merchantName.trim(),
@@ -262,15 +252,12 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
     }
   })
   .then(function(response) {
-    //console.log(response);
     newCoupon.save()
       .then(function(coupon) {
         const savedCoupon = coupon.toObject();
-        //console.log(savedCoupon);
         res.status(201).json(savedCoupon);
       })
       .catch(function(err) {
-        //console.error(err);
         res.status(500).send(err);
       });
   })

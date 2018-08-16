@@ -6,34 +6,26 @@ const jwt = require('jsonwebtoken');
 const faker = require('faker');
 const mongoose = require('mongoose');
 
-const { User } = require('../models/User');
-const { Coupon } = require('../models/Coupon');
+const User = require('../models/User');
+const Coupon = require('../models/Coupon');
 const { closeServer, runServer, app } = require('../server');
 const { JWT_SECRET, TEST_DATABASE_URL } = require('../config');
-// const seedUsers = require("/seed/users");
-//const seedCoupon = require('../seed/seed-coupon');
 
 const expect = chai.expect;
 
 chai.use(chaiHttp);
 
-const username = 'exampleUser';
-const password = 'examplePass';
-const firstName = 'Example';
-const lastName = 'User';
-
-const merchantName = faker.company.companyName();
+const merchantName = 'Best Buy';
 const code = 'TESTCODE123';
 const expirationDate = '2018-08-14';
-const description = faker.lorem.sentence();
+const description = 'This is a test description sentence';
 const couponUsed = true;
 const couponDisplayState = 'coupon-disabled';
-const companyLogo = `https://logo.clearbit.com/${faker.company.companyName()}.com?size=300`;
-const companyLogoUsed = `https://logo.clearbit.com/${faker.company.companyName()}?size=300&greyscale=true`;
-const companyDomain = `https://www.${faker.company.companyName()}.com`;
+const companyLogo = `https://logo.clearbit.com/bestbuy.com?size=300`;
+const companyLogoUsed = `https://logo.clearbit.com/bestbuy?size=300&greyscale=true`;
+const companyDomain = `https://www.bestbuy.com`;
 const couponImageLinkDisplayState = 'show-coupon-image-link-styling-disabled';
 const couponImage = "exampleimage.png";
-const userId = '5b43e4526930dc1c7ea780b8';
 
 const merchantNameB = "Subway";
 const codeB = "FREESUB12";
@@ -45,9 +37,13 @@ const companyLogoB = "https://logo.clearbit.com/subway.com?size=300";
 const companyLogoUsedB = "https://logo.clearbit.com/subway.com?size=300&greyscale=true";
 const companyDomainB = "https://www.subway.com";
 const couponImageLinkDisplayStateB = "show-coupon-image-link-styling";
-const userIdB = "5b43e4526930dc1c7ea780b8";
 const couponImageB = "exampleBimage.png";
-const id = "123";
+
+
+let userObject;
+let token;
+let userId;
+let res;
 
 
 function tearDownDb() {
@@ -73,58 +69,106 @@ function createUserProfile() {
 
 describe('Protected endpoint Coupon', function () {
 
-  let token;
-
   before(function () {
     return runServer(TEST_DATABASE_URL);
   });
 
+  before(function () {
+    let res;
+    return chai
+        .request(app)
+        .post('/api/users')
+        .send({
+          username: 'testUser',
+          password: 'password123',
+          firstName: 'user',
+          lastName: 'user'
+        })
+        .then(function(_res) {
+
+          res = _res;
+
+          let userId = res.body.userId;
+          let username = res.body.username;
+          let firstName = res.body.firstName;
+          let lastName = res.body.lastName;
+
+          token = jwt.sign({
+            user: {
+              username,
+              firstName,
+              lastName
+            }
+          },
+          JWT_SECRET,
+          {
+            algorithm: 'HS256',
+            subject: username,
+            expiresIn: '7d'
+          });
+
+          //return an object with token and userId
+          userObject = {
+            token: token,
+            userId: userId
+          }
+          //console.log(userObject);
+          return userObject;
+
+        })
+        .catch(function(err) {
+          console.log('there is an error ' + err);
+        })
+
+   });
+
   beforeEach(function () {
-    return createUserProfile()
-            .then(function () {
-                token = jwt.sign(
-                    {
-                        user: {
-                            username,
-                            firstName,
-                            lastName
-                        }
-                    },
-                    JWT_SECRET,
-                    {
-                        algorithm: 'HS256',
-                        subject: username,
-                        expiresIn: '7d'
-                    });
-            });
+    // return createUserProfile()
+    //         .then(function () {
+    //             token = jwt.sign(
+    //                 {
+    //                   user: {
+    //                     username,
+    //                     firstName,
+    //                     lastName
+    //                   }
+    //                 },
+    //                 JWT_SECRET,
+    //                 {
+    //                   algorithm: 'HS256',
+    //                   subject: username,
+    //                   expiresIn: '7d'
+    //                 });
+    //         });
   });
 
   afterEach(function () {
-    return tearDownDb();
+    //return tearDownDb();
   });
 
   after(function () {
     return closeServer();
   });
 
-
-  describe('/coupon', function () {
+  describe('testing routes for CRUD on /coupon', function () {
     describe('GET', function () {
-      it('Should return an empty array initially', function () {
+      /*
+      it('Should return an empty coupon array', function () {
         return chai.request(app)
           .get('/coupon')
-          .set('Authorization', `Bearer ${token}`)
-          .then(res => {
+          .set('Authorization', `Bearer ${userObject.token}`)
+          .then(function(_res) {
+            res = _res;
             expect(res).to.have.status(200);
             expect(res.body).to.be.an('object');
             expect(res.body.coupons).to.have.length(0);
+            expect(res.body.coupons).to.be.an('array');
         });
       });
-      /*
+      */
       it('Should return an coupons', function () {
         return Coupon.create(
           {
-            id,
             merchantName,
             code,
             expirationDate,
@@ -136,10 +180,9 @@ describe('Protected endpoint Coupon', function () {
             companyLogoUsed,
             couponImage,
             couponImageLinkDisplayState,
-            userId,
+            userId: userObject.userId
           },
           {
-            id: id,
             merchantName: merchantNameB,
             code: codeB ,
             expirationDate: expirationDateB ,
@@ -151,218 +194,238 @@ describe('Protected endpoint Coupon', function () {
             companyLogoUsed: companyLogoUsedB,
             couponImage: couponImageB,
             couponImageLinkDisplayState: couponImageLinkDisplayStateB,
-            userId: userId
+            userId: userObject.userId
           }
         )
-          .then(res => {
-            chai.request(app)
-            .get('/coupon')
-            .set('Authorization', `Bearer ${token}`)
-          })
-          .then(res => {
-            console.log(res.body);
-            //expect(res).to.have.status(201);
-          });
+        .then(function (){
+          return chai.request(app)
+          .get('/coupon')
+          .set('Authorization', `Bearer ${userObject.token}`)
+        })
+        .then(res => {
+          console.log(res.body);
+          expect(res).to.have.status(200);
+          //expect(res.body.coupon).to.be.an('array');
+          //expect(res.body.coupon).to.have.length(2);
+          // expect(res.body[0]).to.deep.equal({
+          //   merchantName,
+          //   code,
+          //   expirationDate,
+          //   description,
+          //   userId: res.body[0].userId
+          // });
+          // expect(res.body[1]).to.deep.equal({
+          //   merchantName,
+          //   code,
+          //   expirationDate,
+          //   description,
+          //   userId: res.body[1].userId
+          // });
+        })
+        .catch(function(err) {
+          console.log('Could not pull the latest coupons in the db ' + err);
+        })
       });
-      */
     });
+/*
     describe('POST', function () {
-      it('Should reject a coupon with missing Merchant Name', function () {
+      it('Should reject a coupon with missing merchant name', function () {
           return chai
             .request(app)
             .post('/coupon')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${userObject.token}`)
             .field('code', 'testCode')
             .field('expirationDate', '2019-08-23')
             .field('description', 'this is a test description.')
-            .then(res => {
+            .then(function(_res){
+              res = _res;
               expect(res).to.have.status(422);
+              expect(res.body.reason).to.equal('ValidationError');
+              expect(res.body.message).to.equal('Missing field');
+              expect(res.body.location).to.equal('merchantName');
             })
       });
       it('Should reject a coupon with missing code', function () {
           return chai
             .request(app)
             .post('/coupon')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${userObject.token}`)
             .field('merchantName', 'Target')
             .field('expirationDate', '08-19-2019')
             .field('description', 'this is a test description.')
-            .then(res => {
+            .then(function(_res) {
+              res = _res;
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
+              expect(res.body.reason).to.equal('ValidationError');
+              expect(res.body.message).to.equal('Missing field');
+              expect(res.body.location).to.equal('code');
             })
       });
       it('Should reject a coupon with missing expiration date', function () {
           return chai
             .request(app)
             .post('/coupon')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${userObject.token}`)
             .field('merchantName', 'Target')
             .field('code', 'testCode')
             .field('description', 'this is a test description.')
-            .then(res => {
+            .then(function(_res) {
+              res = _res;
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
+              expect(res.body.reason).to.equal('ValidationError');
+              expect(res.body.message).to.equal('Missing field');
+              expect(res.body.location).to.equal('expirationDate');
             })
       });
       it('Should reject a coupon with missing description', function () {
           return chai
             .request(app)
             .post('/coupon')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${userObject.token}`)
             .field('merchantName', 'Target')
             .field('code', 'testCode')
             .field('expirationDate', '08-19-2019')
-            .then(res => {
+            .then(function(_res) {
+              res = _res;
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
+              expect(res.body.reason).to.equal('ValidationError');
+              expect(res.body.message).to.equal('Missing field');
+              expect(res.body.location).to.equal('description');
             })
       });
-      it('Should reject a coupon with Merchant Name with less than 1', function () {
+      it('Should reject a coupon with merchant name with less than 1 characters', function () {
           return chai
             .request(app)
             .post('/coupon')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${userObject.token}`)
             .field('merchantName', '')
             .field('code', 'testCode')
             .field('expirationDate', '08-19-2019')
             .field('description', 'this is a test description.')
-            .then(res => {
+            .then(function(_res) {
+              res = _res;
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
+              expect(res.body.reason).to.equal('ValidationError');
+              expect(res.body.message).to.equal('Must be at least 1 characters long');
+              expect(res.body.location).to.equal('merchantName');
             })
       });
-      it('Should reject a coupon with code less than 1', function () {
+      it('Should reject a coupon with code less than 1 characters', function () {
           return chai
             .request(app)
             .post('/coupon')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${userObject.token}`)
             .field('merchantName', 'company')
             .field('code', '')
             .field('expirationDate', '08-19-2019')
             .field('description', 'this is a test description.')
-            .then(res => {
+            .then(function(_res) {
+              res = _res;
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
+              expect(res.body.reason).to.equal('ValidationError');
+              expect(res.body.message).to.equal('Must be at least 1 characters long');
+              expect(res.body.location).to.equal('code');
             })
       });
-      it('Should reject a coupon with expirationdate less than 10 characters', function () {
+      it('Should reject a coupon with expiration date less than 10 characters', function () {
           return chai
             .request(app)
             .post('/coupon')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${userObject.token}`)
             .field('merchantName', 'company')
             .field('code', 'testcode123')
             .field('expirationDate', '8-19-2019')
             .field('description', 'this is a test description.')
-            .then(res => {
+            .then(function(_res) {
+              res = _res;
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
+              expect(res.body.reason).to.equal('ValidationError');
+              expect(res.body.message).to.equal('Must be at least 10 characters long');
+              expect(res.body.location).to.equal('expirationDate');
             })
       });
       it('Should reject a coupon with description less than 1 characters', function () {
           return chai
             .request(app)
             .post('/coupon')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${userObject.token}`)
             .field('merchantName', 'company')
             .field('code', 'testcode123')
             .field('expirationDate', '08-19-2019')
             .field('description', '')
-            .then(res => {
+            .then(function(_res) {
+              res = _res;
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
+              expect(res.body.reason).to.equal('ValidationError');
+              expect(res.body.message).to.equal('Must be at least 1 characters long');
+              expect(res.body.location).to.equal('description');
             })
       });
       it('Should reject a coupon with description more than 40 characters', function () {
           return chai
             .request(app)
             .post('/coupon')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${userObject.token}`)
             .field('merchantName', 'company')
             .field('code', 'testcode123')
             .field('expirationDate', '08-19-2019')
             .field('description', 'This is a test description that will go over 40 characters.')
-            .then(res => {
+            .then(function(_res) {
+              res = _res;
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
+              expect(res.body.reason).to.equal('ValidationError');
+              expect(res.body.message).to.equal('Must be at most 40 characters long');
+              expect(res.body.location).to.equal('description');
             })
       });
-      it('Should reject a coupon with expiration date in the past ', function () {
+      it('Should reject a coupon with expiration date in the past', function () {
           return chai
             .request(app)
             .post('/coupon')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${userObject.token}`)
             .field('merchantName', 'company')
             .field('code', 'testcode123')
             .field('expirationDate', '2018-08-01')
             .field('description', 'This is a test description.')
-            .then(res => {
+            .then(function(_res){
+              res = _res;
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
+              expect(res.body.reason).to.equal('ValidationError');
+              expect(res.body.message).to.equal('Cannot add a date in the past');
+              expect(res.body.location).to.equal('expirationDate');
             })
       });
       it('Should add a coupon ', function () {
         return chai
           .request(app)
           .post('/coupon')
-          .set('Authorization', `Bearer ${token}`)
+          .set('Authorization', `Bearer ${userObject.token}`)
           .field('merchantName', 'Target')
-          .field('code', 'testCode')
+          .field('code', 'testCode123')
           .field('expirationDate', '2019-08-30')
           .field('description', 'this is a test description.')
-          .then(res => {
+          .then(function(_res) {
+            res = _res;
             expect(res).to.have.status(201);
-            expect(res.body).to.be.an('object');
+            expect(res.body).to.be.a('object');
+            expect(res.body).to.include.keys('_id','merchantName','code','expirationDate','description','couponUsed','couponDisplayState', 'companyLogo','companyLogoUsed', 'companyDomain','couponImageLinkDisplayState');
+            expect(res.body.merchantName).to.equal('Target');
+            expect(res.body.code).to.equal('testCode123');
+            expect(res.body.expirationDate).to.equal('2019-08-30');
+            expect(res.body.description).to.equal('this is a test description.');
           })
       });
-
     });
-    describe('DELETE', function () {
-      /*
-      it('Should delete a coupon', function () {
-        let couponItem;
-
-        return Coupon.create({
-            id,
-            merchantName,
-            code,
-            expirationDate,
-            description,
-            couponUsed,
-            couponDisplayState,
-            companyDomain,
-            companyLogo,
-            companyLogoUsed,
-            couponImage,
-            couponImageLinkDisplayState,
-            userId
-          });
-
-        console.log(Coupon.findOne());
-          //.then(_coupon => {
-          //  couponItem = _coupon;
-          //  console.log(couponItem);
-            // return chai
-            //   .request(app)
-            //   .delete(`/coupon/${couponItem.id}`)
-            //   .set('Authorization', `Bearer ${token}`)
-          // })
-          // .then(_coupon => {
-          //   console.log(_coupon);
-          //   expect(res).to.have.status(204);
-          //   //expect(res.body).to.be.empty;
-          // })
-
-      });
-      */
-    });
-    // describe('PUT', function () {
-    //
-    // });
-    // describe('PATCH', function () {
-    //
-    // });
+*/
 
   });
 });
