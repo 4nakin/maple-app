@@ -55,18 +55,6 @@ function tearDownDb() {
     });
 }
 
-function createUserProfile() {
-    return User.hashPassword(password).then(password =>
-        User.create({
-            username,
-            password,
-            firstName,
-            lastName
-        })
-    );
-}
-
-
 describe('Protected endpoint Coupon', function () {
 
   before(function () {
