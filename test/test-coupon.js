@@ -143,7 +143,7 @@ describe('Protected endpoint Coupon', function () {
   });
 
   afterEach(function () {
-    return tearDownDb();
+    //return tearDownDb();
   });
 
   after(function () {
@@ -208,6 +208,7 @@ describe('Protected endpoint Coupon', function () {
           expect(res.body.coupons).to.be.an('array');
           expect(res.body.coupons).to.have.length(2);
           expect(res.body.coupons[0]).to.deep.equal({
+             userId: res.body.coupons[0].userId,
              merchantName,
              code,
              expirationDate,
@@ -219,7 +220,6 @@ describe('Protected endpoint Coupon', function () {
              companyLogoUsed,
              couponImage,
              couponImageLinkDisplayState,
-             userId: res.body.coupons[0].userId
           });
           //  expect(res.body.coupons[1]).to.deep.equal({
           //    merchantName: merchantNameB,
