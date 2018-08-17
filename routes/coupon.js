@@ -19,7 +19,7 @@ const CouponModel = require('../models/Coupon');
 var router = express.Router();
 const jsonParser = bodyParser.json();
 const jwtAuth = passport.authenticate('jwt', { session: false });
-var moment = require('moment');
+let moment = require('moment');
 
 function capitalizeFirstLetterOfEveryWord(str){
   var splitStr = str.toLowerCase().split(' ');
@@ -165,7 +165,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   }
 
   let {merchantName ='', code ='', expirationDate = '', description = ''} = req.body;
-  // Username and password come in pre-trimmed, otherwise we throw an error
+  // come in pre-trimmed, otherwise we throw an error
   // before this
   merchantName = merchantName.trim();
   code = code.trim();
@@ -267,30 +267,136 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
 
 // EDITS A NEW COUPON
 router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
-  console.log(`req.params.id:  ${req.params.id}`);
-  console.log(`req.body.id: ${req.body.id}`);
+  //console.log(`req.params.id:  ${req.params.id}`);
+  //console.log(`req.body.id: ${req.body.id}`);
+  //console.log(req.body);
 
-  console.log('************** User Edited **************');
+  const stringFields = ['merchantName', 'code', 'expirationDate', 'description'];
+  const nonStringField = stringFields.find(
+    field => field in req.body && typeof req.body[field] !== 'string'
+  );
+
+  if (nonStringField) {
+    return res.status(422).json({
+      code: 422,
+      reason: 'ValidationError',
+      message: 'Incorrect field type: expected string',
+      location: nonStringField
+    });
+  }
+
+  if(nonStringField) {
+    const message = `Incorrect field type: expected string`;
+    return res.status(422).send(message);
+  }
+
+  let explicityTrimmedFields = [];
+  let sizedFields = {};
+
+  if(req.body.merchantName) {
+    explicityTrimmedFields.push('merchantName');
+    sizedFields.merchantName = {
+      min: 1,
+      max: 14
+    }
+  }
+  if(req.body.code) {
+    explicityTrimmedFields.push('code');
+    sizedFields.code = {
+      min: 1,
+      max: 15
+    }
+  }
+  if(req.body.expirationDate) {
+    explicityTrimmedFields.push('expirationDate');
+    sizedFields.expirationDate = {
+      min: 10,
+      max: 10
+    }
+  }
+  if(req.body.description) {
+    explicityTrimmedFields.push('description');
+    sizedFields.description = {
+      min: 1,
+      max: 40
+    }
+  }
+
+  const nonTrimmedField = explicityTrimmedFields.find(
+    field => req.body[field].trim() !== req.body[field]
+  );
+
+  if (nonTrimmedField) {
+    return res.status(422).json({
+      code: 422,
+      reason: 'ValidationError',
+      message: 'Cannot start or end with whitespace',
+      location: nonTrimmedField
+    });
+  }
+
+  const tooSmallField = Object.keys(sizedFields).find(
+    field =>
+      'min' in sizedFields[field] &&
+            req.body[field].trim().length < sizedFields[field].min
+  );
+  const tooLargeField = Object.keys(sizedFields).find(
+    field =>
+      'max' in sizedFields[field] &&
+            req.body[field].trim().length > sizedFields[field].max
+  );
+
+  if (tooSmallField || tooLargeField) {
+    return res.status(422).json({
+      code: 422,
+      reason: 'ValidationError',
+      message: tooSmallField
+        ? `Must be at least ${sizedFields[tooSmallField]
+          .min} characters long`
+        : `Must be at most ${sizedFields[tooLargeField]
+          .max} characters long`,
+      location: tooSmallField || tooLargeField
+    });
+  }
+
+
+  let {merchantName ='', code ='', expirationDate = '', description = ''} = req.body;
+  merchantName = merchantName.trim();
+  code = code.trim();
+  expirationDate = expirationDate.trim();
+  description = description.trim();
+
+  let now = (moment(new Date()).format()).slice(0,10);
+  if(expirationDate < now) {
+      return res.status(422).json({
+        code: 422,
+        reason: 'ValidationError',
+        message: 'Cannot add a date in the past',
+        location: 'expirationDate'
+      });
+  }
+
+  //console.log('************** User Edited **************');
   Object.keys(req.body).forEach(function eachKey(key) {
-  console.log(key + ' : ' + req.body[key]); // alerts key and value
+  //console.log(key + ' : ' + req.body[key]); // alerts key and value
     if(key === 'merchantName'){
       req.body[key] = formatMerchantName(req.body[key]);
-      console.log('** Formatted Merchant Name  ' + req.body[key] + '  **');
+      //console.log('** Formatted Merchant Name  ' + req.body[key] + '  **');
     }
   });
-  console.log('was the image file provided? ' + req.file);
-  console.log('************** End of User Edited **************\n');
+  //console.log('was the image file provided? ' + req.file);
+  //console.log('************** End of User Edited **************\n');
 
-  // if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
-  //   res.status(400).json({
-  //     error: 'Request path id and request body id values must match'
-  //   });
-  // }
+  if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
+    res.status(400).json({
+      error: 'Request path id and request body id values must match'
+    });
+  }
 
   const updated = {};
   const updateableFields = ['merchantName', 'code', 'expirationDate', 'description', 'couponImage'];
 
-  console.log('************** Updated Fields **************');
+  //console.log('************** Updated Fields **************');
   updateableFields.forEach(field => {
     if(field in req.body) {
       updated[field] = req.body[field];
@@ -300,8 +406,10 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
    if(req.file !== undefined ){
     updated.couponImage = req.file.path;
    }
-  console.log(updated);
-  console.log('************** End of Updated Fields **************\n');
+  //console.log(updated);
+  //console.log('************** End of Updated Fields **************\n');
+
+
 
   axios(
   {
@@ -313,7 +421,7 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   })
   .then(function (response) {
     // handle success
-    console.log(response.data);
+    //console.log(response.data);
     const apiData = response.data;
 
     if (response.data.logo == null){
@@ -331,7 +439,7 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   })
   .catch(function (error) {
     // handle error
-    console.log('There was an error ' + error.response.status);
+    //console.log('There was an error ' + error.response.status);
     if(error.response.status === 404) {
       updated.companyLogo = '/images/defaultImage.png';
       updated.companyLogoUsed = '/images/defaultImage.png';

@@ -10,6 +10,7 @@ const User = require('../models/User');
 const Coupon = require('../models/Coupon');
 const { closeServer, runServer, app } = require('../server');
 const { JWT_SECRET, TEST_DATABASE_URL } = require('../config');
+let moment = require('moment');
 
 const expect = chai.expect;
 
@@ -17,7 +18,7 @@ chai.use(chaiHttp);
 
 const merchantName = 'Best Buy';
 const code = 'TESTCODE123';
-const expirationDate = '2018-08-14';
+const expirationDate = moment(new Date()).format().slice(0,10);
 const description = 'This is a test description sentence';
 const couponUsed = true;
 const couponDisplayState = 'coupon-disabled';
@@ -29,7 +30,8 @@ const couponImage = "exampleimage.png";
 
 const merchantNameB = "Subway";
 const codeB = "FREESUB12";
-const expirationDateB = "2018-08-01";
+let date = new Date();
+const expirationDateB = moment(date.setDate(date.getDate() + 1)).format().slice(0,10);
 const descriptionB = "Get a free foot long with a purchase.";
 const couponUsedB = false;
 const couponDisplayStateB = "coupon-active";
@@ -44,6 +46,7 @@ let userObject;
 let token;
 let userId;
 let res;
+let currentCouponId;
 
 
 function tearDownDb() {
@@ -393,18 +396,18 @@ describe('Protected endpoint Coupon', function () {
           .request(app)
           .post('/coupon')
           .set('Authorization', `Bearer ${userObject.token}`)
-          .field('merchantName', 'Target')
+          .field('merchantName', 'TestCompany')
           .field('code', 'testCode123')
-          .field('expirationDate', '2019-08-30')
+          .field('expirationDate', expirationDateB)
           .field('description', 'this is a test description.')
           .then(function(_res) {
             res = _res;
             expect(res).to.have.status(201);
             expect(res.body).to.be.a('object');
             expect(res.body).to.include.keys('_id','merchantName','code','expirationDate','description','couponUsed','couponDisplayState', 'companyLogo','companyLogoUsed', 'companyDomain','couponImageLinkDisplayState');
-            expect(res.body.merchantName).to.equal('Target');
+            expect(res.body.merchantName).to.equal('TestCompany');
             expect(res.body.code).to.equal('testCode123');
-            expect(res.body.expirationDate).to.equal('2019-08-30');
+            expect(res.body.expirationDate).to.equal(expirationDateB);
             expect(res.body.description).to.equal('this is a test description.');
           })
       });
@@ -412,8 +415,6 @@ describe('Protected endpoint Coupon', function () {
 
     describe('DELETE', function () {
       it('Should delete a coupon', function() {
-        let currentCouponId;
-
         return Coupon.create(
           {
             merchantName,
@@ -431,7 +432,6 @@ describe('Protected endpoint Coupon', function () {
           })
           .then(function(_res) {
             res = _res;
-            //console.log(res._id);
             currentCouponId = res._id;
 
             return chai
@@ -448,17 +448,54 @@ describe('Protected endpoint Coupon', function () {
             res = _res;
             expect(res).to.equal(null);
           })
-        // return Coupon
-        //   .findOne()
-        //   .then(function(_res){
-        //     res = _res;
-        //     console.log(res);
-        //   })
       });
     });
 
     describe('PUT', function () {
+      it('should update the send over fields', function () {
+        return Coupon.create(
+          {
+            merchantName,
+            code,
+            expirationDate,
+            description,
+            couponUsed,
+            couponDisplayState,
+            companyDomain,
+            companyLogo,
+            companyLogoUsed,
+            couponImage,
+            couponImageLinkDisplayState,
+            userId: userObject.userId
+          })
+          .then(function(_res) {
+            res = _res;
+            currentCouponId = res._id;
 
+            return chai
+              .request(app)
+              .put(`/coupon/${res._id}`)
+              .set('Authorization', `Bearer ${userObject.token}`)
+              .field('id', `${res._id}`)
+              .field('merchantName', 'Soothe')
+              .field('expirationDate', expirationDateB)
+              .field('description', 'Use your soothe coupon today.')
+              //.attach('files', './test/test.png', 'test.png')
+          })
+          .then(function(_res) {
+            res = _res;
+            expect(res).to.have.status(200);
+            return Coupon.findById(currentCouponId);
+          })
+          .then(function(_res) {
+            res = _res;
+            console.log(res);
+            expect(res.merchantName).to.equal('Soothe');
+            expect(res.code).to.equal(code);
+            expect(res.expirationDate).to.equal(expirationDateB);
+            expect(res.description).to.equal('Use your soothe coupon today.');
+          })
+      });
     });
 
 
