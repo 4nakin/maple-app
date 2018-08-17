@@ -410,19 +410,57 @@ describe('Protected endpoint Coupon', function () {
       });
     });
 
-
-/*
     describe('DELETE', function () {
       it('Should delete a coupon', function() {
-        return Coupon
-          .findOne()
-          .then(function(_res){
-            res = _res;
-            console.log(res);
+        let currentCouponId;
+
+        return Coupon.create(
+          {
+            merchantName,
+            code,
+            expirationDate,
+            description,
+            couponUsed,
+            couponDisplayState,
+            companyDomain,
+            companyLogo,
+            companyLogoUsed,
+            couponImage,
+            couponImageLinkDisplayState,
+            userId: userObject.userId
           })
+          .then(function(_res) {
+            res = _res;
+            //console.log(res._id);
+            currentCouponId = res._id;
+
+            return chai
+              .request(app)
+              .delete(`/coupon/${res._id}`)
+              .set('Authorization', `Bearer ${userObject.token}`)
+          })
+          .then(function(_res) {
+            res = _res;
+            expect(res).to.have.status(204);
+            return Coupon.findOne(currentCouponId)
+          })
+          .then(function(_res) {
+            res = _res;
+            expect(res).to.equal(null);
+          })
+        // return Coupon
+        //   .findOne()
+        //   .then(function(_res){
+        //     res = _res;
+        //     console.log(res);
+        //   })
       });
     });
-*/
+
+    describe('PUT', function () {
+
+    });
+
 
   });
 });
