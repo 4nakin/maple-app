@@ -420,6 +420,8 @@ button:disabled {
 
 
 .coupon-merchant-logo img {
+  background: #d8d8d8;
+  display: block;
   width: 92px;
   height: 92px;
   border-radius: 50%;

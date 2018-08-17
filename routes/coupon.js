@@ -183,6 +183,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   }
 
   let newCoupon;
+  let couponImageFile;
 
   axios(
   {
@@ -195,6 +196,17 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   .then(function (response) {
     // handle success
     const apiData = response.data;
+    console.log(apiData);
+
+    console.log('req.file: ' + req.file);
+
+    if(req.file == undefined){
+      couponImageFile = '';
+      //no image was uploaded
+    }
+    else {
+      couponImageFile = req.file.path;
+    }
 
     if(apiData.logo === null){
       newCoupon = new CouponModel({
@@ -207,7 +219,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         companyLogo: '/images/defaultImage.png',
         companyLogoUsed: '/images/defaultImage.png',
         companyDomain: '',
-        couponImage: req.file.path,
+        couponImage: couponImageFile,
         couponImageLinkDisplayState:'show-coupon-image-link-styling',
         userId: _userId
       });
@@ -223,31 +235,43 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         companyLogo: apiData.logo + '?size=300',
         companyLogoUsed: apiData.logo + '?size=300&greyscale=true',
         companyDomain: 'https://www.' + apiData.domain,
-        couponImage: req.file.path,
+        couponImage: couponImageFile,
         couponImageLinkDisplayState:'show-coupon-image-link-styling',
         userId: _userId
       });
     }
 
   })
-  .catch(function (error) {
+  .catch(function(error) {
+    let couponImageFile;
     // handle error
-    if(error.response.status === 404 || error.response.status === 422) {
-      newCoupon = new CouponModel({
-        merchantName: req.body.merchantName.trim(),
-        code: req.body.code.trim(),
-        expirationDate: req.body.expirationDate,
-        description: req.body.description.trim(),
-        couponUsed: false,
-        couponDisplayState: 'coupon-active',
-        companyLogo: '/images/defaultImage.png',
-        companyLogoUsed: '/images/defaultImage.png',
-        companyDomain: '',
-        couponImage: req.file.path,
-        couponImageLinkDisplayState:'show-coupon-image-link-styling',
-        userId: _userId
-      });
+    console.log(req.file);
+    console.log(error);
+    console.log('did i get here? is there an error' + error);
+
+    if(req.file == undefined){
+      couponImageFile = '';
     }
+    else {
+      couponImageFile = req.file.path;
+    }
+
+      if(error.response.status === 404 || error.response.status === 422) {
+        newCoupon = new CouponModel({
+          merchantName: req.body.merchantName.trim(),
+          code: req.body.code.trim(),
+          expirationDate: req.body.expirationDate,
+          description: req.body.description.trim(),
+          couponUsed: false,
+          couponDisplayState: 'coupon-active',
+          companyLogo: '/images/defaultImage.png',
+          companyLogoUsed: '/images/defaultImage.png',
+          companyDomain: '',
+          couponImage: couponImageFile,
+          couponImageLinkDisplayState:'show-coupon-image-link-styling',
+          userId: _userId
+        });
+      }
   })
   .then(function(response) {
     newCoupon.save()
