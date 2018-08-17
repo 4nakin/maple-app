@@ -207,7 +207,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         companyLogo: '/images/defaultImage.png',
         companyLogoUsed: '/images/defaultImage.png',
         companyDomain: '',
-        //couponImage: req.file.path,
+        couponImage: req.file.path,
         couponImageLinkDisplayState:'show-coupon-image-link-styling',
         userId: _userId
       });
@@ -223,7 +223,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         companyLogo: apiData.logo + '?size=300',
         companyLogoUsed: apiData.logo + '?size=300&greyscale=true',
         companyDomain: 'https://www.' + apiData.domain,
-        // couponImage: req.file.path,
+        couponImage: req.file.path,
         couponImageLinkDisplayState:'show-coupon-image-link-styling',
         userId: _userId
       });
@@ -243,7 +243,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
         companyLogo: '/images/defaultImage.png',
         companyLogoUsed: '/images/defaultImage.png',
         companyDomain: '',
-        //couponImage: req.file.path,
+        couponImage: req.file.path,
         couponImageLinkDisplayState:'show-coupon-image-link-styling',
         userId: _userId
       });
@@ -267,9 +267,10 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
 
 // EDITS A NEW COUPON
 router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
-  //console.log(`req.params.id:  ${req.params.id}`);
-  //console.log(`req.body.id: ${req.body.id}`);
-  //console.log(req.body);
+  // console.log(`req.params.id:  ${req.params.id}`);
+  // console.log(`req.body.id: ${req.body.id}`);
+  // console.log(req.body);
+  // console.log('couponImage: ' + req.file.path);
 
   const stringFields = ['merchantName', 'code', 'expirationDate', 'description'];
   const nonStringField = stringFields.find(
@@ -366,15 +367,20 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   expirationDate = expirationDate.trim();
   description = description.trim();
 
-  let now = (moment(new Date()).format()).slice(0,10);
-  if(expirationDate < now) {
-      return res.status(422).json({
-        code: 422,
-        reason: 'ValidationError',
-        message: 'Cannot add a date in the past',
-        location: 'expirationDate'
-      });
+  //console.log('expirationDate is: ' + expirationDate);
+
+  if(expirationDate){
+    let now = (moment(new Date()).format()).slice(0,10);
+    if(expirationDate < now) {
+        return res.status(422).json({
+          code: 422,
+          reason: 'ValidationError',
+          message: 'Cannot add a date in the past',
+          location: 'expirationDate'
+        });
+    }
   }
+
 
   //console.log('************** User Edited **************');
   Object.keys(req.body).forEach(function eachKey(key) {
@@ -384,7 +390,7 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
       //console.log('** Formatted Merchant Name  ' + req.body[key] + '  **');
     }
   });
-  //console.log('was the image file provided? ' + req.file);
+  //console.log('was the image file provided? ' + req.file.path);
   //console.log('************** End of User Edited **************\n');
 
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
@@ -408,8 +414,6 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
    }
   //console.log(updated);
   //console.log('************** End of Updated Fields **************\n');
-
-
 
   axios(
   {
@@ -475,11 +479,11 @@ router.patch('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   updateableFields.forEach(field => {
     if(field in req.body) {
       updateOps[field] = req.body[field];
-      console.log(updateOps[field]);
+      //console.log(updateOps[field]);
     }
   });
 
-  console.log(updateOps);
+  //console.log(updateOps);
 
   CouponModel.findByIdAndUpdate(req.params.id, {$set: updateOps },{ new: true })
   .then(coupon => {
@@ -488,7 +492,7 @@ router.patch('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
     });
   })
   .catch(err => {
-    console.log(err);
+    //console.log(err);
     res.status(500).json({
       error: err
     });

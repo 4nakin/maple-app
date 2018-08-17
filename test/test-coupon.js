@@ -400,6 +400,7 @@ describe('Protected endpoint Coupon', function () {
           .field('code', 'testCode123')
           .field('expirationDate', expirationDateB)
           .field('description', 'this is a test description.')
+          .attach('couponImage', './uploads/coupons1.jpg', 'coupon.jpg')
           .then(function(_res) {
             res = _res;
             expect(res).to.have.status(201);
@@ -409,12 +410,13 @@ describe('Protected endpoint Coupon', function () {
             expect(res.body.code).to.equal('testCode123');
             expect(res.body.expirationDate).to.equal(expirationDateB);
             expect(res.body.description).to.equal('this is a test description.');
+            expect(res.body.couponImage).to.equal('uploads/coupon.jpg');
           })
       });
     });
 
     describe('DELETE', function () {
-      it('Should delete a coupon', function() {
+      it('Should delete a coupon', function () {
         return Coupon.create(
           {
             merchantName,
@@ -480,7 +482,7 @@ describe('Protected endpoint Coupon', function () {
               .field('merchantName', 'Soothe')
               .field('expirationDate', expirationDateB)
               .field('description', 'Use your soothe coupon today.')
-              //.attach('files', './test/test.png', 'test.png')
+              .attach('couponImage', './uploads/c1.png', 'test.png')
           })
           .then(function(_res) {
             res = _res;
@@ -489,15 +491,79 @@ describe('Protected endpoint Coupon', function () {
           })
           .then(function(_res) {
             res = _res;
-            console.log(res);
             expect(res.merchantName).to.equal('Soothe');
             expect(res.code).to.equal(code);
             expect(res.expirationDate).to.equal(expirationDateB);
             expect(res.description).to.equal('Use your soothe coupon today.');
           })
       });
+      it('should update the image file uploaded', function () {
+        return Coupon.create(
+          {
+            merchantName,
+            code,
+            expirationDate,
+            description,
+            couponUsed,
+            couponDisplayState,
+            companyDomain,
+            companyLogo,
+            companyLogoUsed,
+            couponImage,
+            couponImageLinkDisplayState,
+            userId: userObject.userId
+          })
+          .then(function(_res) {
+            res = _res;
+            currentCouponId = res._id;
+
+            return chai
+              .request(app)
+              .put(`/coupon/${res._id}`)
+              .set('Authorization', `Bearer ${userObject.token}`)
+              .field('id', `${res._id}`)
+              .attach('couponImage', './uploads/coupons1.jpg', 'coupon.jpg')
+          })
+          .then(function(_res) {
+            res = _res;
+            //console.log(res.body);
+            expect(res).to.have.status(200);
+            expect(res.body.couponImage).to.equal('uploads/coupon.jpg');
+          });
+      });
     });
 
+    describe('PATCH', function () {
+      it('marking used', function () {
+        return Coupon.create(
+          {
+            merchantName,
+            code,
+            expirationDate,
+            description,
+            couponUsed,
+            couponDisplayState,
+            companyDomain,
+            companyLogo,
+            companyLogoUsed,
+            couponImage,
+            couponImageLinkDisplayState,
+            userId: userObject.userId
+          })
+        .then(function(_res) {
+          res = _res;
+          currentCouponId = res._id;
 
+          return chai
+            .request(app)
+            .patch(`/coupon/${res._id}`)
+            .set('Authorization', `Bearer ${userObject.token}`)
+            .field('couponUsed', true)
+            .field('couponDisplayState', 'coupon-disabled')
+            .field('couponImageLinkDisplayState', 'show-coupon-image-link-styling-disabled')
+        })
+      });
+    });
   });
+
 });

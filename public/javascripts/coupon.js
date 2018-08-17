@@ -296,12 +296,12 @@ function sendUpdateDataToAPI(id, formData){
     contentType: false,
     processData: false,
     success: (res) => {
-      console.log('updated field(s) is a success ');
+      //console.log('updated field(s) is a success ');
         const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon);
         markCouponUsedonDOM(res.coupon, toggleCouponState);
     },
     error: function(err){
-      console.log('something went wrong');
+      //console.log('something went wrong');
     }
   });
 }
@@ -648,10 +648,10 @@ function clickedOnMerchantFilter(res, merchants) {
       },
       error: function(err) {
         if(token === null) {
-          console.log('Token is empty and you are not logged in. Please log in!!!');
+          //console.log('Token is empty and you are not logged in. Please log in!!!');
         }
         else{
-          console.log('something went wrong when trying to get to the protected endpoint');
+          //console.log('something went wrong when trying to get to the protected endpoint');
         }
       }
     });
@@ -659,7 +659,7 @@ function clickedOnMerchantFilter(res, merchants) {
 }
 
 function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
-  console.log(filteredByMerchantCoupons);
+  //console.log(filteredByMerchantCoupons);
   let couponHTML = "";
 
   filteredByMerchantCoupons.map(function(coupon){
@@ -711,7 +711,7 @@ function renderCouponAsUsed(res) {
     sendUpdateDataToAPI(currentCouponId, formData);
   }
   else {
-    console.log("something went wrong with marking coupon!");
+    //console.log("something went wrong with marking coupon!");
   }
 
 }
@@ -738,6 +738,7 @@ function checkIfCouponIsPastDue() {
 }
 
 function initalizeCouponApp() {
+    //checkIfCouponIsPastDue()
     getUserCoupons();
     watchAddBtnHandler();
     watchDeleteBtnHandler();
