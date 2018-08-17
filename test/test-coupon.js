@@ -20,27 +20,26 @@ const merchantName = 'Best Buy';
 const code = 'TESTCODE123';
 const expirationDate = moment(new Date()).format().slice(0,10);
 const description = 'This is a test description sentence';
-const couponUsed = true;
-const couponDisplayState = 'coupon-disabled';
+const couponUsed = false;
+const couponDisplayState = 'coupon-active';
 const companyLogo = `https://logo.clearbit.com/bestbuy.com?size=300`;
 const companyLogoUsed = `https://logo.clearbit.com/bestbuy?size=300&greyscale=true`;
 const companyDomain = `https://www.bestbuy.com`;
-const couponImageLinkDisplayState = 'show-coupon-image-link-styling-disabled';
-const couponImage = "exampleimage.png";
+const couponImageLinkDisplayState = 'show-coupon-image-link-styling';
+const couponImage = 'exampleimage.png';
 
-const merchantNameB = "Subway";
-const codeB = "FREESUB12";
+const merchantNameB = 'Subway';
+const codeB = 'FREESUB12';
 let date = new Date();
 const expirationDateB = moment(date.setDate(date.getDate() + 1)).format().slice(0,10);
-const descriptionB = "Get a free foot long with a purchase.";
-const couponUsedB = false;
-const couponDisplayStateB = "coupon-active";
-const companyLogoB = "https://logo.clearbit.com/subway.com?size=300";
-const companyLogoUsedB = "https://logo.clearbit.com/subway.com?size=300&greyscale=true";
-const companyDomainB = "https://www.subway.com";
-const couponImageLinkDisplayStateB = "show-coupon-image-link-styling";
-const couponImageB = "exampleBimage.png";
-
+const descriptionB = 'Get a free foot long with a purchase.';
+const couponUsedB = true;
+const couponDisplayStateB = 'coupon-disable';
+const companyLogoB = 'https://logo.clearbit.com/subway.com?size=300';
+const companyLogoUsedB = 'https://logo.clearbit.com/subway.com?size=300&greyscale=true';
+const companyDomainB = 'https://www.subway.com';
+const couponImageLinkDisplayStateB = 'show-coupon-image-link-styling-disabled';
+const couponImageB = 'exampleBimage.png';
 
 let userObject;
 let token;
@@ -472,6 +471,7 @@ describe('Protected endpoint Coupon', function () {
           })
           .then(function(_res) {
             res = _res;
+            //console.log(res);
             currentCouponId = res._id;
 
             return chai
@@ -561,6 +561,49 @@ describe('Protected endpoint Coupon', function () {
             .field('couponUsed', true)
             .field('couponDisplayState', 'coupon-disabled')
             .field('couponImageLinkDisplayState', 'show-coupon-image-link-styling-disabled')
+        })
+        .then(function(_res) {
+          res = _res;
+          expect(res).to.have.status(200);
+          expect(res.body.coupon.couponUsed).to.equal(true);
+          expect(res.body.coupon.couponDisplayState).to.equal('coupon-disabled');
+          expect(res.body.coupon.couponImageLinkDisplayState).to.equal('show-coupon-image-link-styling-disabled');
+        })
+      });
+      it('marking unused', function () {
+        return Coupon.create(
+          {
+            merchantName: merchantNameB,
+            code: codeB,
+            expirationDate: expirationDateB,
+            description: descriptionB,
+            couponUsed: couponUsedB,
+            couponDisplayState: couponDisplayStateB,
+            companyDomain: companyDomainB,
+            companyLogo: companyLogoB,
+            companyLogoUsed: companyLogoUsedB,
+            couponImage: couponImageB,
+            couponImageLinkDisplayState: couponImageLinkDisplayStateB,
+            userId: userObject.userId
+          })
+        .then(function(_res) {
+          res = _res;
+          currentCouponId = res._id;
+
+          return chai
+            .request(app)
+            .patch(`/coupon/${res._id}`)
+            .set('Authorization', `Bearer ${userObject.token}`)
+            .field('couponUsed', false)
+            .field('couponDisplayState', 'coupon-active')
+            .field('couponImageLinkDisplayState', 'show-coupon-image-link-styling')
+        })
+        .then(function(_res) {
+          res = _res;
+          expect(res).to.have.status(200);
+          expect(res.body.coupon.couponUsed).to.equal(false);
+          expect(res.body.coupon.couponDisplayState).to.equal('coupon-active');
+          expect(res.body.coupon.couponImageLinkDisplayState).to.equal('show-coupon-image-link-styling');
         })
       });
     });
