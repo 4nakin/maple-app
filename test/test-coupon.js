@@ -116,7 +116,7 @@ describe('Protected endpoint Coupon', function () {
   });
 
   describe('testing routes for CRUD on /coupon', function () {
-    /*
+
     describe('GET', function () {
       it('Should return an empty coupon array', function () {
         return chai.request(app)
@@ -130,7 +130,7 @@ describe('Protected endpoint Coupon', function () {
             expect(res.body.coupons).to.be.an('array');
         });
       });
-      it('Should return an coupons', function () {
+      it('Should return an array of coupons', function () {
         return Coupon.create(
           {
             merchantName,
@@ -148,12 +148,12 @@ describe('Protected endpoint Coupon', function () {
           },
           {
             merchantName: merchantNameB,
-            code: codeB ,
-            expirationDate: expirationDateB ,
+            code: codeB,
+            expirationDate: expirationDateB,
             description: descriptionB,
-            couponUsed: couponUsedB ,
+            couponUsed: couponUsedB,
             couponDisplayState: couponDisplayStateB,
-            companyDomain: companyDomainB ,
+            companyDomain: companyDomainB,
             companyLogo: companyLogoB,
             companyLogoUsed: companyLogoUsedB,
             couponImage: couponImageB,
@@ -171,8 +171,10 @@ describe('Protected endpoint Coupon', function () {
           delete _res.body.coupons[1]._id;
           delete _res.body.coupons[0].__v;
           delete _res.body.coupons[1].__v;
+          delete _res.body.userId;
+
           res = _res;
-          console.log(res.body);
+
           expect(res).to.have.status(200);
           expect(res.body).to.be.an('object');
           expect(res.body.coupons).to.be.an('array');
@@ -184,6 +186,7 @@ describe('Protected endpoint Coupon', function () {
             description,
             couponUsed,
             couponDisplayState,
+            companyDomain,
             companyLogo,
             companyLogoUsed,
             couponImage,
@@ -191,22 +194,21 @@ describe('Protected endpoint Coupon', function () {
             userId: res.body.coupons[0].userId
           });
           expect(res.body.coupons[1]).to.deep.equal({
-            mechantName: merchantNameB,
+            merchantName: merchantNameB,
             code: codeB,
             expirationDate: expirationDateB,
             description: descriptionB,
             couponUsed: couponUsedB,
             couponDisplayState: couponDisplayStateB,
+            companyDomain: companyDomainB,
             companyLogo: companyLogoB,
             companyLogoUsed: companyLogoUsedB,
             couponImage: couponImageB,
             couponImageLinkDisplayState: couponImageLinkDisplayStateB,
             userId: res.body.coupons[1].userId
           });
-        // .catch(function(err) {
-        //   console.log('Could not pull the latest coupons in the db ' + err);
-        // })
-      });
+
+        });
       });
     });
 
@@ -408,7 +410,7 @@ describe('Protected endpoint Coupon', function () {
       });
     });
 
-    */
+
 /*
     describe('DELETE', function () {
       it('Should delete a coupon', function() {
