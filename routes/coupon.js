@@ -390,7 +390,6 @@ router.patch('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
 
 // DELETES A NEW COUPON
 router.delete('/:id', jwtAuth, (req, res) => {
-  console.log(req);
   CouponModel.findByIdAndRemove(req.params.id)
   .then(coupon => res.status(204).end())
   .catch(err => res.status(500).json({message: 'Internal server error'}));

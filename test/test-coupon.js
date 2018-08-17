@@ -116,8 +116,8 @@ describe('Protected endpoint Coupon', function () {
   });
 
   describe('testing routes for CRUD on /coupon', function () {
+    /*
     describe('GET', function () {
-
       it('Should return an empty coupon array', function () {
         return chai.request(app)
           .get('/coupon')
@@ -161,44 +161,53 @@ describe('Protected endpoint Coupon', function () {
             userId: userObject.userId
           }
         )
-        .then(function (){
+        .then(function(){
           return chai.request(app)
           .get('/coupon')
           .set('Authorization', `Bearer ${userObject.token}`)
         })
-        .then(res => {
+        .then(function(_res) {
+          delete _res.body.coupons[0]._id;
+          delete _res.body.coupons[1]._id;
+          delete _res.body.coupons[0].__v;
+          delete _res.body.coupons[1].__v;
+          res = _res;
+          console.log(res.body);
           expect(res).to.have.status(200);
           expect(res.body).to.be.an('object');
           expect(res.body.coupons).to.be.an('array');
           expect(res.body.coupons).to.have.length(2);
-          expect(res.body.coupons[0].merchantName).to.equal(merchantName);
-          expect(res.body.coupons[0].code).to.equal(code);
-          expect(res.body.coupons[0].expirationDate).to.equal(expirationDate);
-          expect(res.body.coupons[0].description).to.equal(description);
-          expect(res.body.coupons[0].couponUsed).to.equal(couponUsed);
-          expect(res.body.coupons[0].couponDisplayState).to.equal(couponDisplayState);
-          expect(res.body.coupons[0].companyLogo).to.equal(companyLogo);
-          expect(res.body.coupons[0].companyLogoUsed).to.equal(companyLogoUsed);
-          expect(res.body.coupons[0].couponImage).to.equal(couponImage);
-          expect(res.body.coupons[0].couponImageLinkDisplayState).to.equal(couponImageLinkDisplayState);
-          expect(res.body.coupons[0].userid).to.equal(res.body.coupons[0].userid);
-          expect(res.body.coupons[1].merchantName).to.equal(merchantNameB);
-          expect(res.body.coupons[1].code).to.equal(codeB);
-          expect(res.body.coupons[1].expirationDate).to.equal(expirationDateB);
-          expect(res.body.coupons[1].description).to.equal(descriptionB);
-          expect(res.body.coupons[1].couponUsed).to.equal(couponUsedB);
-          expect(res.body.coupons[1].couponDisplayState).to.equal(couponDisplayStateB);
-          expect(res.body.coupons[1].companyLogo).to.equal(companyLogoB);
-          expect(res.body.coupons[1].companyLogoUsed).to.equal(companyLogoUsedB);
-          expect(res.body.coupons[1].couponImage).to.equal(couponImageB);
-          expect(res.body.coupons[1].couponImageLinkDisplayState).to.equal(couponImageLinkDisplayStateB);
-          expect(res.body.coupons[1].userid).to.equal(res.body.coupons[1].userid);
-        })
-        .catch(function(err) {
-          console.log('Could not pull the latest coupons in the db ' + err);
-        })
+          expect(res.body.coupons[0]).to.deep.equal({
+            merchantName,
+            code,
+            expirationDate,
+            description,
+            couponUsed,
+            couponDisplayState,
+            companyLogo,
+            companyLogoUsed,
+            couponImage,
+            couponImageLinkDisplayState,
+            userId: res.body.coupons[0].userId
+          });
+          expect(res.body.coupons[1]).to.deep.equal({
+            mechantName: merchantNameB,
+            code: codeB,
+            expirationDate: expirationDateB,
+            description: descriptionB,
+            couponUsed: couponUsedB,
+            couponDisplayState: couponDisplayStateB,
+            companyLogo: companyLogoB,
+            companyLogoUsed: companyLogoUsedB,
+            couponImage: couponImageB,
+            couponImageLinkDisplayState: couponImageLinkDisplayStateB,
+            userId: res.body.coupons[1].userId
+          });
+        // .catch(function(err) {
+        //   console.log('Could not pull the latest coupons in the db ' + err);
+        // })
       });
-
+      });
     });
 
     describe('POST', function () {
@@ -399,6 +408,19 @@ describe('Protected endpoint Coupon', function () {
       });
     });
 
+    */
+/*
+    describe('DELETE', function () {
+      it('Should delete a coupon', function() {
+        return Coupon
+          .findOne()
+          .then(function(_res){
+            res = _res;
+            console.log(res);
+          })
+      });
+    });
+*/
 
   });
 });
