@@ -65,7 +65,7 @@ router.get('/:id', jwtAuth, (req, res) => {
   CouponModel.findById(req.params.id)
     .then(coupons => res.status(200).json(coupons))
     .catch(err => {
-        console.error(err);
+        //console.error(err);
         res.status(500).json({
           message: 'Internal server error'
         });
@@ -366,8 +366,6 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   code = code.trim();
   expirationDate = expirationDate.trim();
   description = description.trim();
-
-  //console.log('expirationDate is: ' + expirationDate);
 
   if(expirationDate){
     let now = (moment(new Date()).format()).slice(0,10);

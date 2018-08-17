@@ -102,7 +102,7 @@ describe('Protected endpoint Coupon', function () {
           return userObject;
         })
         .catch(function(err) {
-          console.log('there is an error ' + err);
+
         })
    });
 
@@ -443,11 +443,16 @@ describe('Protected endpoint Coupon', function () {
           .then(function(_res) {
             res = _res;
             expect(res).to.have.status(204);
-            return Coupon.findOne(currentCouponId)
           })
           .then(function(_res) {
             res = _res;
-            expect(res).to.equal(null);
+            return chai.request(app)
+            .get('/coupon')
+            .set('Authorization', `Bearer ${userObject.token}`)
+          })
+          .then(function(_res) {
+            res = _res;
+            expect(res.body.coupons).to.be.empty;
           })
       });
     });
@@ -471,7 +476,7 @@ describe('Protected endpoint Coupon', function () {
           })
           .then(function(_res) {
             res = _res;
-            //console.log(res);
+
             currentCouponId = res._id;
 
             return chai
@@ -487,14 +492,18 @@ describe('Protected endpoint Coupon', function () {
           .then(function(_res) {
             res = _res;
             expect(res).to.have.status(200);
-            return Coupon.findById(currentCouponId);
+          })
+          .then(function(_res) {
+            return chai.request(app)
+            .get('/coupon')
+            .set('Authorization', `Bearer ${userObject.token}`)
           })
           .then(function(_res) {
             res = _res;
-            expect(res.merchantName).to.equal('Soothe');
-            expect(res.code).to.equal(code);
-            expect(res.expirationDate).to.equal(expirationDateB);
-            expect(res.description).to.equal('Use your soothe coupon today.');
+            expect(res.body.coupons[0].merchantName).to.equal('Soothe');
+            expect(res.body.coupons[0].code).to.equal(code);
+            expect(res.body.coupons[0].expirationDate).to.equal(expirationDateB);
+            expect(res.body.coupons[0].description).to.equal('Use your soothe coupon today.');
           })
       });
       it('should update the image file uploaded', function () {
@@ -526,10 +535,237 @@ describe('Protected endpoint Coupon', function () {
           })
           .then(function(_res) {
             res = _res;
-            //console.log(res.body);
             expect(res).to.have.status(200);
             expect(res.body.couponImage).to.equal('uploads/coupon.jpg');
           });
+      });
+      it('should update the merchantName', function () {
+        return Coupon.create(
+          {
+            merchantName,
+            code,
+            expirationDate,
+            description,
+            couponUsed,
+            couponDisplayState,
+            companyDomain,
+            companyLogo,
+            companyLogoUsed,
+            couponImage,
+            couponImageLinkDisplayState,
+            userId: userObject.userId
+          })
+          .then(function(_res) {
+            res = _res;
+            currentCouponId = res._id;
+
+            return chai
+              .request(app)
+              .put(`/coupon/${res._id}`)
+              .set('Authorization', `Bearer ${userObject.token}`)
+              .field('id', `${res._id}`)
+              .field('merchantName', 'Soothe')
+          })
+          .then(function(_res) {
+            res = _res;
+            expect(res).to.have.status(200);
+            return chai.request(app)
+              .get('/coupon')
+              .set('Authorization', `Bearer ${userObject.token}`)
+          })
+          .then(function(_res) {
+            res = _res;
+            expect(res).to.have.status(200);
+            expect(res.body.coupons[0].merchantName).to.equal('Soothe');
+          })
+      });
+      it('should update the code', function () {
+        return Coupon.create(
+          {
+            merchantName,
+            code,
+            expirationDate,
+            description,
+            couponUsed,
+            couponDisplayState,
+            companyDomain,
+            companyLogo,
+            companyLogoUsed,
+            couponImage,
+            couponImageLinkDisplayState,
+            userId: userObject.userId
+          })
+          .then(function(_res) {
+            res = _res;
+            currentCouponId = res._id;
+
+            return chai
+              .request(app)
+              .put(`/coupon/${res._id}`)
+              .set('Authorization', `Bearer ${userObject.token}`)
+              .field('id', `${res._id}`)
+              .field('code', 'SOOTHESERVE')
+          })
+          .then(function(_res) {
+            res = _res;
+            expect(res).to.have.status(200);
+            return chai.request(app)
+              .get('/coupon')
+              .set('Authorization', `Bearer ${userObject.token}`)
+          })
+          .then(function(_res) {
+            res = _res;
+            expect(res).to.have.status(200);
+            expect(res.body.coupons[0].code).to.equal('SOOTHESERVE');
+          })
+      });
+      it('should update the expirationDate', function () {
+        return Coupon.create(
+          {
+            merchantName,
+            code,
+            expirationDate,
+            description,
+            couponUsed,
+            couponDisplayState,
+            companyDomain,
+            companyLogo,
+            companyLogoUsed,
+            couponImage,
+            couponImageLinkDisplayState,
+            userId: userObject.userId
+          })
+          .then(function(_res) {
+            res = _res;
+            currentCouponId = res._id;
+
+            return chai
+              .request(app)
+              .put(`/coupon/${res._id}`)
+              .set('Authorization', `Bearer ${userObject.token}`)
+              .field('id', `${res._id}`)
+              .field('expirationDate', expirationDateB)
+          })
+          .then(function(_res) {
+            res = _res;
+            expect(res).to.have.status(200);
+            return chai.request(app)
+              .get('/coupon')
+              .set('Authorization', `Bearer ${userObject.token}`)
+          })
+          .then(function(_res) {
+            res = _res;
+            expect(res).to.have.status(200);
+            expect(res.body.coupons[0].expirationDate).to.equal(expirationDateB);
+          })
+      });
+      it('should update the description', function () {
+        return Coupon.create(
+          {
+            merchantName,
+            code,
+            expirationDate,
+            description,
+            couponUsed,
+            couponDisplayState,
+            companyDomain,
+            companyLogo,
+            companyLogoUsed,
+            couponImage,
+            couponImageLinkDisplayState,
+            userId: userObject.userId
+          })
+          .then(function(_res) {
+            res = _res;
+            currentCouponId = res._id;
+
+            return chai
+              .request(app)
+              .put(`/coupon/${res._id}`)
+              .set('Authorization', `Bearer ${userObject.token}`)
+              .field('id', `${res._id}`)
+              .field('description', 'This coupon is reedemable online only')
+          })
+          .then(function(_res) {
+            res = _res;
+            expect(res).to.have.status(200);
+            return chai.request(app)
+              .get('/coupon')
+              .set('Authorization', `Bearer ${userObject.token}`)
+          })
+          .then(function(_res) {
+            res = _res;
+            expect(res).to.have.status(200);
+            expect(res.body.coupons[0].description).to.equal('This coupon is reedemable online only');
+          })
+      });
+      it('Should reject a coupon with expiration date in the past', function () {
+        return Coupon.create(
+          {
+            merchantName,
+            code,
+            expirationDate,
+            description,
+            couponUsed,
+            couponDisplayState,
+            companyDomain,
+            companyLogo,
+            companyLogoUsed,
+            couponImage,
+            couponImageLinkDisplayState,
+            userId: userObject.userId
+          })
+          .then(function(_res) {
+            res = _res;
+            return chai
+              .request(app)
+              .put(`/coupon/${res._id}`)
+              .set('Authorization', `Bearer ${userObject.token}`)
+              .field('id', `${res._id}`)
+              .field('expirationDate', '2018-08-01')
+          })
+          .then(function(_res){
+            res = _res;
+            expect(res).to.have.status(422);
+            expect(res.body).to.be.an('object');
+            expect(res.body.reason).to.equal('ValidationError');
+            expect(res.body.message).to.equal('Cannot add a date in the past');
+            expect(res.body.location).to.equal('expirationDate');
+          })
+      });
+      it('Should reject a coupon with whitespaces characters', function () {
+        return Coupon.create(
+          {
+            merchantName,
+            code,
+            expirationDate,
+            description,
+            couponUsed,
+            couponDisplayState,
+            companyDomain,
+            companyLogo,
+            companyLogoUsed,
+            couponImage,
+            couponImageLinkDisplayState,
+            userId: userObject.userId
+          })
+          .then(function(_res) {
+            res = _res;
+            return chai
+              .request(app)
+              .put(`/coupon/${res._id}`)
+              .set('Authorization', `Bearer ${userObject.token}`)
+              .field('id', `${res._id}`)
+              .field('merchantName', ' ')
+          })
+          .then(function(_res){
+            res = _res;
+            expect(res).to.have.status(422);
+            expect(res.body).to.be.an('object');
+            expect(res.body.reason).to.equal('ValidationError');
+            expect(res.body.message).to.equal('Cannot start or end with whitespace');
+            expect(res.body.location).to.equal('merchantName');
+          })
       });
     });
 

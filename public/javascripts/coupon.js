@@ -50,10 +50,10 @@ function getCouponById(id, callback) {
     success: callback,
     error: function(err) {
       if(token === null) {
-        console.log('Token is empty and you are not logged in. Please log in!!!');
+        //console.log('Token is empty and you are not logged in. Please log in!!!');
       }
       else{
-        console.log('something went wrong when trying to get to the protected endpoint');
+        //console.log('something went wrong when trying to get to the protected endpoint');
       }
     }
   });
@@ -296,12 +296,10 @@ function sendUpdateDataToAPI(id, formData){
     contentType: false,
     processData: false,
     success: (res) => {
-      //console.log('updated field(s) is a success ');
-        const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon);
-        markCouponUsedonDOM(res.coupon, toggleCouponState);
+      const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon);
+      markCouponUsedonDOM(res.coupon, toggleCouponState);
     },
     error: function(err){
-      //console.log('something went wrong');
     }
   });
 }
@@ -368,9 +366,6 @@ function watchSubmitAddNewCouponHandler() {
 
 function sendAddCouponDataToAPI(e) {
   const formData = new FormData(e.target);
-  // for (var [key, value] of formData.entries()) {
-  //     //console.log(key, value);
-  // }
   $.ajax({
     url: '/coupon',
     type: 'POST',
@@ -381,8 +376,6 @@ function sendAddCouponDataToAPI(e) {
     processData: false,
     contentType: false,
     success: (res) => {
-      //console.log(res);
-
       $('#addNewCouponModal').modal('hide');
       $('.input-add-merchantName').val('');
       $('.input-add-code').val('');
@@ -391,8 +384,6 @@ function sendAddCouponDataToAPI(e) {
 
       const toggleCouponState = checkIfCouponShouldBeDisabled(res);
       let couponHTML = $(renderCoupons(res, toggleCouponState));
-
-      //console.log(couponHTML)
 
       couponHTML.css('opacity', '0');
       $('#coupons').append(couponHTML);
@@ -404,7 +395,6 @@ function sendAddCouponDataToAPI(e) {
        getUserCoupons();
     },
     error: function(err){
-      console.log('something went wrong');
     }
   });
 
@@ -426,7 +416,6 @@ function watchDeleteBtnHandler() {
 function watchSubmitDeleteCouponHandler(currentCouponId,container){
   $('#js-submit-delete-coupon-yes').on('click', (e) => {
       e.preventDefault();
-      console.log('you want to delete a coupon');
       $('#showConfirmDeleteModal').modal('hide');
       sendCouponToDeleteFromAPI(currentCouponId, container);
   });
@@ -435,7 +424,6 @@ function watchSubmitDeleteCouponHandler(currentCouponId,container){
 function watchSubmitDeletePressedNoHandler() {
   $('#js-submit-delete-coupon-no').on('click', (e) => {
       e.preventDefault();
-      console.log('You pressed NO!You do no want to delete This coupon');
       $('#showConfirmDeleteModal').modal('hide');
   });
 }
@@ -463,7 +451,6 @@ function sendCouponToDeleteFromAPI(id, container) {
          getUserCoupons();
       },
       error: function(err) {
-        console.log(`Something happened when trying to delete ${err}`);
       }
     });
 }
@@ -508,7 +495,6 @@ function watchEditBtnHandler() {
 function watchSubmitEditCouponHandler(id) {
   $('#js-edit-coupon-form').on('submit', (e) => {
       e.preventDefault();
-      console.log('you want to update a coupon');
       $('#editCouponModal').modal('hide');
       sendCouponToEditFromAPI(id, e);
   });
