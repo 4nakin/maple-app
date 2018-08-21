@@ -76,10 +76,19 @@ router.get('/:id', jwtAuth, (req, res) => {
 router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   const _userId = getUserIdFromJwt(req);
 
-  req.body.merchantName = req.body.merchantName.trim();
-  req.body.code = req.body.code.trim();
-  req.body.expirationDate = req.body.expirationDate.trim();
-  req.body.description = req.body.description.trim();
+  //only perform the trim if it exists
+  if(req.body.merchantName){
+    req.body.merchantName = req.body.merchantName.trim();
+  }
+  if(req.body.code){
+    req.body.code = req.body.code.trim();
+  }
+  if(req.body.expirationDate){
+    req.body.expirationDate.trim();
+  }
+  if(req.body.description){
+    req.body.description.trim();
+  }
 
   const requiredFields = ['merchantName', 'code','expirationDate','description'];
   const missingField = requiredFields.find(field => !(field in req.body));
@@ -203,8 +212,6 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
     // handle success
     const apiData = response.data;
 
-    console.log(apiData);
-
     if(req.file == undefined){
       couponImageFile = '';
       //no image was uploaded
@@ -249,11 +256,8 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   })
   .catch(function(error) {
     let couponImageFile;
-    // handle error
-    //console.log(req.file);
-    //console.log(error);
-    //console.log('did i get here? is there an error' + error);
 
+    // handle error
     if(req.file == undefined){
       couponImageFile = '';
     }
@@ -289,22 +293,27 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
       });
   })
   .catch(function(err){
-    console.error(err);
+    //console.error(err);
     res.status(500).send(err);
   })
 });
 
 // EDITS A NEW COUPON
 router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
-  // console.log(`req.params.id:  ${req.params.id}`);
-  // console.log(`req.body.id: ${req.body.id}`);
-  // console.log(req.body);
-  // console.log('couponImage: ' + req.file.path);
 
-  req.body.merchantName = req.body.merchantName.trim();
-  req.body.code = req.body.code.trim();
-  req.body.expirationDate = req.body.expirationDate.trim();
-  req.body.description = req.body.description.trim();
+  //only perform the trim if it exists
+  if(req.body.merchantName){
+    req.body.merchantName = req.body.merchantName.trim();
+  }
+  if(req.body.code){
+    req.body.code = req.body.code.trim();
+  }
+  if(req.body.expirationDate){
+    req.body.expirationDate.trim();
+  }
+  if(req.body.description){
+    req.body.description.trim();
+  }
 
   const stringFields = ['merchantName', 'code', 'expirationDate', 'description'];
   const nonStringField = stringFields.find(
@@ -440,10 +449,6 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
     }
   });
 
-
-
-  //console.log('the image uploaded is: ' + req.file.path);
-
    if(req.file == undefined){
      couponImageFile = '';
    }
@@ -490,7 +495,7 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
     }
   })
   .then(function() {
-    console.log(updated);
+    //console.log(updated);
     CouponModel.findByIdAndUpdate(req.params.id, {$set: updated }, { new: true })
     .then(coupon => {
       const updatedCoupon = coupon.toObject();

@@ -399,7 +399,7 @@ describe('Protected endpoint Coupon', function () {
           .field('code', 'testCode123')
           .field('expirationDate', expirationDateB)
           .field('description', 'this is a test description.')
-          .attach('couponImage', './uploads/coupons1.jpg', 'coupon.jpg')
+          .attach('couponImage', './uploads/coupon1.jpg', 'coupon.jpg')
           .then(function(_res) {
             res = _res;
             expect(res).to.have.status(201);
@@ -487,7 +487,7 @@ describe('Protected endpoint Coupon', function () {
               .field('merchantName', 'Soothe')
               .field('expirationDate', expirationDateB)
               .field('description', 'Use your soothe coupon today.')
-              .attach('couponImage', './uploads/c1.png', 'test.png')
+              .attach('couponImage', './uploads/coupon1.jpg', 'test.png')
           })
           .then(function(_res) {
             res = _res;
@@ -500,6 +500,7 @@ describe('Protected endpoint Coupon', function () {
           })
           .then(function(_res) {
             res = _res;
+            //console.log(res);
             expect(res.body.coupons[0].merchantName).to.equal('Soothe');
             expect(res.body.coupons[0].code).to.equal(code);
             expect(res.body.coupons[0].expirationDate).to.equal(expirationDateB);
@@ -531,7 +532,7 @@ describe('Protected endpoint Coupon', function () {
               .put(`/coupon/${res._id}`)
               .set('Authorization', `Bearer ${userObject.token}`)
               .field('id', `${res._id}`)
-              .attach('couponImage', './uploads/coupons1.jpg', 'coupon.jpg')
+              .attach('couponImage', './uploads/coupon1.jpg', 'coupon.jpg')
           })
           .then(function(_res) {
             res = _res;
@@ -756,15 +757,13 @@ describe('Protected endpoint Coupon', function () {
               .put(`/coupon/${res._id}`)
               .set('Authorization', `Bearer ${userObject.token}`)
               .field('id', `${res._id}`)
-              .field('merchantName', ' ')
+              .field('merchantName', ' test company')
           })
           .then(function(_res){
             res = _res;
-            expect(res).to.have.status(422);
+            expect(res).to.have.status(200);
             expect(res.body).to.be.an('object');
-            expect(res.body.reason).to.equal('ValidationError');
-            expect(res.body.message).to.equal('Cannot start or end with whitespace');
-            expect(res.body.location).to.equal('merchantName');
+            expect(res.body.merchantName).to.equal('Test Company');
           })
       });
     });

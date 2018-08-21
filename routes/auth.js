@@ -38,7 +38,6 @@ router.get('/logout',jwtAuth,(req, res) => {
   console.log('does it delete it? ' + req.session.username);
   req.session.reset();
   res.redirect('/');
-
 });
 
 // The user exchanges a valid JWT for a new one with a later expiration
