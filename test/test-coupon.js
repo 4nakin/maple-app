@@ -177,8 +177,6 @@ describe('Protected endpoint Coupon', function () {
 
           res = _res;
 
-          console.log(res.body);
-
           expect(res).to.have.status(200);
           expect(res.body).to.be.an('object');
           expect(res.body.coupons).to.be.an('array');
@@ -502,7 +500,6 @@ describe('Protected endpoint Coupon', function () {
           })
           .then(function(_res) {
             res = _res;
-            //console.log(res);
             expect(res.body.coupons[0].merchantName).to.equal('Soothe');
             expect(res.body.coupons[0].code).to.equal(code);
             expect(res.body.coupons[0].expirationDate).to.equal(expirationDateB);

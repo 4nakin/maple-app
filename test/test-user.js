@@ -13,7 +13,6 @@ const expect = chai.expect;
 
 chai.use(chaiHttp);
 
-
 describe('/api/users', function () {
   const username = 'exampleUser';
   const password = 'examplePass';
@@ -29,7 +28,6 @@ describe('/api/users', function () {
   });
 
   beforeEach(function () {
-    //return seedUserData();
   });
 
   afterEach(function () {

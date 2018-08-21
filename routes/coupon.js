@@ -24,8 +24,7 @@ let moment = require('moment');
 function capitalizeFirstLetterOfEveryWord(str){
   var splitStr = str.toLowerCase().split(' ');
    for (var i = 0; i < splitStr.length; i++) {
-       // You do not need to check if i is larger than splitStr length, as your for does that for you
-       // Assign it back to the array
+       // You do not need to check if i is larger than splitStr length, as your for does that for you. Assign it back to the array
        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
    }
    // Directly return the joined string
@@ -65,7 +64,6 @@ router.get('/:id', jwtAuth, (req, res) => {
   CouponModel.findById(req.params.id)
     .then(coupons => res.status(200).json(coupons))
     .catch(err => {
-        //console.error(err);
         res.status(500).json({
           message: 'Internal server error'
         });
@@ -118,7 +116,6 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
 
   if(nonStringField) {
     const message = `Incorrect field type: expected string`;
-    console.error(message);
     return res.status(422).send(message);
   }
 
@@ -420,17 +417,11 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
     }
   }
 
-
-  //console.log('************** User Edited **************');
   Object.keys(req.body).forEach(function eachKey(key) {
-  //console.log(key + ' : ' + req.body[key]); // alerts key and value
     if(key === 'merchantName'){
       req.body[key] = formatMerchantName(req.body[key]);
-      //console.log('** Formatted Merchant Name  ' + req.body[key] + '  **');
     }
   });
-  //console.log('was the image file provided? ' + req.file.path);
-  //console.log('************** End of User Edited **************\n');
 
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     res.status(400).json({
@@ -441,7 +432,6 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   const updated = {};
   const updateableFields = ['merchantName', 'code', 'expirationDate', 'description', 'couponImage'];
 
-  //console.log('************** Updated Fields **************');
   updateableFields.forEach(field => {
     if(field in req.body) {
       updated[field] = req.body[field];
@@ -455,8 +445,6 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
      couponImageFile = req.file.path;
      updated.couponImage = req.file.path;
    }
-
-  //console.log('************** End of Updated Fields **************\n');
 
   axios(
   {
@@ -485,7 +473,6 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   })
   .catch(function (error) {
     // handle error
-    //console.log('There was an error ' + error.response.status);
     if(error.response.status === 404) {
       updated.companyLogo = '/images/defaultImage.png';
       updated.companyLogoUsed = '/images/defaultImage.png';
@@ -494,24 +481,13 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
     }
   })
   .then(function() {
-    //console.log(updated);
     CouponModel.findByIdAndUpdate(req.params.id, {$set: updated }, { new: true })
     .then(coupon => {
       const updatedCoupon = coupon.toObject();
-      //console.log(updatedCoupon);
       res.status(200).json(updatedCoupon);
     })
     .catch(err => res.status(500).json({ message: 'Something went wrong'}));
   })
-
-
-  // CouponModel.findByIdAndUpdate(req.params.id, {$set: updated }, { new: true })
-  // .then(coupon => {
-  //   const updatedCoupon = coupon.toObject();
-  //   console.log(updatedCoupon);
-  //   res.status(200).json(updatedCoupon);
-  // })
-  // .catch(err => res.status(500).json({ message: 'Something went wrong'}));
 });
 
 // UPDATES ONLY ITEMS PROVIDED OF AN IMAGE OF COUPON
@@ -522,11 +498,8 @@ router.patch('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   updateableFields.forEach(field => {
     if(field in req.body) {
       updateOps[field] = req.body[field];
-      //console.log(updateOps[field]);
     }
   });
-
-  //console.log(updateOps);
 
   CouponModel.findByIdAndUpdate(req.params.id, {$set: updateOps },{ new: true })
   .then(coupon => {
@@ -535,7 +508,6 @@ router.patch('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
     });
   })
   .catch(err => {
-    //console.log(err);
     res.status(500).json({
       error: err
     });
