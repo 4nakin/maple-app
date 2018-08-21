@@ -83,8 +83,6 @@ function checkIfCouponShouldBeDisabled(res) {
   let couponImageLinkDisplayState = '';
   let editIconState = '';
 
-  //console.log(res);
-
   if(res.couponUsed !== null && res.couponUsed !== '') {
     if(res.couponUsed === false){
       if(res.companyDomain === ''){
@@ -164,7 +162,6 @@ function getUserCoupons() {
 
     },
     error: function(res) {
-      //console.log(res);
       renderErrorMessage(res);
     }
   });
@@ -374,7 +371,6 @@ function watchAddBtnHandler() {
 function watchSubmitAddNewCouponHandler() {
   $('#js-add-coupon-form').on('submit', (e) => {
     e.preventDefault();
-    //console.log('you added a coupon');
     sendAddCouponDataToAPI(e);
   });
 }
@@ -392,9 +388,8 @@ function sendAddCouponDataToAPI(e) {
     processData: false,
     contentType: false,
     success: (res) => {
-      console.log(res);
-
-      checkIfImageWasUploaded(res);
+      //TODO
+      //checkIfImageWasUploaded(res);
 
       $('#addNewCouponModal').modal('hide');
       $('.input-add-merchantName').val('');
@@ -492,7 +487,6 @@ function getValues(res) {
 
 function watchEditBtnHandler() {
   $('#coupons').on('click','.js-edit-icon', (e) => {
-    //console.log(e.eventTarget);
       e.preventDefault();
 
       $('.js-delete-icon').tooltip('hide');
@@ -505,7 +499,6 @@ function watchEditBtnHandler() {
       $('#editCouponModal').modal('show');
 
       currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
-      //console.log(`The coupon id: ${currentCouponId}`);
 
       getCouponById(currentCouponId, getValues);
       watchSubmitEditCouponHandler(currentCouponId);
@@ -526,7 +519,6 @@ function sendCouponToEditFromAPI(id, e) {
     for (var [key, value] of formData.entries()) {
       //console.log(key, value);
     }
-    //console.log('coupon id: ' + id);
 
     let _couponId = id;
 
@@ -541,9 +533,6 @@ function sendCouponToEditFromAPI(id, e) {
       contentType: false,
       success: function(res) {
 
-        //console.log(res);
-        //console.log(res.companyDomain);
-
         if(res.companyDomain !== '' || res.companyDomain !== null){
           $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', res.companyDomain);
         }
@@ -556,8 +545,6 @@ function sendCouponToEditFromAPI(id, e) {
         $(`[data-id = ${_couponId}] .coupon-code`).html(res.code);
         $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(`Valid til ${res.expirationDate}`);
         $(`[data-id = ${_couponId}] .coupon-description`).html(res.description);
-
-        //console.log(`you successfully updated a coupon: ${_couponId}`);
 
         getUserCoupons();
       },
@@ -573,12 +560,13 @@ function setMinDateToTodaysDate(){
   var mm = today.getMonth()+1; //January is 0!
   var yyyy = today.getFullYear();
     if(dd<10){
-        dd='0'+dd
+        dd ='0' + dd
     }
     if(mm<10){
-        mm='0'+mm
+        mm ='0'+ mm
     }
-    today = yyyy+'-'+mm+'-'+dd;
+    today = yyyy + '-' + mm + '-' + dd;
+     console.log(today);
     $('.js-date-field').attr("min", today);
 }
 
@@ -599,7 +587,6 @@ function renderDropDown(htmlCode) {
 }
 
 function renderFilterByMerchants(res) {
-  //console.log(res);
   const coupons = res.coupons;
   let merchants = [];
   // Generate unique list of merchants
@@ -633,7 +620,6 @@ function clickedOnMerchantFilter(res, merchants) {
       url: '/coupon/',
       type: 'GET',
       success: (res) => {
-        //console.log(res);
         const coupons = res.coupons;
         let filteredCoupons = [];
         let currentMerchant = 0;
@@ -667,7 +653,6 @@ function clickedOnMerchantFilter(res, merchants) {
 }
 
 function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
-  //console.log(filteredByMerchantCoupons);
   let couponHTML = "";
 
   filteredByMerchantCoupons.map(function(coupon){
@@ -688,7 +673,6 @@ function clickedOnMarkUsed() {
   $('#coupons').on('click','.js-complete-icon', (e) => {
     e.preventDefault();
     currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
-    //console.log(`I want to mark this coupon(${currentCouponId}) complete`);
     getCouponById(currentCouponId, renderCouponAsUsed);
     currentEventListener = e;
     entireCouponElement = $(e.currentTarget).parent().parent();
@@ -696,7 +680,6 @@ function clickedOnMarkUsed() {
 }
 
 function renderCouponAsUsed(res) {
-  //console.log(res);
   currentCouponId = res._id;
   let couponUsedBoolVal = res.couponUsed;
   let couponImagePath = res.couponImage;
@@ -731,7 +714,6 @@ function showCoupondetails(){
     currentCouponId = $(couponContainer).attr('data-id');
     // I want to get the img element and pass it to renderShowCouponImageModal
     let currentCouponImage = $(couponContainer).find('img.hide.js-coupon-image').attr('src');
-    //console.log(currentCouponImage);
     $('#showuploadedImageModelSection').html(renderShowCouponImageModal(currentCouponImage));
     $('.js-show-coupon-image').tooltip('hide');
     $('#showCouponImageModal').modal('show');

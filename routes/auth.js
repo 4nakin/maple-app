@@ -35,7 +35,6 @@ router.get('/logout',jwtAuth,(req, res) => {
      delete req.session.username;
      delete req.session.authToken;
   }
-  console.log('does it delete it? ' + req.session.username);
   req.session.reset();
   res.redirect('/');
 });

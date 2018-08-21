@@ -23,7 +23,6 @@ router.get('/dashboard', function(req, res) {
       res.render('pages/coupon', { title: 'Dashboard' });
     }
     else {
-      console.log('fell in else. REDIREDT TO LOGIN');
       res.redirect('/login');
     }
 });

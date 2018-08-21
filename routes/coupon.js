@@ -213,8 +213,8 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
     const apiData = response.data;
 
     if(req.file == undefined){
-      couponImageFile = '';
       //no image was uploaded
+      couponImageFile = '';
     }
     else {
       couponImageFile = req.file.path;
@@ -293,7 +293,6 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
       });
   })
   .catch(function(err){
-    //console.error(err);
     res.status(500).send(err);
   })
 });
