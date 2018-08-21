@@ -5,21 +5,19 @@ let currentEventListener = null;
 let entireCouponElement = null;
 
 function checkIfImageWasUploaded(res) {
-  let couponImageHTML;
+  let uploadedImage;
 
   if(res.couponImage == ''){
-    console.log('no image was uploaded');
-    couponImageHTML = `<p class="coupon-code js-coupon-code no-margin ${res.couponImageLinkDisplayState}" data-toggle="modal" data-target="showCouponImageModal">${res.code}</p>`;
+    uploadedImage = './images/defaultUploadedImage.png';
   }
-  else{
-    couponImageHTML = `<p class="coupon-code js-coupon-code no-margin ${res.couponImageLinkDisplayState}" data-toggle="modal" data-target="showCouponImageModal"><a href="" data-toggle="tooltip" data-placement="left" title="Click to see coupon Image uploaded" class="js-show-coupon-image show-coupon-image">${res.code}</a>
-    </p>`;
+  else {
+    console.log('Image was uploaded. do nothing.');
+      uploadedImage = res.couponImage;
   }
-
-  return couponImageHTML;
+  return uploadedImage;
 }
 
-function renderCoupons(res, toggleCouponState) {
+function renderCoupons(res, toggleCouponState, uploadedImage) {
   return `<section role="region" class="all-coupon-container" data-id="${res._id}">
             <img src ="${res.couponImage}" alt="coupon image user uploaded for ${res.merchantName}" class="hide js-coupon-image">
             <section role="region" class="coupon-container js-coupon-container ${toggleCouponState.classes}">
@@ -64,12 +62,6 @@ function getCouponById(id, callback) {
     type: 'GET',
     success: callback,
     error: function(err) {
-      if(token === null) {
-        //console.log('Token is empty and you are not logged in. Please log in!!!');
-      }
-      else{
-        //console.log('something went wrong when trying to get to the protected endpoint');
-      }
     }
   });
 }
@@ -377,7 +369,6 @@ function watchSubmitAddNewCouponHandler() {
 
 function sendAddCouponDataToAPI(e) {
   const formData = new FormData(e.target);
-  console.log()
   $.ajax({
     url: '/coupon',
     type: 'POST',
@@ -388,9 +379,7 @@ function sendAddCouponDataToAPI(e) {
     processData: false,
     contentType: false,
     success: (res) => {
-      //TODO
-      //checkIfImageWasUploaded(res);
-
+      
       $('#addNewCouponModal').modal('hide');
       $('.input-add-merchantName').val('');
       $('.input-add-code').val('');
@@ -398,7 +387,8 @@ function sendAddCouponDataToAPI(e) {
       $('.input-add-description').val('');
 
       const toggleCouponState = checkIfCouponShouldBeDisabled(res);
-      let couponHTML = $(renderCoupons(res, toggleCouponState));
+      const uploadedImage = checkIfImageWasUploaded(res);
+      let couponHTML = $(renderCoupons(res, toggleCouponState, uploadedImage));
 
       couponHTML.css('opacity', '0');
       $('#coupons').append(couponHTML);
@@ -566,7 +556,6 @@ function setMinDateToTodaysDate(){
         mm ='0'+ mm
     }
     today = yyyy + '-' + mm + '-' + dd;
-     console.log(today);
     $('.js-date-field').attr("min", today);
 }
 
@@ -641,12 +630,6 @@ function clickedOnMerchantFilter(res, merchants) {
 
       },
       error: function(err) {
-        if(token === null) {
-          //console.log('Token is empty and you are not logged in. Please log in!!!');
-        }
-        else{
-          //console.log('something went wrong when trying to get to the protected endpoint');
-        }
       }
     });
   });

@@ -31,7 +31,6 @@ function signupHandler() {
         $('#input-username').val('');
         $('#input-password').val('');
         renderSuccessMessage(res);
-        //window.location.href = '/login';
       },
       error: (res) => {
         renderErrorMessage(res);
@@ -42,16 +41,6 @@ function signupHandler() {
 
 function logoutHandler() {
   $('.js-logout').on('click', (e) => {
-    // var token = localStorage.getItem('Token');
-    // if(token) {
-    //   localStorage.removeItem('Token');
-    //   console.log('you are logged out!');
-    //   //window.location.href = '/';
-    // }
-    // else {
-    //   console.log('there is no token. you you are not signed in');
-    // }
-
     e.preventDefault();
     $.ajax({
       url: '/api/auth/logout',
@@ -64,7 +53,6 @@ function logoutHandler() {
         var token = localStorage.getItem('Token');
         if(token) {
           localStorage.removeItem('Token');
-          //console.log('you are logged out!');
         }
         window.location.href = '/dashboard';
       },
@@ -88,7 +76,6 @@ function loginHandler() {
       success: (res) => {
         //this saves the authToken that comes from response to the Token variable
         localStorage.setItem('Token', res.authToken);
-        //console.log('What is res.authToken Value?' + res.authToken);
 
         $('.js-logout').removeClass('hide');
         $('.js-coupon').removeClass('hide');
@@ -105,13 +92,11 @@ function loginHandler() {
 function renderNavigationLinksListener() {
   var token = localStorage.getItem('Token');
   if(!token) {
-    //console.log('oh no, There\'s no token');
     //hide coupon link
     $('.js-signup').removeClass('hide');
     $('.js-login').removeClass('hide');
   }
-  else{
-    //console.log('you are still signed in');
+  else {
     //show coupon link
     $('.js-logout').removeClass('hide');
     $('.js-coupon').removeClass('hide');
@@ -124,6 +109,7 @@ function renderSuccessMessage(res){
   let successfulMsg = `<div class="alert alert-success fade show text-center" role="alert">
                         You've been successfully registered ${res.username}. You can now <a href="/login">login</a>.
                        </div>`;
+
   return $('#js-msg-output').html(successfulMsg);
 }
 
@@ -146,19 +132,17 @@ function renderErrorMessage(res){
 
 function clickonMapleLogo() {
   //if signed on then redirect to dashboard if not redirect to /
-  $('navbar-brand').on('click', (e) => {
+  $('.navbar-brand').on('click', (e) => {
+    e.preventDefault();
     var token = localStorage.getItem('Token');
 
     if(!token) {
-      console.log('oh no, There\'s no token. Please sign in or register!');
-        window.location.href = '/login';
+        window.location.href = '/';
     }
-    else{
-      console.log('you are still signed in');
-      //redirect to dashboard
+    else {
       window.location.href = '/dashboard';
     }
-  })
+  });
 }
 
 function initApp() {

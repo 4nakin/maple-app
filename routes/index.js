@@ -5,7 +5,7 @@ router.get('/', function (req, res) {
     if(req.session.username){
       res.redirect('/dashboard');
     }
-    else{
+    else {
       res.render('pages/index', {title: 'Coupon'});
     }
 });

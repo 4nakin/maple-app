@@ -211,7 +211,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
 
     if(req.file == undefined){
       //no image was uploaded
-      couponImageFile = '';
+      couponImageFile = '/images/defaultUploadedImage.png';
     }
     else {
       couponImageFile = req.file.path;
