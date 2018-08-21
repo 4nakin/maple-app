@@ -2,3 +2,10 @@ language: node_js
 node_js: node
 services:
 - mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: kPNVnFuayk76P0JQHQj6YmqMGAj01y3aPX3HPwf5N+EAc8U86Wmav+6IDWimxDFMTQ1f+VAD5F5pLefPkdzl5W/OY9MkiV/AvpBGNk/ONa04PIyUbNdSB7FbBw19cH3Xe62YloDaX8CLhfH7r4nkbxWSLscf71jPxLpv/SJTflOHnzUzI8cdKaQa9E84MI32pAD3h9Q+uVOvh8MYMd0aOaSv8ZVajQRsCwpe8vKmCbEdiyNdaIJ4kjY6C8hWZqHmI4tmY91p9jjz25h/1MNY1VyT+WWN4rlcktBH2pdq92OtWwdUWlkqcNxKgq8nbpBLgNQt9eH0aZ84umKDiRuCuNsUzyS1duwsJbZv+Hza0JA0i/y/Z8o38hsRysn5gdZD2gfzYJIxd4Llb+BmvvG6IPteHCzI+0amWgXf1F+NzXX5sqBnf9FFyTUdURFjda61XMZx9zEDOGjlS4M5Sj6tmVWCk1P/72d4UsxY6TJpvqWr21PB5KRwduwf8I+Ni0E+FR0AlVAKEweSdL3AOKJOBq/RE+eQ2wYlrpG9Rb/lvfa9f6/Wq+7/JVWMZHrJTd6BvYYnTOKUudN3pguwyH4L1lVpeTnshOQZymymyXj2zTk32VUpcvCJRhCSmWRU71C7OQzmMIK/JCXdvJjFuI1xsntLXitK4fgPjGLBobcNwVs=
+  app: maple-app
+  on:
+    repo: jessicaerazo/maple-app
