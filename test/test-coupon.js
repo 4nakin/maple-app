@@ -173,7 +173,7 @@ describe('Protected endpoint Coupon', function () {
           delete _res.body.coupons[1]._id;
           delete _res.body.coupons[0].__v;
           delete _res.body.coupons[1].__v;
-          delete _res.body.userId;
+          delete _res.body._userId;
 
           res = _res;
 
