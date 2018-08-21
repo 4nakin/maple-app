@@ -2,7 +2,12 @@ var express = require('express');
 var router = express.Router();
 
 router.get('/', function (req, res) {
-    res.render('pages/index', {title: 'Coupon'});
+    if(req.session.username){
+      res.redirect('/dashboard');
+    }
+    else{
+      res.render('pages/index', {title: 'Coupon'});
+    }
 });
 
 router.get('/signup', function(req, res) {
@@ -14,7 +19,13 @@ router.get('/login', function(req, res) {
 });
 
 router.get('/dashboard', function(req, res) {
-    res.render('pages/coupon', { title: 'Dashboard' });
+    if(req.session.username){
+      res.render('pages/coupon', { title: 'Dashboard' });
+    }
+    else {
+      console.log('fell in else. REDIREDT TO LOGIN');
+      res.redirect('/login');
+    }
 });
 
 

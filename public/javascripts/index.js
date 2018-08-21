@@ -42,15 +42,36 @@ function signupHandler() {
 
 function logoutHandler() {
   $('.js-logout').on('click', (e) => {
-    var token = localStorage.getItem('Token');
-    if(token) {
-      localStorage.removeItem('Token');
-      console.log('you are logged out!');
-      window.location.href = '/';
-    }
-    else {
-      console.log('there is no token. you you are not signed in');
-    }
+    // var token = localStorage.getItem('Token');
+    // if(token) {
+    //   localStorage.removeItem('Token');
+    //   console.log('you are logged out!');
+    //   //window.location.href = '/';
+    // }
+    // else {
+    //   console.log('there is no token. you you are not signed in');
+    // }
+
+    e.preventDefault();
+    $.ajax({
+      url: '/api/auth/logout',
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('Token')}`);
+      },
+      type: 'GET',
+      success: (res) => {
+
+        var token = localStorage.getItem('Token');
+        if(token) {
+          localStorage.removeItem('Token');
+          //console.log('you are logged out!');
+        }
+        window.location.href = '/dashboard';
+      },
+      error: (res) => {
+        renderErrorMessage(res);
+      }
+    });
   });
 }
 
@@ -83,16 +104,14 @@ function loginHandler() {
 
 function renderNavigationLinksListener() {
   var token = localStorage.getItem('Token');
-
   if(!token) {
-    console.log('oh no, There\'s no token');
+    //console.log('oh no, There\'s no token');
     //hide coupon link
     $('.js-signup').removeClass('hide');
     $('.js-login').removeClass('hide');
-
   }
   else{
-    console.log('you are still signed in');
+    //console.log('you are still signed in');
     //show coupon link
     $('.js-logout').removeClass('hide');
     $('.js-coupon').removeClass('hide');

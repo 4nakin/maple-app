@@ -515,22 +515,17 @@ button:disabled {
   width: 100%;
 }
 
-/* input[type=file]{
-  display: block;
-  -webkit-appearence: none;
-} */
-
 .couponImageContainer{
   width: 200px;
   display: block;
-  background: #000;
+  background: #d8d8d8;
   margin: 20px 0;
 }
 .uploaded-coupon-image {
   display: inline-block;
   margin: 8px 0 8px 0;
   width: 100px;
-  background: #000;
+  background: #d8d8d8;
 }
 
 input[type="text"],
@@ -538,10 +533,6 @@ input[type="email"],
 input[type="date"] {
 	height: 2.375rem;
 }
-
-/* .show-coupon-image a {
-  color: #FFF;
-} */
 
 .show-coupon-image-link-styling a {
   color: #FFF;
@@ -581,7 +572,7 @@ No media query for `xs` since this is the default in Bootstrap */
   .couponImageContainer{
     width: 400px;
     display: block;
-    background: #000;
+    background: #d8d8d8;
     margin: 20px 0;
   }
 
@@ -589,7 +580,7 @@ No media query for `xs` since this is the default in Bootstrap */
     display: inline-block;
     margin: 8px 0 8px 0;
     width: 100px;
-    background: #000;
+    background: #d8d8d8;
   }
 }
 
@@ -623,21 +614,6 @@ No media query for `xs` since this is the default in Bootstrap */
     right: 5%;
     top: -10px;
   }
-
-  /* .couponImageContainer{
-    width: 400px;
-    display: block;
-    background: #000;
-    margin: 20px 0;
-  }
-
-  .uploaded-coupon-image {
-    display: inline-block;
-    margin: 8px 0 8px 0;
-    width: 100px;
-    background: #000;
-  } */
-
 }
 
 /* Extra large devices (large desktops, 1200px and up) */

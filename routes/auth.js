@@ -21,10 +21,25 @@ router.use(bodyParser.json());
 // The user provides a username and password to login
 router.post('/login', localAuth, (req, res) => {
   const authToken = createAuthToken(req.user.serialize());
+  //sets a cookie with the user's info
+  req.session.username = req.body.username;
+  req.session.authToken = authToken;
   res.json({authToken});
 });
 
 const jwtAuth = passport.authenticate('jwt', {session: false});
+
+router.get('/logout',jwtAuth,(req, res) => {
+  console.log('first I have to make sure I have a cookie ' + req.session.username);
+  if(req.session.username){
+     delete req.session.username;
+     delete req.session.authToken;
+  }
+  console.log('does it delete it? ' + req.session.username);
+  req.session.reset();
+  res.redirect('/');
+
+});
 
 // The user exchanges a valid JWT for a new one with a later expiration
 router.post('/refresh', jwtAuth, (req, res) => {

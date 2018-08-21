@@ -75,6 +75,12 @@ router.get('/:id', jwtAuth, (req, res) => {
 // CREATES A NEW COUPON
 router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   const _userId = getUserIdFromJwt(req);
+
+  req.body.merchantName = req.body.merchantName.trim();
+  req.body.code = req.body.code.trim();
+  req.body.expirationDate = req.body.expirationDate.trim();
+  req.body.description = req.body.description.trim();
+
   const requiredFields = ['merchantName', 'code','expirationDate','description'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
@@ -109,8 +115,7 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
 
   const explicityTrimmedFields = ['merchantName', 'code', 'expirationDate', 'description'];
   const nonTrimmedField = explicityTrimmedFields.find(
-    field => req.body[field].trim() !== req.body[field]
-  );
+    field => req.body[field].trim() !== req.body[field]);
 
   if (nonTrimmedField) {
     return res.status(422).json({
@@ -165,12 +170,13 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   }
 
   let {merchantName ='', code ='', expirationDate = '', description = ''} = req.body;
-  // come in pre-trimmed, otherwise we throw an error
-  // before this
+  // come in pre-trimmed, otherwise we throw an error before this
+
   merchantName = merchantName.trim();
   code = code.trim();
   expirationDate = expirationDate.trim();
   description = description.trim();
+
 
   let now = (moment(new Date()).format()).slice(0,10);
   if(expirationDate < now) {
@@ -196,9 +202,8 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   .then(function (response) {
     // handle success
     const apiData = response.data;
-    console.log(apiData);
 
-    console.log('req.file: ' + req.file);
+    console.log(apiData);
 
     if(req.file == undefined){
       couponImageFile = '';
@@ -208,9 +213,9 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
       couponImageFile = req.file.path;
     }
 
-    if(apiData.logo === null){
+    if(apiData.logo === null || apiData.name === 'TEST'|| apiData.name === 'test'){
       newCoupon = new CouponModel({
-        merchantName: apiData.name,
+        merchantName: formatMerchantName(apiData.name),
         code: req.body.code.trim(),
         expirationDate: req.body.expirationDate,
         description: req.body.description.trim(),
@@ -245,9 +250,9 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   .catch(function(error) {
     let couponImageFile;
     // handle error
-    console.log(req.file);
-    console.log(error);
-    console.log('did i get here? is there an error' + error);
+    //console.log(req.file);
+    //console.log(error);
+    //console.log('did i get here? is there an error' + error);
 
     if(req.file == undefined){
       couponImageFile = '';
@@ -296,12 +301,17 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   // console.log(req.body);
   // console.log('couponImage: ' + req.file.path);
 
+  req.body.merchantName = req.body.merchantName.trim();
+  req.body.code = req.body.code.trim();
+  req.body.expirationDate = req.body.expirationDate.trim();
+  req.body.description = req.body.description.trim();
+
   const stringFields = ['merchantName', 'code', 'expirationDate', 'description'];
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== 'string'
   );
 
-  if (nonStringField) {
+  if(nonStringField) {
     return res.status(422).json({
       code: 422,
       reason: 'ValidationError',
@@ -309,7 +319,6 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
       location: nonStringField
     });
   }
-
   if(nonStringField) {
     const message = `Incorrect field type: expected string`;
     return res.status(422).send(message);
@@ -384,14 +393,14 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
     });
   }
 
+  let { merchantName ='', code ='', expirationDate = '', description = '' } = req.body;
 
-  let {merchantName ='', code ='', expirationDate = '', description = ''} = req.body;
   merchantName = merchantName.trim();
   code = code.trim();
   expirationDate = expirationDate.trim();
   description = description.trim();
 
-  if(expirationDate){
+  if(expirationDate) {
     let now = (moment(new Date()).format()).slice(0,10);
     if(expirationDate < now) {
         return res.status(422).json({
@@ -431,10 +440,18 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
     }
   });
 
-   if(req.file !== undefined ){
-    updated.couponImage = req.file.path;
+
+
+  //console.log('the image uploaded is: ' + req.file.path);
+
+   if(req.file == undefined){
+     couponImageFile = '';
    }
-  //console.log(updated);
+   else {
+     couponImageFile = req.file.path;
+     updated.couponImage = req.file.path;
+   }
+
   //console.log('************** End of Updated Fields **************\n');
 
   axios(
@@ -447,13 +464,12 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   })
   .then(function (response) {
     // handle success
-    //console.log(response.data);
     const apiData = response.data;
 
-    if (response.data.logo == null){
+    if (response.data.logo == null || response.data.name === 'TEST' || response.data.name === 'test'){
+      updated.companyDomain = '';
       updated.companyLogo = '/images/defaultImage.png';
       updated.companyLogoUsed = '/images/defaultImage.png';
-      updated.companyDomain = '';
       updated.couponDisplayState = 'coupon-active';
     }
     else {
@@ -474,6 +490,7 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
     }
   })
   .then(function() {
+    console.log(updated);
     CouponModel.findByIdAndUpdate(req.params.id, {$set: updated }, { new: true })
     .then(coupon => {
       const updatedCoupon = coupon.toObject();

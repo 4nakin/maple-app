@@ -4,6 +4,21 @@ let currentCouponId = null;
 let currentEventListener = null;
 let entireCouponElement = null;
 
+function checkIfImageWasUploaded(res) {
+  let couponImageHTML;
+
+  if(res.couponImage == ''){
+    console.log('no image was uploaded');
+    couponImageHTML = `<p class="coupon-code js-coupon-code no-margin ${res.couponImageLinkDisplayState}" data-toggle="modal" data-target="showCouponImageModal">${res.code}</p>`;
+  }
+  else{
+    couponImageHTML = `<p class="coupon-code js-coupon-code no-margin ${res.couponImageLinkDisplayState}" data-toggle="modal" data-target="showCouponImageModal"><a href="" data-toggle="tooltip" data-placement="left" title="Click to see coupon Image uploaded" class="js-show-coupon-image show-coupon-image">${res.code}</a>
+    </p>`;
+  }
+
+  return couponImageHTML;
+}
+
 function renderCoupons(res, toggleCouponState) {
   return `<section role="region" class="all-coupon-container" data-id="${res._id}">
             <img src ="${res.couponImage}" alt="coupon image user uploaded for ${res.merchantName}" class="hide js-coupon-image">
@@ -208,7 +223,7 @@ function renderShowCouponImageModal(imgPath){
                 </div>
                 <div class="modal-body block-center">
                   <h5 class="modal-title" id="showCouponImageModalLabel">Coupon Image</h5>
-                  <img src="${imgPath}" alt="" class="couponImageContainer coupon-Image-Big">
+                  <img src="${imgPath}" alt="uploaded coupon image" class="couponImageContainer coupon-Image-Big">
               </div>
             </div>
           </div>
@@ -342,7 +357,7 @@ function markCouponUsedonDOM(res,toggleCouponState) {
     editIcon.fadeOut('slow');
   }
   else {
-    console.log('something is up in the patch request conditionals');
+    //console.log('something is up in the patch request conditionals');
   }
 
 }
@@ -359,13 +374,14 @@ function watchAddBtnHandler() {
 function watchSubmitAddNewCouponHandler() {
   $('#js-add-coupon-form').on('submit', (e) => {
     e.preventDefault();
-    console.log('you added a coupon');
+    //console.log('you added a coupon');
     sendAddCouponDataToAPI(e);
   });
 }
 
 function sendAddCouponDataToAPI(e) {
   const formData = new FormData(e.target);
+  console.log()
   $.ajax({
     url: '/coupon',
     type: 'POST',
@@ -376,6 +392,10 @@ function sendAddCouponDataToAPI(e) {
     processData: false,
     contentType: false,
     success: (res) => {
+      console.log(res);
+
+      checkIfImageWasUploaded(res);
+
       $('#addNewCouponModal').modal('hide');
       $('.input-add-merchantName').val('');
       $('.input-add-code').val('');
@@ -472,7 +492,7 @@ function getValues(res) {
 
 function watchEditBtnHandler() {
   $('#coupons').on('click','.js-edit-icon', (e) => {
-    console.log(e.eventTarget);
+    //console.log(e.eventTarget);
       e.preventDefault();
 
       $('.js-delete-icon').tooltip('hide');
@@ -485,7 +505,7 @@ function watchEditBtnHandler() {
       $('#editCouponModal').modal('show');
 
       currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
-      console.log(`The coupon id: ${currentCouponId}`);
+      //console.log(`The coupon id: ${currentCouponId}`);
 
       getCouponById(currentCouponId, getValues);
       watchSubmitEditCouponHandler(currentCouponId);
@@ -502,9 +522,11 @@ function watchSubmitEditCouponHandler(id) {
 
 function sendCouponToEditFromAPI(id, e) {
   let formData = new FormData(e.target);
+  formData.append('id', id);
     for (var [key, value] of formData.entries()) {
-      console.log(key, value);
+      //console.log(key, value);
     }
+    //console.log('coupon id: ' + id);
 
     let _couponId = id;
 
@@ -519,8 +541,8 @@ function sendCouponToEditFromAPI(id, e) {
       contentType: false,
       success: function(res) {
 
-        console.log(res);
-        console.log(res.companyDomain);
+        //console.log(res);
+        //console.log(res.companyDomain);
 
         if(res.companyDomain !== '' || res.companyDomain !== null){
           $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', res.companyDomain);
@@ -535,12 +557,12 @@ function sendCouponToEditFromAPI(id, e) {
         $(`[data-id = ${_couponId}] .coupon-expiration-date`).html(`Valid til ${res.expirationDate}`);
         $(`[data-id = ${_couponId}] .coupon-description`).html(res.description);
 
-        console.log(`you successfully updated a coupon: ${_couponId}`);
+        //console.log(`you successfully updated a coupon: ${_couponId}`);
 
         getUserCoupons();
       },
       error: function(err) {
-        console.log(`Something happened when trying to edit ${err}`);
+        //console.log(`Something happened when trying to edit ${err}`);
       }
     });
 }
@@ -611,7 +633,7 @@ function clickedOnMerchantFilter(res, merchants) {
       url: '/coupon/',
       type: 'GET',
       success: (res) => {
-        console.log(res);
+        //console.log(res);
         const coupons = res.coupons;
         let filteredCoupons = [];
         let currentMerchant = 0;
@@ -666,7 +688,7 @@ function clickedOnMarkUsed() {
   $('#coupons').on('click','.js-complete-icon', (e) => {
     e.preventDefault();
     currentCouponId = $(e.currentTarget).parent().parent().attr('data-id');
-    console.log(`I want to mark this coupon(${currentCouponId}) complete`);
+    //console.log(`I want to mark this coupon(${currentCouponId}) complete`);
     getCouponById(currentCouponId, renderCouponAsUsed);
     currentEventListener = e;
     entireCouponElement = $(e.currentTarget).parent().parent();
@@ -709,6 +731,7 @@ function showCoupondetails(){
     currentCouponId = $(couponContainer).attr('data-id');
     // I want to get the img element and pass it to renderShowCouponImageModal
     let currentCouponImage = $(couponContainer).find('img.hide.js-coupon-image').attr('src');
+    //console.log(currentCouponImage);
     $('#showuploadedImageModelSection').html(renderShowCouponImageModal(currentCouponImage));
     $('.js-show-coupon-image').tooltip('hide');
     $('#showCouponImageModal').modal('show');
@@ -717,7 +740,7 @@ function showCoupondetails(){
 
 //TODO: STILL HAVE TO WORK ON!!!!!!
 function checkIfCouponIsPastDue() {
-  console.log('checking if coupon is past due based on date');//this should be done in the backend.
+  //console.log('checking if coupon is past due based on date');//this should be done in the backend.
   //check coupons get responseJSON
   //from coupons array get expiration Date
   //then compare if value of expirationDate and today's current date.
