@@ -73,6 +73,19 @@ router.get('/:id', jwtAuth, (req, res) => {
 // CREATES A NEW COUPON
 router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   const _userId = getUserIdFromJwt(req);
+  console.log('do i get here?');
+  console.log(req.body);
+  console.log('Was file uploaded? ' + req.file);
+
+  let couponImageFile;
+
+  if(req.file == undefined){
+    //no image was uploaded
+    couponImageFile = null;
+  }
+  else {
+    couponImageFile = req.file.path;
+  }
 
   //only perform the trim if it exists
   if(req.body.merchantName){
@@ -185,6 +198,9 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
 
 
   let now = (moment(new Date()).format()).slice(0,10);
+  console.log('the expiration date in the backend is: ' + expirationDate);
+  console.log('now: ' + now);
+
   if(expirationDate < now) {
       return res.status(422).json({
         code: 422,
@@ -195,7 +211,6 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   }
 
   let newCoupon;
-  let couponImageFile;
 
   axios(
   {
@@ -208,14 +223,6 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   .then(function (response) {
     // handle success
     const apiData = response.data;
-
-    if(req.file == undefined){
-      //no image was uploaded
-      couponImageFile = '/images/defaultUploadedImage.png';
-    }
-    else {
-      couponImageFile = req.file.path;
-    }
 
     if(apiData.logo === null || apiData.name === 'TEST'|| apiData.name === 'test'){
       newCoupon = new CouponModel({
@@ -255,13 +262,6 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
     let couponImageFile;
 
     // handle error
-    if(req.file == undefined){
-      couponImageFile = '';
-    }
-    else {
-      couponImageFile = req.file.path;
-    }
-
       if(error.response.status === 404 || error.response.status === 422) {
         newCoupon = new CouponModel({
           merchantName: req.body.merchantName.trim(),
@@ -439,7 +439,7 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
   });
 
    if(req.file == undefined){
-     couponImageFile = '';
+     couponImageFile = null;
    }
    else {
      couponImageFile = req.file.path;

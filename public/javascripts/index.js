@@ -130,23 +130,7 @@ function renderErrorMessage(res){
   return $('#js-msg-output').html(errorMsg);
 }
 
-function clickonMapleLogo() {
-  //if signed on then redirect to dashboard if not redirect to /
-  $('.navbar-brand').on('click', (e) => {
-    e.preventDefault();
-    var token = localStorage.getItem('Token');
-
-    if(!token) {
-        window.location.href = '/';
-    }
-    else {
-      window.location.href = '/dashboard';
-    }
-  });
-}
-
 function initApp() {
-  clickonMapleLogo();
   renderNavigationLinksListener();
   signupBtnHandler();
   loginBtnHandler();
