@@ -259,9 +259,9 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
 
   })
   .catch(function(error) {
-    let couponImageFile;
-
     // handle error
+    console.log('There was an error ' + error.response.status);
+    console.log('The couponImage file is ' + couponImageFile);
       if(error.response.status === 404 || error.response.status === 422) {
         newCoupon = new CouponModel({
           merchantName: req.body.merchantName.trim(),

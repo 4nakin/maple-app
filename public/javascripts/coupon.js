@@ -34,8 +34,8 @@ function renderAddModal() {
                       <input type="text" name="description" class="form-control input-add-description" maxlength="40" id="description" required>
                     </div>
                     <div class="form-group">
-                      <label for="couponImage" class="custom-file-upload"><p>Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></p></label>
-                      <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg" />
+                      <label for="couponImage" class="custom-file-upload"><p>Upload an image of your coupon <span class ="limitsOnInputs">(only accepts image file types)</span></p></label>
+                      <input id="couponImage" type="file" name="couponImage" accept="image/*" />
                     </div>
                     <div class="">
                       <button type="submit" class="button solid submit-add-coupon-btn" id="js-submit-add-coupon-btn">Add</button>
