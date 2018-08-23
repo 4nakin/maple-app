@@ -104,8 +104,9 @@ function sendAddCouponDataToAPI(e) {
 
        getUserCoupons();
     },
-    error: function(err){
-      alert(err);
+    error: (err) => {
+      alert('There is an error');
+      alert(Object.values(err));
     }
   });
 }
@@ -510,7 +511,7 @@ function markCouponUsedonDOM(res,toggleCouponState) {
 function renderCoupons(res, toggleCouponState) {
   const modalAttributes = (res.couponImage) ? 'data-toggle="modal" data-target="#showCouponImageModal"' : '';
   const beginningLinkAttributes = (res.couponImage) ? '<a href="" class="js-show-coupon-image show-coupon-image" ' : '';
-  const toolTipAttributes = (res.couponImage) ? 'data-toggle="tooltip" data-placement="left" title="Click to see coupon Image uploaded">' : '';
+  const toolTipAttributes = (res.couponImage) ? 'data-toggle="tooltip" data-placement="top" title="Click to see coupon Image uploaded">' : '';
   const endLinkAttributes = (res.couponImage) ? '</a>' : '';
   const couponImageAttributes = (res.couponImage) ? `${res.couponImage}` : '';
 
