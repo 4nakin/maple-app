@@ -65,10 +65,8 @@ function watchSubmitAddNewCouponHandler() {
   });
 }
 function sendAddCouponDataToAPI(e) {
-  const formData = new FormData(e.target);
-  // for (var [key, value] of formData.entries()) {
-  //   console.log(key, value);
-  // }
+  let formData = new FormData(e.target);
+
   $.ajax({
     url: '/coupon',
     type: 'POST',
@@ -196,8 +194,6 @@ function getValues(res) {
   const descriptionText = res.description;
   const couponImage = res.couponImage;
 
-  console.log("expirationDate that was pulled from DB: " + expirationDateText);
-
   $('.input-edit-merchantName').val(merchantNameText);
   $('.input-edit-code').val(codeText);
   $('.input-edit-expirationDate').val(expirationDateText);
@@ -214,9 +210,6 @@ function watchSubmitEditCouponHandler(id) {
 function sendCouponToEditFromAPI(id, e) {
   let formData = new FormData(e.target);
   formData.append('id', id);
-    // for (var [key, value] of formData.entries()) {
-    //   //console.log(key, value);
-    // }
 
     let _couponId = id;
 
