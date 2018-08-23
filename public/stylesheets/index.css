@@ -436,7 +436,6 @@ button:disabled {
   margin-bottom: 12px;
   font-size: 22px;
   line-height: 24px;
-  width: 163px;
   margin: 0 auto 5px auto;
   text-transform: capitalize;
 }
@@ -445,10 +444,10 @@ button:disabled {
   font-size: 10px;
   font-weight: 300;
   width: 163px;
-  height: 40px;
+  height: 45px;
   overflow-wrap: break-word;
   line-height: 20px;
-  margin: 0 auto 5px auto;
+  margin: 10px auto 5px auto;
   text-align: center;
   text-transform: capitalize;
 }
