@@ -66,9 +66,9 @@ function watchSubmitAddNewCouponHandler() {
 }
 function sendAddCouponDataToAPI(e) {
   const formData = new FormData(e.target);
-  for (var [key, value] of formData.entries()) {
-    console.log(key, value);
-  }
+  // for (var [key, value] of formData.entries()) {
+  //   console.log(key, value);
+  // }
   $.ajax({
     url: '/coupon',
     type: 'POST',
@@ -214,9 +214,9 @@ function watchSubmitEditCouponHandler(id) {
 function sendCouponToEditFromAPI(id, e) {
   let formData = new FormData(e.target);
   formData.append('id', id);
-    for (var [key, value] of formData.entries()) {
-      //console.log(key, value);
-    }
+    // for (var [key, value] of formData.entries()) {
+    //   //console.log(key, value);
+    // }
 
     let _couponId = id;
 
