@@ -34,7 +34,7 @@ function renderAddModal() {
                       <input type="text" name="description" class="form-control input-add-description" maxlength="40" id="description" required>
                     </div>
                     <div class="form-group">
-                      <label for="couponImage" class="custom-file-upload"><p>Upload an image of your coupon <span class ="limitsOnInputs">(only accepts image file types)</span></p></label>
+                      <label for="couponImage" class="custom-file-upload"><p>Upload an image of your coupon <span class ="limitsOnInputs">(only accepts image formats)</span></p></label>
                       <input id="couponImage" type="file" name="couponImage" accept="image/*" />
                     </div>
                     <div class="">
@@ -61,6 +61,7 @@ function watchAddBtnHandler() {
 function watchSubmitAddNewCouponHandler() {
   $('#js-add-coupon-form').on('submit', (e) => {
     e.preventDefault();
+    $('#js-submit-add-coupon-btn').attr("disabled", true);
     sendAddCouponDataToAPI(e);
   });
 }
@@ -147,8 +148,8 @@ function renderEditModal() {
                                     <img src="" alt="coupon image that user uploaded" class="js-uploaded-coupon-image uploaded-coupon-image">
                                     current image
                                   </div>
-                                  <label for="couponImage" class="custom-file-upload"><p>Upload an image of your coupon <span class ="limitsOnInputs">(only accepts png/jpeg)</span></p></label>
-                                  <input id="couponImage" type="file" name="couponImage" accept="image/png, image/jpeg"/>
+                                  <label for="couponImage" class="custom-file-upload"><p>Upload an image of your coupon <span class ="limitsOnInputs">(only accepts image formats)</span></p></label>
+                                  <input id="couponImage" type="file" name="couponImage" accept="image/*" />
                                 </div>
 
                                 <div class="">
@@ -209,6 +210,7 @@ function getValues(res) {
 function watchSubmitEditCouponHandler(id) {
   $('#js-edit-coupon-form').on('submit', (e) => {
       e.preventDefault();
+      $('#js-submit-edit-coupon-btn').attr("disabled", true);
       $('#editCouponModal').modal('hide');
       sendCouponToEditFromAPI(id, e);
   });
