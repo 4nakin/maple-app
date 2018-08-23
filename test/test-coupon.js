@@ -15,7 +15,6 @@ let moment = require('moment');
 const expect = chai.expect;
 
 chai.use(chaiHttp);
-chai.use(require('chai-datetime'));
 
 const merchantName = 'Best Buy';
 const code = 'TESTCODE123';
