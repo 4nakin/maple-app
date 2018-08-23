@@ -27,7 +27,7 @@ function renderAddModal() {
                     </div>
                     <div class="form-group">
                       <label for="expirationDate">Expiration Date <span class ="limitsOnInputs">(Date must be today or greater)</span></label>
-                      <input type="text" name="expirationDate" class="form-control input-add-expirationDate js-date-field" id="datepicker" autocomplete="off" max-length="10" required>
+                      <input type="text" name="expirationDate" class="form-control input-add-expirationDate js-date-field" id="datepicker" autocomplete="off" minlength="10" maxlength="10" required>
                     </div>
                     <div class="form-group">
                       <label for="description">Description <span class ="limitsOnInputs">(40 charater limit)</span></label>
@@ -66,7 +66,7 @@ function watchSubmitAddNewCouponHandler() {
         event.preventDefault();
       }
   });
-  
+
   $('#js-add-coupon-form').on('submit', (e) => {
     e.preventDefault();
     $('#js-submit-add-coupon-btn').attr("disabled", true);
@@ -145,7 +145,7 @@ function renderEditModal() {
 
                                 <div class="form-group">
                                     <label for="expirationDate">Expiration Date <span class ="limitsOnInputs">(Date must be today or greater)</label>
-                                    <input type="text" name="expirationDate" class="form-control input-edit-expirationDate js-date-field" id="datepicker2" autocomplete="off" required>
+                                    <input type="text" name="expirationDate" class="form-control input-edit-expirationDate js-date-field" id="datepicker2" autocomplete="off" maxlength="10" required>
                                 </div>
 
                                 <div class="form-group">
