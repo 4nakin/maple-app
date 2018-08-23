@@ -15,6 +15,7 @@ let moment = require('moment');
 const expect = chai.expect;
 
 chai.use(chaiHttp);
+chai.use(require('chai-datetime'));
 
 const merchantName = 'Best Buy';
 const code = 'TESTCODE123';
@@ -391,6 +392,10 @@ describe('Protected endpoint Coupon', function () {
             })
       });
       it('Should add a coupon ', function () {
+        let d1, d2;
+        d1 = moment(new Date()).format();
+        d2 = d1;
+
         return chai
           .request(app)
           .post('/coupon')
@@ -399,9 +404,10 @@ describe('Protected endpoint Coupon', function () {
           .field('code', 'testCode123')
           .field('expirationDate', expirationDateB)
           .field('description', 'this is a test description.')
-          .attach('couponImage', './uploads/coupon1.jpg', 'coupon.jpg')
+          .attach('couponImage', './uploads/coupon1.jpg', `couponImage-${d1}.jpg`)
           .then(function(_res) {
             res = _res;
+            console.log(res.body.couponImage);
             expect(res).to.have.status(201);
             expect(res.body).to.be.a('object');
             expect(res.body).to.include.keys('_id','merchantName','code','expirationDate','description','couponUsed','couponDisplayState', 'companyLogo','companyLogoUsed', 'companyDomain','couponImageLinkDisplayState');
@@ -409,7 +415,7 @@ describe('Protected endpoint Coupon', function () {
             expect(res.body.code).to.equal('testCode123');
             expect(res.body.expirationDate).to.equal(expirationDateB);
             expect(res.body.description).to.equal('this is a test description.');
-            expect(res.body.couponImage).to.equal('uploads/coupon.jpg');
+            expect(res.body.couponImage).to.equal(`uploads/couponImage-${d2}.jpg`);
           })
       });
     });
@@ -459,6 +465,7 @@ describe('Protected endpoint Coupon', function () {
 
     describe('PUT', function () {
       it('should update the send over fields', function () {
+        let d1, d2;
         return Coupon.create(
           {
             merchantName,
@@ -474,11 +481,10 @@ describe('Protected endpoint Coupon', function () {
             couponImageLinkDisplayState,
             userId: userObject.userId
           })
-          .then(function(_res) {
-            res = _res;
-
+          .then(function(res) {
+            d1 = moment(new Date()).format();
+            d2 = d1;
             currentCouponId = res._id;
-
             return chai
               .request(app)
               .put(`/coupon/${res._id}`)
@@ -487,10 +493,9 @@ describe('Protected endpoint Coupon', function () {
               .field('merchantName', 'Soothe')
               .field('expirationDate', expirationDateB)
               .field('description', 'Use your soothe coupon today.')
-              .attach('couponImage', './uploads/coupon1.jpg', 'test.png')
+              .attach('couponImage', './uploads/coupon1.jpg', `couponImage-${d1}.jpg`)
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res).to.have.status(200);
           })
           .then(function(_res) {
@@ -504,9 +509,11 @@ describe('Protected endpoint Coupon', function () {
             expect(res.body.coupons[0].code).to.equal(code);
             expect(res.body.coupons[0].expirationDate).to.equal(expirationDateB);
             expect(res.body.coupons[0].description).to.equal('Use your soothe coupon today.');
+            expect(res.body.coupons[0].couponImage).to.equal(`uploads/couponImage-${d2}.jpg`);
           })
       });
       it('should update the image file uploaded', function () {
+        let d1, d2;
         return Coupon.create(
           {
             merchantName,
@@ -523,6 +530,9 @@ describe('Protected endpoint Coupon', function () {
             userId: userObject.userId
           })
           .then(function(_res) {
+            d1 = moment(new Date()).format();
+            d2 = d1;
+
             res = _res;
             currentCouponId = res._id;
 
@@ -531,12 +541,12 @@ describe('Protected endpoint Coupon', function () {
               .put(`/coupon/${res._id}`)
               .set('Authorization', `Bearer ${userObject.token}`)
               .field('id', `${res._id}`)
-              .attach('couponImage', './uploads/coupon1.jpg', 'coupon.jpg')
+              .attach('couponImage', './uploads/coupon1.jpg', `couponImage-${d1}.jpg`)
           })
           .then(function(_res) {
             res = _res;
             expect(res).to.have.status(200);
-            expect(res.body.couponImage).to.equal('uploads/coupon.jpg');
+            expect(res.body.couponImage).to.equal(`uploads/couponImage-${d2}.jpg`);
           });
       });
       it('should update the merchantName', function () {
