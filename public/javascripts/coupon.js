@@ -250,8 +250,10 @@ function sendCouponToEditFromAPI(id, e) {
 
         getUserCoupons();
       },
-      error: function(err) {
-        //console.log(`Something happened when trying to edit ${err}`);
+      error:(err) => {
+        alert('There is an error');
+        alert(Object.values(err));
+        renderErrorMessage(err);
       }
     });
 }
