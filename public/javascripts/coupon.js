@@ -577,10 +577,11 @@ function getUserCoupons() {
 
       let couponHTML = "";
 
-      res.coupons.map((coupon) => {
+      res.coupons.reverse().map((coupon) => {
         const toggleCouponState = checkIfCouponShouldBeDisabled(coupon);
         couponHTML += renderCoupons(coupon, toggleCouponState);
       });
+
 
       $('#coupons').css('opacity', '0');
       $('#coupons').html(couponHTML);
