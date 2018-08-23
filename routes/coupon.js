@@ -93,10 +93,10 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
     req.body.code = req.body.code.trim();
   }
   if(req.body.expirationDate){
-    req.body.expirationDate.trim();
+    req.body.expirationDate = req.body.expirationDate.trim();
   }
   if(req.body.description){
-    req.body.description.trim();
+    req.body.description = req.body.description.trim();
   }
 
   const requiredFields = ['merchantName', 'code','expirationDate','description'];
@@ -299,11 +299,12 @@ router.put('/:id', jwtAuth, upload.single('couponImage'), (req, res) => {
     req.body.code = req.body.code.trim();
   }
   if(req.body.expirationDate){
-    req.body.expirationDate.trim();
+    req.body.expirationDate = req.body.expirationDate.trim();
   }
   if(req.body.description){
-    req.body.description.trim();
+    req.body.description = req.body.description.trim();
   }
+
 
   const stringFields = ['merchantName', 'code', 'expirationDate', 'description'];
   const nonStringField = stringFields.find(

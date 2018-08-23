@@ -59,6 +59,14 @@ function watchAddBtnHandler() {
   });
 }
 function watchSubmitAddNewCouponHandler() {
+  let field = $('#js-add-coupon-form');
+  field.on('keypress','.input-add-code', function(event) {
+     var key = event.keyCode;
+      if (key === 32) {
+        event.preventDefault();
+      }
+  });
+  
   $('#js-add-coupon-form').on('submit', (e) => {
     e.preventDefault();
     $('#js-submit-add-coupon-btn').attr("disabled", true);
