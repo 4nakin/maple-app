@@ -67,6 +67,12 @@ function watchSubmitAddNewCouponHandler() {
 function sendAddCouponDataToAPI(e) {
   let formData = new FormData(e.target);
 
+  let couponImageLength = $('#couponImage')[0].files.length;
+
+  if(couponImageLength <= 0){
+    formData.delete('couponImage');
+  }
+
   $.ajax({
     url: '/coupon',
     type: 'POST',

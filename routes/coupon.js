@@ -73,14 +73,10 @@ router.get('/:id', jwtAuth, (req, res) => {
 // CREATES A NEW COUPON
 router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   const _userId = getUserIdFromJwt(req);
-  console.log('do i get here?');
-  console.log(req.body);
-  console.log('Was file uploaded? ' + req.file);
 
   let couponImageFile;
 
   if(req.file == undefined){
-    //no image was uploaded
     couponImageFile = null;
   }
   else {
@@ -198,8 +194,6 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
 
 
   let now = (moment(new Date()).format()).slice(0,10);
-  console.log('the expiration date in the backend is: ' + expirationDate);
-  console.log('now: ' + now);
 
   if(expirationDate < now) {
       return res.status(422).json({
@@ -260,8 +254,6 @@ router.post('/', jwtAuth, upload.single('couponImage'), (req, res) => {
   })
   .catch(function(error) {
     // handle error
-    console.log('There was an error ' + error.response.status);
-    console.log('The couponImage file is ' + couponImageFile);
       if(error.response.status === 404 || error.response.status === 422) {
         newCoupon = new CouponModel({
           merchantName: req.body.merchantName.trim(),
