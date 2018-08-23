@@ -105,8 +105,7 @@ function sendAddCouponDataToAPI(e) {
        getUserCoupons();
     },
     error: (err) => {
-      alert('There is an error');
-      alert(Object.values(err));
+      //alert('There is an error');
       renderErrorMessage(err);
     }
   });
@@ -251,8 +250,7 @@ function sendCouponToEditFromAPI(id, e) {
         getUserCoupons();
       },
       error:(err) => {
-        alert('There is an error');
-        alert(Object.values(err));
+        //alert('There is an error');
         renderErrorMessage(err);
       }
     });
