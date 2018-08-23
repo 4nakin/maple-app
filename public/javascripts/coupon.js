@@ -105,6 +105,7 @@ function sendAddCouponDataToAPI(e) {
        getUserCoupons();
     },
     error: function(err){
+      alert(err);
     }
   });
 }
