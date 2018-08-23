@@ -475,7 +475,10 @@ function checkIfCouponShouldBeDisabled(res) {
 }
 function markCouponUsedonDOM(res,toggleCouponState) {
   $('.js-complete-icon').tooltip('hide');
+
   const couponContainerObject = $(entireCouponElement);
+  const couponNav = $(couponContainerObject).find('a.icon.complete-icon');
+  const completeIconElement = $(couponNav)[0];
   const couponContainer = $(couponContainerObject).find('.js-coupon-container');
   const merchantLogoLink = couponContainerObject.find('div.js-coupon-merchant-logo').children();
   const dashed = couponContainerObject.find('div.dashed');
@@ -483,7 +486,7 @@ function markCouponUsedonDOM(res,toggleCouponState) {
   const couponImageDisplayLink = couponContainerObject.find('p.coupon-code');
   const uploadedCouponImageLink = couponContainerObject.find('p.coupon-code a');
 
-  if (res.couponUsed === false){
+  if (res.couponUsed === false){ //coupon not used
     merchantLogoLink.attr('href', res.companyDomain);
     couponContainer.removeClass('coupon-disabled');
     couponContainer.addClass(toggleCouponState.classes);
@@ -495,8 +498,9 @@ function markCouponUsedonDOM(res,toggleCouponState) {
     couponImageDisplayLink.addClass(toggleCouponState.couponImageLinkDisplayState);
     couponContainerObject.find('p.coupon-code a').tooltip('enable');
     editIcon.fadeIn('slow');
+    $(completeIconElement).attr('data-original-title', 'Mark used');
   }
-  else if (res.couponUsed === true){
+  else if (res.couponUsed === true){ //coupon is used
     couponContainer.removeClass('coupon-active');
     couponContainer.addClass(toggleCouponState.classes);
     merchantLogoLink.children().attr('src', toggleCouponState.companyLogoStates);
@@ -509,6 +513,7 @@ function markCouponUsedonDOM(res,toggleCouponState) {
     uploadedCouponImageLink.removeAttr('href');
     couponContainerObject.find('p.coupon-code a').tooltip('disable');
     editIcon.fadeOut('slow');
+    $(completeIconElement).attr('data-original-title', 'Mark unused');
   }
   else {
     //something is up in the patch request conditionals
