@@ -94,7 +94,6 @@ function sendAddCouponDataToAPI(e) {
     success: (res) => {
 
       $('#addNewCouponModal').modal('hide');
-
       $('.input-add-merchantName').val('');
       $('.input-add-code').val('');
       $('.input-add-expirationDate').val('');
@@ -113,7 +112,6 @@ function sendAddCouponDataToAPI(e) {
        getUserCoupons();
     },
     error: (err) => {
-      //alert('There is an error');
       renderErrorMessage(err);
     }
   });
@@ -200,7 +198,8 @@ function getCouponById(id, callback) {
     url: `/coupon/${id}`,
     type: 'GET',
     success: callback,
-    error: function(err) {
+    error: (err) => {
+      renderErrorMessage(err);
     }
   });
 }
@@ -258,7 +257,6 @@ function sendCouponToEditFromAPI(id, e) {
         getUserCoupons();
       },
       error:(err) => {
-        //alert('There is an error');
         renderErrorMessage(err);
       }
     });
@@ -329,7 +327,8 @@ function sendCouponToDeleteFromAPI(id, container) {
 
          getUserCoupons();
       },
-      error: function(err) {
+      error: (err) => {
+        renderErrorMessage(err);
       }
     });
 }
@@ -398,7 +397,7 @@ function renderCouponAsUsed(res) {
     sendUpdateDataToAPI(currentCouponId, formData);
   }
   else {
-    //console.log("something went wrong with marking coupon!");
+    //something went wrong with marking coupon!
   }
 
 }
@@ -416,7 +415,8 @@ function sendUpdateDataToAPI(id, formData){
       const toggleCouponState = checkIfCouponShouldBeDisabled(res.coupon);
       markCouponUsedonDOM(res.coupon, toggleCouponState);
     },
-    error: function(err){
+    error: (err) => {
+      renderErrorMessage(err);
     }
   });
 }
@@ -511,7 +511,7 @@ function markCouponUsedonDOM(res,toggleCouponState) {
     editIcon.fadeOut('slow');
   }
   else {
-    //console.log('something is up in the patch request conditionals');
+    //something is up in the patch request conditionals
   }
 }
 
@@ -662,9 +662,9 @@ function clickedOnMerchantFilter(res, merchants) {
         else {
           getUserCoupons();
         }
-
       },
-      error: function(err) {
+      error: (err) => {
+        renderErrorMessage(err);
       }
     });
   });
@@ -689,7 +689,7 @@ function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
 
 //TODO: STILL HAVE TO WORK ON!!!!!!
 function checkIfCouponIsPastDue() {
-  //console.log('checking if coupon is past due based on date');//this should be done in the backend.
+  //checking if coupon is past due based on date
   //check coupons get responseJSON
   //from coupons array get expiration Date
   //then compare if value of expirationDate and today's current date.

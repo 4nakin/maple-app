@@ -30,7 +30,6 @@ router.post('/login', localAuth, (req, res) => {
 const jwtAuth = passport.authenticate('jwt', {session: false});
 
 router.get('/logout',jwtAuth,(req, res) => {
-  console.log('first I have to make sure I have a cookie ' + req.session.username);
   if(req.session.username){
      delete req.session.username;
      delete req.session.authToken;

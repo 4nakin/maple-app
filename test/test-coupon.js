@@ -44,13 +44,11 @@ const couponImageB = 'exampleBimage.png';
 let userObject;
 let token;
 let userId;
-let res;
 let currentCouponId;
 
 
 function tearDownDb() {
     return new Promise((resolve, reject) => {
-        console.warn('Deleting database');
         mongoose.connection.dropDatabase()
             .then(result => resolve(result))
             .catch(err => reject(err));
@@ -76,9 +74,7 @@ describe('Protected endpoint Coupon', function () {
           firstName: 'user',
           lastName: 'user'
         })
-        .then(function(_res) {
-          res = _res;
-
+        .then(function(res) {
           let userId = res.body.userId;
           let username = res.body.username;
           let firstName = res.body.firstName;
@@ -96,8 +92,7 @@ describe('Protected endpoint Coupon', function () {
                 password: password,
               })
         })
-        .then(function(_res) {
-          res = _res;
+        .then(function(res) {
           userObject.token = res.body.authToken;
           return userObject;
         })
@@ -118,14 +113,12 @@ describe('Protected endpoint Coupon', function () {
   });
 
   describe('testing routes for CRUD on /coupon', function () {
-
     describe('GET', function () {
       it('Should return an empty coupon array', function () {
         return chai.request(app)
           .get('/coupon')
           .set('Authorization', `Bearer ${userObject.token}`)
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res).to.have.status(200);
             expect(res.body).to.be.an('object');
             expect(res.body.coupons).to.have.length(0);
@@ -168,14 +161,12 @@ describe('Protected endpoint Coupon', function () {
           .get('/coupon')
           .set('Authorization', `Bearer ${userObject.token}`)
         })
-        .then(function(_res) {
-          delete _res.body.coupons[0]._id;
-          delete _res.body.coupons[1]._id;
-          delete _res.body.coupons[0].__v;
-          delete _res.body.coupons[1].__v;
-          delete _res.body._userId;
-
-          res = _res;
+        .then(function(res) {
+          delete res.body.coupons[0]._id;
+          delete res.body.coupons[1]._id;
+          delete res.body.coupons[0].__v;
+          delete res.body.coupons[1].__v;
+          delete res.body._userId;
 
           expect(res).to.have.status(200);
           expect(res.body).to.be.an('object');
@@ -209,11 +200,9 @@ describe('Protected endpoint Coupon', function () {
             couponImageLinkDisplayState: couponImageLinkDisplayStateB,
             userId: res.body.coupons[1].userId
           });
-
         });
       });
     });
-
     describe('POST', function () {
       it('Should reject a coupon with missing merchant name', function () {
           return chai
@@ -223,8 +212,7 @@ describe('Protected endpoint Coupon', function () {
             .field('code', 'testCode')
             .field('expirationDate', '2019-08-23')
             .field('description', 'this is a test description.')
-            .then(function(_res){
-              res = _res;
+            .then(function(res){
               expect(res).to.have.status(422);
               expect(res.body.reason).to.equal('ValidationError');
               expect(res.body.message).to.equal('Missing field');
@@ -239,8 +227,7 @@ describe('Protected endpoint Coupon', function () {
             .field('merchantName', 'Target')
             .field('expirationDate', '08-19-2019')
             .field('description', 'this is a test description.')
-            .then(function(_res) {
-              res = _res;
+            .then(function(res) {
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
               expect(res.body.reason).to.equal('ValidationError');
@@ -256,8 +243,7 @@ describe('Protected endpoint Coupon', function () {
             .field('merchantName', 'Target')
             .field('code', 'testCode')
             .field('description', 'this is a test description.')
-            .then(function(_res) {
-              res = _res;
+            .then(function(res) {
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
               expect(res.body.reason).to.equal('ValidationError');
@@ -273,8 +259,7 @@ describe('Protected endpoint Coupon', function () {
             .field('merchantName', 'Target')
             .field('code', 'testCode')
             .field('expirationDate', '08-19-2019')
-            .then(function(_res) {
-              res = _res;
+            .then(function(res) {
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
               expect(res.body.reason).to.equal('ValidationError');
@@ -291,8 +276,7 @@ describe('Protected endpoint Coupon', function () {
             .field('code', 'testCode')
             .field('expirationDate', '08-19-2019')
             .field('description', 'this is a test description.')
-            .then(function(_res) {
-              res = _res;
+            .then(function(res) {
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
               expect(res.body.reason).to.equal('ValidationError');
@@ -309,8 +293,7 @@ describe('Protected endpoint Coupon', function () {
             .field('code', '')
             .field('expirationDate', '08-19-2019')
             .field('description', 'this is a test description.')
-            .then(function(_res) {
-              res = _res;
+            .then(function(res) {
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
               expect(res.body.reason).to.equal('ValidationError');
@@ -327,8 +310,7 @@ describe('Protected endpoint Coupon', function () {
             .field('code', 'testcode123')
             .field('expirationDate', '8-19-2019')
             .field('description', 'this is a test description.')
-            .then(function(_res) {
-              res = _res;
+            .then(function(res) {
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
               expect(res.body.reason).to.equal('ValidationError');
@@ -345,8 +327,7 @@ describe('Protected endpoint Coupon', function () {
             .field('code', 'testcode123')
             .field('expirationDate', '08-19-2019')
             .field('description', '')
-            .then(function(_res) {
-              res = _res;
+            .then(function(res) {
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
               expect(res.body.reason).to.equal('ValidationError');
@@ -363,8 +344,7 @@ describe('Protected endpoint Coupon', function () {
             .field('code', 'testcode123')
             .field('expirationDate', '08-19-2019')
             .field('description', 'This is a test description that will go over 40 characters.')
-            .then(function(_res) {
-              res = _res;
+            .then(function(res) {
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
               expect(res.body.reason).to.equal('ValidationError');
@@ -381,14 +361,31 @@ describe('Protected endpoint Coupon', function () {
             .field('code', 'testcode123')
             .field('expirationDate', '2018-08-01')
             .field('description', 'This is a test description.')
-            .then(function(_res){
-              res = _res;
+            .then(function(res){
               expect(res).to.have.status(422);
               expect(res.body).to.be.an('object');
               expect(res.body.reason).to.equal('ValidationError');
               expect(res.body.message).to.equal('Cannot add a date in the past');
               expect(res.body.location).to.equal('expirationDate');
             })
+      });
+      it('Should reject only passing in a couponImage', function () {
+        let d1, d2;
+        d1 = moment(new Date()).format();
+        d2 = d1;
+
+        return chai
+          .request(app)
+          .post('/coupon')
+          .set('Authorization', `Bearer ${userObject.token}`)
+          .attach('couponImage', './uploads/coupon1.jpg', `couponImage-${d1}.jpg`)
+          .then(function(res) {
+            expect(res).to.have.status(422);
+            expect(res.body).to.be.a('object');
+            expect(res.body.reason).to.equal('ValidationError');
+            expect(res.body.message).to.equal('Missing field');
+            expect(res.body.location).to.equal('merchantName');
+          })
       });
       it('Should add a coupon ', function () {
         let d1, d2;
@@ -404,9 +401,7 @@ describe('Protected endpoint Coupon', function () {
           .field('expirationDate', expirationDateB)
           .field('description', 'this is a test description.')
           .attach('couponImage', './uploads/coupon1.jpg', `couponImage-${d1}.jpg`)
-          .then(function(_res) {
-            res = _res;
-            console.log(res.body.couponImage);
+          .then(function(res) {
             expect(res).to.have.status(201);
             expect(res.body).to.be.a('object');
             expect(res.body).to.include.keys('_id','merchantName','code','expirationDate','description','couponUsed','couponDisplayState', 'companyLogo','companyLogoUsed', 'companyDomain','couponImageLinkDisplayState');
@@ -418,7 +413,6 @@ describe('Protected endpoint Coupon', function () {
           })
       });
     });
-
     describe('DELETE', function () {
       it('Should delete a coupon', function () {
         return Coupon.create(
@@ -436,32 +430,26 @@ describe('Protected endpoint Coupon', function () {
             couponImageLinkDisplayState,
             userId: userObject.userId
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             currentCouponId = res._id;
-
             return chai
               .request(app)
               .delete(`/coupon/${res._id}`)
               .set('Authorization', `Bearer ${userObject.token}`)
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res).to.have.status(204);
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             return chai.request(app)
             .get('/coupon')
             .set('Authorization', `Bearer ${userObject.token}`)
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res.body.coupons).to.be.empty;
           })
       });
     });
-
     describe('PUT', function () {
       it('should update the send over fields', function () {
         let d1, d2;
@@ -497,13 +485,12 @@ describe('Protected endpoint Coupon', function () {
           .then(function(res) {
             expect(res).to.have.status(200);
           })
-          .then(function(_res) {
+          .then(function() {
             return chai.request(app)
             .get('/coupon')
             .set('Authorization', `Bearer ${userObject.token}`)
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res.body.coupons[0].merchantName).to.equal('Soothe');
             expect(res.body.coupons[0].code).to.equal(code);
             expect(res.body.coupons[0].expirationDate).to.equal(expirationDateB);
@@ -528,13 +515,10 @@ describe('Protected endpoint Coupon', function () {
             couponImageLinkDisplayState,
             userId: userObject.userId
           })
-          .then(function(_res) {
+          .then(function(res) {
             d1 = moment(new Date()).format();
             d2 = d1;
-
-            res = _res;
             currentCouponId = res._id;
-
             return chai
               .request(app)
               .put(`/coupon/${res._id}`)
@@ -542,8 +526,7 @@ describe('Protected endpoint Coupon', function () {
               .field('id', `${res._id}`)
               .attach('couponImage', './uploads/coupon1.jpg', `couponImage-${d1}.jpg`)
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res).to.have.status(200);
             expect(res.body.couponImage).to.equal(`uploads/couponImage-${d2}.jpg`);
           });
@@ -564,10 +547,8 @@ describe('Protected endpoint Coupon', function () {
             couponImageLinkDisplayState,
             userId: userObject.userId
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             currentCouponId = res._id;
-
             return chai
               .request(app)
               .put(`/coupon/${res._id}`)
@@ -575,15 +556,13 @@ describe('Protected endpoint Coupon', function () {
               .field('id', `${res._id}`)
               .field('merchantName', 'Soothe')
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res).to.have.status(200);
             return chai.request(app)
               .get('/coupon')
               .set('Authorization', `Bearer ${userObject.token}`)
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res).to.have.status(200);
             expect(res.body.coupons[0].merchantName).to.equal('Soothe');
           })
@@ -604,10 +583,8 @@ describe('Protected endpoint Coupon', function () {
             couponImageLinkDisplayState,
             userId: userObject.userId
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             currentCouponId = res._id;
-
             return chai
               .request(app)
               .put(`/coupon/${res._id}`)
@@ -615,15 +592,13 @@ describe('Protected endpoint Coupon', function () {
               .field('id', `${res._id}`)
               .field('code', 'SOOTHESERVE')
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res).to.have.status(200);
             return chai.request(app)
               .get('/coupon')
               .set('Authorization', `Bearer ${userObject.token}`)
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res).to.have.status(200);
             expect(res.body.coupons[0].code).to.equal('SOOTHESERVE');
           })
@@ -644,10 +619,8 @@ describe('Protected endpoint Coupon', function () {
             couponImageLinkDisplayState,
             userId: userObject.userId
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             currentCouponId = res._id;
-
             return chai
               .request(app)
               .put(`/coupon/${res._id}`)
@@ -655,20 +628,19 @@ describe('Protected endpoint Coupon', function () {
               .field('id', `${res._id}`)
               .field('expirationDate', expirationDateB)
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res).to.have.status(200);
             return chai.request(app)
               .get('/coupon')
               .set('Authorization', `Bearer ${userObject.token}`)
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res).to.have.status(200);
             expect(res.body.coupons[0].expirationDate).to.equal(expirationDateB);
           })
       });
       it('should update the description', function () {
+        //let res;
         return Coupon.create(
           {
             merchantName,
@@ -684,10 +656,8 @@ describe('Protected endpoint Coupon', function () {
             couponImageLinkDisplayState,
             userId: userObject.userId
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             currentCouponId = res._id;
-
             return chai
               .request(app)
               .put(`/coupon/${res._id}`)
@@ -695,15 +665,13 @@ describe('Protected endpoint Coupon', function () {
               .field('id', `${res._id}`)
               .field('description', 'This coupon is reedemable online only')
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res).to.have.status(200);
             return chai.request(app)
               .get('/coupon')
               .set('Authorization', `Bearer ${userObject.token}`)
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             expect(res).to.have.status(200);
             expect(res.body.coupons[0].description).to.equal('This coupon is reedemable online only');
           })
@@ -724,8 +692,7 @@ describe('Protected endpoint Coupon', function () {
             couponImageLinkDisplayState,
             userId: userObject.userId
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             return chai
               .request(app)
               .put(`/coupon/${res._id}`)
@@ -733,8 +700,7 @@ describe('Protected endpoint Coupon', function () {
               .field('id', `${res._id}`)
               .field('expirationDate', '2018-08-01')
           })
-          .then(function(_res){
-            res = _res;
+          .then(function(res){
             expect(res).to.have.status(422);
             expect(res.body).to.be.an('object');
             expect(res.body.reason).to.equal('ValidationError');
@@ -758,8 +724,7 @@ describe('Protected endpoint Coupon', function () {
             couponImageLinkDisplayState,
             userId: userObject.userId
           })
-          .then(function(_res) {
-            res = _res;
+          .then(function(res) {
             return chai
               .request(app)
               .put(`/coupon/${res._id}`)
@@ -767,15 +732,13 @@ describe('Protected endpoint Coupon', function () {
               .field('id', `${res._id}`)
               .field('merchantName', ' test company')
           })
-          .then(function(_res){
-            res = _res;
+          .then(function(res){
             expect(res).to.have.status(200);
             expect(res.body).to.be.an('object');
             expect(res.body.merchantName).to.equal('Test Company');
           })
       });
     });
-
     describe('PATCH', function () {
       it('marking used', function () {
         return Coupon.create(
@@ -793,10 +756,8 @@ describe('Protected endpoint Coupon', function () {
             couponImageLinkDisplayState,
             userId: userObject.userId
           })
-        .then(function(_res) {
-          res = _res;
+        .then(function(res) {
           currentCouponId = res._id;
-
           return chai
             .request(app)
             .patch(`/coupon/${res._id}`)
@@ -805,8 +766,7 @@ describe('Protected endpoint Coupon', function () {
             .field('couponDisplayState', 'coupon-disabled')
             .field('couponImageLinkDisplayState', 'show-coupon-image-link-styling-disabled')
         })
-        .then(function(_res) {
-          res = _res;
+        .then(function(res) {
           expect(res).to.have.status(200);
           expect(res.body.coupon.couponUsed).to.equal(true);
           expect(res.body.coupon.couponDisplayState).to.equal('coupon-disabled');
@@ -829,10 +789,8 @@ describe('Protected endpoint Coupon', function () {
             couponImageLinkDisplayState: couponImageLinkDisplayStateB,
             userId: userObject.userId
           })
-        .then(function(_res) {
-          res = _res;
+        .then(function(res) {
           currentCouponId = res._id;
-
           return chai
             .request(app)
             .patch(`/coupon/${res._id}`)
@@ -841,8 +799,7 @@ describe('Protected endpoint Coupon', function () {
             .field('couponDisplayState', 'coupon-active')
             .field('couponImageLinkDisplayState', 'show-coupon-image-link-styling')
         })
-        .then(function(_res) {
-          res = _res;
+        .then(function(res) {
           expect(res).to.have.status(200);
           expect(res.body.coupon.couponUsed).to.equal(false);
           expect(res.body.coupon.couponDisplayState).to.equal('coupon-active');
@@ -851,5 +808,4 @@ describe('Protected endpoint Coupon', function () {
       });
     });
   });
-
 });

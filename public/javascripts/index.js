@@ -25,7 +25,6 @@ function signupHandler() {
         password: $('#input-password').val()
       },
       success: (res) => {
-        console.log(res);
         $('#input-firstName').val('');
         $('#input-lastName').val('');
         $('#input-username').val('');
@@ -117,7 +116,6 @@ function renderErrorMessage(res){
   let errorMsg = '';
 
   if(res.statusText === 'Unauthorized') {
-    console.log(res.statusText);
     errorMsg = `<div class="alert alert-danger fade show text-center" role="alert">
                   ${res.statusText}. Please Login.
                 </div>`;
