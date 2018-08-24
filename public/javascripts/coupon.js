@@ -21,19 +21,19 @@ function renderAddModal() {
                   <form id="js-add-coupon-form">
                     <div class="form-group">
                       <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(14 charater limit)</span></label>
-                      <input type="text" name="merchantName" class="form-control input-add-merchantName" maxlength="14" id="merchantName" required>
+                      <input type="text" name="merchantName" class="form-control input-add-merchantName" maxlength="14" minlength="1" id="merchantName" required/>
                     </div>
                     <div class="form-group">
                       <label for="code">Code <span class ="limitsOnInputs">(15 charater limit)</span></label>
-                      <input type="text" name="code" class="form-control input-add-code" maxlength="15" id="code" required>
+                      <input type="text" name="code" class="form-control input-add-code" maxlength="15" minlength="1" id="code" required/>
                     </div>
                     <div class="form-group">
                       <label for="expirationDate">Expiration Date <span class ="limitsOnInputs">(Date must be today or greater)</span></label>
-                      <input type="text" name="expirationDate" class="form-control input-add-expirationDate js-date-field" id="datepicker" autocomplete="off" minlength="10" maxlength="10" required>
+                      <input type="text" name="expirationDate" class="form-control input-add-expirationDate js-date-field" id="datepicker" autocomplete="off" minlength="10" maxlength="10" required/>
                     </div>
                     <div class="form-group">
                       <label for="description">Description <span class ="limitsOnInputs">(40 charater limit)</span></label>
-                      <input type="text" name="description" class="form-control input-add-description" maxlength="40" id="description" required>
+                      <input type="text" name="description" class="form-control input-add-description" maxlength="40" minlength="1" id="description" required/>
                     </div>
                     <div class="form-group">
                       <label for="couponImage" class="custom-file-upload"><p>Upload an image of your coupon <span class ="limitsOnInputs">(only accepts image formats)</span></p></label>
@@ -140,23 +140,23 @@ function renderEditModal() {
                             <section role ="region" id="js-err-output" class="container"></section>
                             <form id="js-edit-coupon-form">
                                 <div class="form-group">
-                                    <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(15 charater limit)</span></label>
-                                    <input type="text" name="merchantName" class="form-control input-edit-merchantName" maxlength="14" minlength="4"  id="merchantName" required>
+                                    <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(14 charater limit)</span></label>
+                                    <input type="text" name="merchantName" class="form-control input-edit-merchantName" maxlength="14" minlength="1"  id="merchantName" required />
                                 </div>
 
                                 <div class="form-group">
                                     <label for="code">Code <span class ="limitsOnInputs">(15 charater limit)</span></label>
-                                    <input type="text" name="code" class="form-control input-edit-code" maxlength="15"  minlength="4"  id="code" required>
+                                    <input type="text" name="code" class="form-control input-edit-code" maxlength="15"  minlength="1"  id="code" required />
                                 </div>
 
                                 <div class="form-group">
                                     <label for="expirationDate">Expiration Date <span class ="limitsOnInputs">(Date must be today or greater)</label>
-                                    <input type="text" name="expirationDate" class="form-control input-edit-expirationDate js-date-field" id="datepicker2" autocomplete="off" maxlength="10" required>
+                                    <input type="text" name="expirationDate" class="form-control input-edit-expirationDate js-date-field" id="datepicker2" autocomplete="off" maxlength="10" required />
                                 </div>
 
                                 <div class="form-group">
                                     <label for="description">Description <span class ="limitsOnInputs">(40 charater limit)</span></label>
-                                    <input type="text" name="description" class="form-control input-edit-description" maxlength="40" minlength="4"  id="description" required>
+                                    <input type="text" name="description" class="form-control input-edit-description" maxlength="40" minlength="1"  id="description" required/>
                                 </div>
 
                                 <div class="form-group">
