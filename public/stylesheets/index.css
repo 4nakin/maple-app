@@ -349,6 +349,11 @@ button:disabled {
   margin-top: 54px;
 }
 
+#demo-cred-section {
+  text-align: center;
+  margin-top: 75px;
+}
+
 #js-list-coupons-section {
   margin: 40px 0 0 0;
 }

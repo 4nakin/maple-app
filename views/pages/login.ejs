@@ -1,27 +1,36 @@
 <% include ../partials/header %>
   <% include ../partials/navigation %>
-        <main role="main" class="container" id="login-section">
-            <h1>Login</h1>
-            <% include ../partials/outputMessage %>
-            <form action="/auth" method="post" id="js-login-form" class="login-form">
-            <div class="form-group">
-                <label for="input-username">Username:</label>
-                <input type="text" name="input-username" class="form-control" id="input-username" required/>
-            </div>
-            <div class="form-group">
-                <label for="input-password">Password:</label>
-                <input type="password" name="input-password" class="form-control" id="input-password" aria-describedby="passwordHelpInline" required/>
-                <small id="passwordHelpInline" class="text-muted">
+  <section role="region" id="demo-cred-section" class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Hey!Are you trying to test my App?</strong>
+    <br> User: demo
+    <br> Password: password123
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </section>
+
+    <main role="main" class="container" id="login-section">
+      <h1>Login</h1>
+      <% include ../partials/outputMessage %>
+        <form action="/auth" method="post" id="js-login-form" class="login-form">
+          <div class="form-group">
+            <label for="input-username">Username:</label>
+            <input type="text" name="input-username" class="form-control" id="input-username" required/>
+          </div>
+          <div class="form-group">
+            <label for="input-password">Password:</label>
+            <input type="password" name="input-password" class="form-control" id="input-password" aria-describedby="passwordHelpInline" required/>
+            <small id="passwordHelpInline" class="text-muted">
                   Must be 10-72 characters long.
-                </small>
-            </div>
-              <button type="submit" class="button solid" value="Login">Login</button>
-            </form>
-        </main>
+            </small>
+          </div>
+          <button type="submit" class="button solid" value="Login">Login</button>
+        </form>
+    </main>
 
-        <section role="region" id="signup-link-section">
-            <p>Not yet a user? <a href="/signup">Sign up</a></p>
-        </section>
+    <section role="region" id="signup-link-section">
+      <p>Not yet a user? <a href="/signup">Sign up</a></p>
+    </section>
 
-        <script src="/javascripts/index.js"></script>
+<script src="/javascripts/index.js"></script>
 <% include ../partials/footer %>
