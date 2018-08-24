@@ -228,6 +228,13 @@ function sendCouponToEditFromAPI(id, e) {
   let formData = new FormData(e.target);
   formData.append('id', id);
 
+  let couponImageLength = $('#couponImage')[0].files.length;
+
+  if(couponImageLength <= 0){
+    formData.delete('couponImage');
+  }
+
+
     let _couponId = id;
 
     $.ajax({
@@ -257,7 +264,8 @@ function sendCouponToEditFromAPI(id, e) {
         getUserCoupons();
       },
       error:(err) => {
-        renderErrorMessage(err);
+        alert(JSON.stringify(err));
+        //renderErrorMessage(err);
       }
     });
 }
