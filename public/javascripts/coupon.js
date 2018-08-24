@@ -4,6 +4,7 @@ let currentCouponId = null;
 let currentEventListener = null;
 let entireCouponElement = null;
 
+
 /* ADD COUPON */
 function renderAddModal() {
   return `<div class="modal fade" id="addNewCouponModal" tabindex="-1" role="dialog" aria-labelledby="addNewCouponModalLabel" aria-hidden="true">
@@ -16,6 +17,7 @@ function renderAddModal() {
                 </div>
                 <div class="modal-body">
                   <h2 class="modal-title" id="addNewCouponModalLabel">Add Coupon</h2>
+                  <section role ="region" id="js-err-output" class="container"></section>
                   <form id="js-add-coupon-form">
                     <div class="form-group">
                       <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(14 charater limit)</span></label>
@@ -60,10 +62,10 @@ function watchAddBtnHandler() {
 }
 function watchSubmitAddNewCouponHandler() {
   let field = $('#js-add-coupon-form');
-  field.on('keypress','.input-add-code', function(event) {
-     var key = event.keyCode;
+  field.on('keypress','.input-add-code', (e) => {
+     var key = e.keyCode;
       if (key === 32) {
-        event.preventDefault();
+        e.preventDefault();
       }
   });
 
@@ -112,7 +114,12 @@ function sendAddCouponDataToAPI(e) {
        getUserCoupons();
     },
     error: (err) => {
-      renderErrorMessage(err);
+      $('#js-submit-add-coupon-btn').attr("disabled", false);
+      let errorMsg = `<div class="alert alert-danger fade show text-center" role="alert">
+                        ${err.responseJSON.message}
+                      </div>`;
+
+      return $('#js-err-output').html(errorMsg);
     }
   });
 }
@@ -130,6 +137,7 @@ function renderEditModal() {
                         </div>
                         <div class="modal-body">
                             <h2 class="modal-title" id="editCouponModalLabel">Edit Coupon</h2>
+                            <section role ="region" id="js-err-output" class="container"></section>
                             <form id="js-edit-coupon-form">
                                 <div class="form-group">
                                     <label for="merchantName">Merchant Name <span class ="limitsOnInputs">(15 charater limit)</span></label>
@@ -217,10 +225,18 @@ function getValues(res) {
   $('.js-uploaded-coupon-image').attr('src', couponImage);
 }
 function watchSubmitEditCouponHandler(id) {
+  let field = $('#js-edit-coupon-form');
+  field.on('keypress','.input-edit-code', (e) => {
+     var key = e.keyCode;
+      if (key === 32) {
+        e.preventDefault();
+      }
+  });
+
   $('#js-edit-coupon-form').on('submit', (e) => {
       e.preventDefault();
       $('#js-submit-edit-coupon-btn').attr("disabled", true);
-      $('#editCouponModal').modal('hide');
+
       sendCouponToEditFromAPI(id, e);
   });
 }
@@ -234,7 +250,6 @@ function sendCouponToEditFromAPI(id, e) {
     formData.delete('couponImage');
   }
 
-
     let _couponId = id;
 
     $.ajax({
@@ -246,8 +261,8 @@ function sendCouponToEditFromAPI(id, e) {
       data: formData,
       processData: false,
       contentType: false,
-      success: function(res) {
-
+      success: (res) => {
+        $('#editCouponModal').modal('hide');
         if(res.companyDomain !== '' || res.companyDomain !== null){
           $(`[data-id = ${_couponId}] .js-coupon-merchant-logo a`).attr('href', res.companyDomain);
         }
@@ -264,8 +279,12 @@ function sendCouponToEditFromAPI(id, e) {
         getUserCoupons();
       },
       error:(err) => {
-        alert(JSON.stringify(err));
-        //renderErrorMessage(err);
+        $('#js-submit-edit-coupon-btn').attr("disabled", false);
+        let errorMsg = `<div class="alert alert-danger fade show text-center" role="alert">
+                          ${err.responseJSON.message}
+                        </div>`;
+
+        return $('#js-err-output').html(errorMsg);
       }
     });
 }
@@ -635,7 +654,7 @@ function renderFilterByMerchants(res) {
   const coupons = res.coupons;
   let merchants = [];
   // Generate unique list of merchants
-  coupons.map(function(coupon) {
+  coupons.map((coupon) => {
     if(!merchants.includes(coupon.merchantName)) {
         merchants.push(coupon.merchantName);
     }
@@ -645,7 +664,7 @@ function renderFilterByMerchants(res) {
 }
 function displayDropDownList(merchants) {
   var htmlCode = "";
-  merchants.map(function(coupon, index){
+  merchants.map((coupon, index) => {
     htmlCode += renderDropDownlist(coupon, index);
   });
 
@@ -673,7 +692,7 @@ function clickedOnMerchantFilter(res, merchants) {
 
         if(currentMerchant >= 0) {
           // Generate filtered coupons to then be rendered
-          filteredCoupons = coupons.filter(function(coupon, index) {
+          filteredCoupons = coupons.filter((coupon, index) => {
             return coupon.merchantName === merchants[currentMerchant];
           });
           renderSpecificMerchantCouponsOnDOM(filteredCoupons);
@@ -691,7 +710,7 @@ function clickedOnMerchantFilter(res, merchants) {
 function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
   let couponHTML = "";
 
-  filteredByMerchantCoupons.map(function(coupon){
+  filteredByMerchantCoupons.map((coupon) => {
     const toggleCouponState = checkIfCouponShouldBeDisabled(coupon);
     couponHTML += renderCoupons(coupon, toggleCouponState);
   });
@@ -705,17 +724,7 @@ function renderSpecificMerchantCouponsOnDOM(filteredByMerchantCoupons){
 
 }
 
-
-//TODO: STILL HAVE TO WORK ON!!!!!!
-function checkIfCouponIsPastDue() {
-  //checking if coupon is past due based on date
-  //check coupons get responseJSON
-  //from coupons array get expiration Date
-  //then compare if value of expirationDate and today's current date.
-}
-
 function initalizeCouponApp() {
-    //checkIfCouponIsPastDue()
     getUserCoupons();
     watchAddBtnHandler();
     watchDeleteBtnHandler();
