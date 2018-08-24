@@ -355,7 +355,7 @@ function renderShowCouponImageModal(imgPath){
 function showCoupondetails(){
   $('#coupons').on('click', '.js-coupon-code', (e) => {
     e.preventDefault();
-    const couponContainer = $(e.target).parent().parent().parent();
+    const couponContainer = $(e.target).parent().parent().parent().parent();
     currentCouponId = $(couponContainer).attr('data-id');
     let currentCouponImage = $(couponContainer).find('img.hide.js-coupon-image').attr('src');
     $('#showUploadedImageModalSection').html(renderShowCouponImageModal(currentCouponImage));
@@ -483,8 +483,12 @@ function markCouponUsedonDOM(res,toggleCouponState) {
   const merchantLogoLink = couponContainerObject.find('div.js-coupon-merchant-logo').children();
   const dashed = couponContainerObject.find('div.dashed');
   const editIcon = couponContainer.siblings().find('a.icon.edit-icon');
+  const couponCodeTitle = couponContainerObject.find('p.coupon-title');
   const couponImageDisplayLink = couponContainerObject.find('p.coupon-code');
   const uploadedCouponImageLink = couponContainerObject.find('p.coupon-code a');
+
+  //put the image modal back
+  const couponImageStates = (res.couponImage) ? '' : '';
 
   if (res.couponUsed === false){ //coupon not used
     merchantLogoLink.attr('href', res.companyDomain);
@@ -523,11 +527,12 @@ function markCouponUsedonDOM(res,toggleCouponState) {
 
 /* RENDERS COUPONS */
 function renderCoupons(res, toggleCouponState) {
-  const modalAttributes = (res.couponImage) ? 'data-toggle="modal" data-target="#showCouponImageModal"' : '';
-  const beginningLinkAttributes = (res.couponImage) ? '<a href="" class="js-show-coupon-image show-coupon-image" ' : '';
-  const toolTipAttributes = (res.couponImage) ? 'data-toggle="tooltip" data-placement="top" title="Click to see coupon Image uploaded">' : '';
-  const endLinkAttributes = (res.couponImage) ? '</a>' : '';
+  const modalAttributes = (res.couponImage) && (res.couponUsed === false) ? 'data-toggle="modal" data-target="#showCouponImageModal"' : '';
+  const beginningLinkAttributes = (res.couponImage) && (res.couponUsed === false) ? '<a href="" class="js-show-coupon-image show-coupon-image" ' : '';
+  const toolTipAttributes = (res.couponImage) && (res.couponUsed === false) ? 'data-toggle="tooltip" data-placement="top" title="Click to see coupon Image uploaded">' : '';
+  const endLinkAttributes = (res.couponImage) && (res.couponUsed === false) ? '</a>' : '';
   const couponImageAttributes = (res.couponImage) ? `${res.couponImage}` : '';
+  const toolTipTextCompleteIcon = (res.couponUsed) ? 'title="Mark un-used"' : 'title="Mark used"';
 
   return `<section role="region" class="all-coupon-container" data-id="${res._id}">
             <img src ="${couponImageAttributes}" alt="coupon image user uploaded for ${res.merchantName}" class="hide js-coupon-image">
@@ -543,21 +548,21 @@ function renderCoupons(res, toggleCouponState) {
                 <img src="${toggleCouponState.dashedLineImage}" alt="dashed line to seperate the sections" class="${toggleCouponState.dashedStates}">
               </div>
               <p class="coupon-title no-margin">COUPON CODE</p>
-              <p class="coupon-code js-coupon-code no-margin ${res.couponImageLinkDisplayState}" ${modalAttributes}>${beginningLinkAttributes}${toolTipAttributes}${res.code}${endLinkAttributes}</p>
+              <p class="coupon-code js-coupon-code no-margin ${res.couponImageLinkDisplayState}" ${modalAttributes}>${beginningLinkAttributes}${toolTipAttributes}<span>${res.code}</span>${endLinkAttributes}</p>
               <p class="coupon-expiration-date no-margin">Valid till ${res.expirationDate}</p>
             </section>
             <section role="region" class="coupon-actions-nav">
 
-              <a href="" data-toggle="tooltip" data-placement="top" title="Mark used" class="icon complete-icon js-complete-icon">
-                <img src="images/tick-sign.svg" alt="mark coupon used" class="budicon">
+              <a href="" data-toggle="tooltip" data-placement="top" ${toolTipTextCompleteIcon} class="icon complete-icon js-complete-icon">
+                <img src="images/tick-sign.svg" alt="complete icon" class="budicon">
               </a>
 
               <a href="" data-toggle="tooltip" data-placement="top" title="Edit" class="icon edit-icon js-edit-icon ${toggleCouponState.editIconState}">
-                <img src="images/ui-compose.svg" alt="edit-icon" data-toggle="modal" data-target="#editCouponModal" class="budicon">
+                <img src="images/ui-compose.svg" alt="edit icon" data-toggle="modal" data-target="#editCouponModal" class="budicon">
               </a>
 
               <a href="" data-toggle="tooltip" data-placement="top" title="Delete" class="icon trash-icon js-delete-icon">
-                <img src="images/trash.svg" alt="This is a trash icon to delete this coupon" data-toggle="modal" data-target="#showConfirmDeleteModal" class="budicon">
+                <img src="images/trash.svg" alt="trash icon" data-toggle="modal" data-target="#showConfirmDeleteModal" class="budicon">
               </a>
             </section>
           </section>`;
