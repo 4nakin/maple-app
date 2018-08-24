@@ -61,14 +61,6 @@ function watchAddBtnHandler() {
   });
 }
 function watchSubmitAddNewCouponHandler() {
-  let field = $('#js-add-coupon-form');
-  field.on('keypress','.input-add-code', (event) => {
-     var key = event.keyCode;
-      if (key === 32) {
-        event.preventDefault();
-      }
-  });
-
   $('#js-add-coupon-form').on('submit', (e) => {
     e.preventDefault();
     $('#js-submit-add-coupon-btn').attr("disabled", true);
@@ -225,14 +217,6 @@ function getValues(res) {
   $('.js-uploaded-coupon-image').attr('src', couponImage);
 }
 function watchSubmitEditCouponHandler(id) {
-  let field = $('#js-edit-coupon-form');
-  field.on('keypress','.input-edit-code', (event) => {
-     var key = event.keyCode;
-      if (key === 32) {
-        event.preventDefault();
-      }
-  });
-
   $('#js-edit-coupon-form').on('submit', (e) => {
       e.preventDefault();
       $('#js-submit-edit-coupon-btn').attr("disabled", true);
@@ -244,7 +228,7 @@ function sendCouponToEditFromAPI(id, e) {
   formData.append('id', id);
 
   let couponImageLength = $('#couponImage')[0].files.length;
-  console.log(couponImageLength);
+
   if(couponImageLength <= 0){
     formData.delete('couponImage');
   }
