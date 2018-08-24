@@ -279,11 +279,11 @@ function sendCouponToEditFromAPI(id, e) {
         getUserCoupons();
       },
       error:(err) => {
-        $('#js-submit-edit-coupon-btn').attr("disabled", false);
+
         let errorMsg = `<div class="alert alert-danger fade show text-center" role="alert">
                           ${err.responseJSON.message}
                         </div>`;
-
+        $('#js-submit-edit-coupon-btn').attr("disabled", false);
         return $('#js-err-output').html(errorMsg);
       }
     });
@@ -301,6 +301,7 @@ function renderDeleteConfirmationModal(){
                   </button>
                 </div>
                 <div class="modal-body inlineBlock-center">
+                  <section role ="region" id="js-err-output" class="container"></section>
                   <h5 class="modal-title" id="showConfirmDeleteModalLabel">Are you sure you want to delete?</h5>
                   <button type="submit" class="btn btn-danger" id="js-submit-delete-coupon-yes">Yes</button>
                   <button type="submit" class="btn btn-secondary" id="js-submit-delete-coupon-no">No</button>
@@ -355,7 +356,11 @@ function sendCouponToDeleteFromAPI(id, container) {
          getUserCoupons();
       },
       error: (err) => {
-        renderErrorMessage(err);
+        let errorMsg = `<div class="alert alert-danger fade show text-center" role="alert">
+                          ${err.responseJSON.message}
+                        </div>`;
+
+        return $('#js-err-output').html(errorMsg);
       }
     });
 }
